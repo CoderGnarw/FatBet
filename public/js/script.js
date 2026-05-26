@@ -103,9 +103,12 @@ function fillGridWithRandomSymbols() {
 }
 
 function changeBet() {
-  
   if (freeSpins > 0 || isSpinning) {
-  return;
+    const betSelect = document.getElementById("betSelect");
+    if (betSelect) {
+      betSelect.value = bet;
+    }
+    return;
   }
 
   bet = Number(document.getElementById("betSelect").value);
@@ -431,6 +434,12 @@ function updateUI() {
     } else {
       freeSpinsWrapper.classList.add("hidden");
     }   
+  }
+  
+  const betSelect = document.getElementById("betSelect");
+
+  if (betSelect) {
+  betSelect.disabled = freeSpins > 0 || isSpinning;
   }
 }
 
