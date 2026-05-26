@@ -137,11 +137,11 @@ async function spin() {
   renderGrid();
 
   const winData = calculateTotalWin();
-  const scatterData = calculateScatterBonus();
+  const scatterData = calculateScatterBonus(isFreeSpin);
 
   let totalWin = winData.totalWin;
 
-  if (scatterData.freeSpinsWon > 0) {
+  if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
     freeSpins += scatterData.freeSpinsWon;
   }
 
@@ -211,9 +211,23 @@ function generateFinalGrid() {
 
   for (let row = 0; row < rows; row++) {
     currentGrid[row] = [];
+  }
 
-    for (let reel = 0; reel < reels; reel++) {
-      currentGrid[row][reel] = rand();
+  for (let reel = 0; reel < reels; reel++) {
+    let scatterPlacedOnThisReel = false;
+
+    for (let row = 0; row < rows; row++) {
+      let symbol = rand();
+
+      if (symbol === scatterSymbol) {
+        if (scatterPlacedOnThisReel) {
+          symbol = randRegularSymbol();
+        } else {
+          scatterPlacedOnThisReel = true;
+        }
+      }
+
+      currentGrid[row][reel] = symbol;
     }
   }
 }
@@ -312,7 +326,14 @@ function calculateLineWin(line) {
   };
 }
 
-function calculateScatterBonus() {
+function calculateScatterBonus(isFreeSpin) {
+  if (isFreeSpin) {
+    return {
+      scatterCount: 0,
+      freeSpinsWon: 0
+    };
+  }
+
   let scatterCount = 0;
 
   for (let row = 0; row < rows; row++) {
@@ -325,9 +346,9 @@ function calculateScatterBonus() {
 
   let freeSpinsWon = 0;
 
-  if (scatterCount >= 3) freeSpinsWon = 5;
-  if (scatterCount >= 4) freeSpinsWon = 8;
-  if (scatterCount >= 5) freeSpinsWon = 12;
+  if (scatterCount === 3) freeSpinsWon = 5;
+  if (scatterCount === 4) freeSpinsWon = 7;
+  if (scatterCount >= 5) freeSpinsWon = 10;
 
   return {
     scatterCount,
@@ -367,6 +388,10 @@ function clearWinningCells() {
 
 function rand() {
   return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+function randRegularSymbol() {
+  return regularSymbols[Math.floor(Math.random() * regularSymbols.length)];
 }
 
 function updateUI() {
