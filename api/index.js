@@ -1,16 +1,17 @@
 require("dotenv").config();
-console.log("ICH BIN DIE RICHTIGE SERVER DATEI");
 
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
 const session = require("express-session");
 const axios = require("axios");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
-app.get("/test", (req, res) => {
-  res.send("Test funktioniert");
-});
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 app.use(cors({
   origin: process.env.FRONTEND_URL,
@@ -24,39 +25,23 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false
+    secure: true,
+    sameSite: "none"
   }
 }));
 
-const db = new sqlite3.Database("./slots.db");
-
-// USER TABELLE
-db.run(`
-CREATE TABLE IF NOT EXISTS users (
-  discord_id TEXT PRIMARY KEY,
-  username TEXT,
-  coins INTEGER
-)
-`);
-
-// DISCORD LOGIN START
 app.get("/auth/discord", (req, res) => {
-
-  console.log("DISCORD ROUTE EXISTIERT");
-
   const redirect =
-    `https://discord.com/api/oauth2/authorize` +
+    "https://discord.com/api/oauth2/authorize" +
     `?client_id=${process.env.DISCORD_CLIENT_ID}` +
-    `&response_type=code` +
+    "&response_type=code" +
     `&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}` +
-    `&scope=identify`;
+    "&scope=identify";
 
   res.redirect(redirect);
 });
 
-// DISCORD CALLBACK
 app.get("/auth/discord/callback", async (req, res) => {
-
   const code = req.query.code;
 
   if (!code) {
@@ -64,19 +49,15 @@ app.get("/auth/discord/callback", async (req, res) => {
   }
 
   try {
-
-    // TOKEN HOLEN
     const tokenResponse = await axios.post(
       "https://discord.com/api/oauth2/token",
-
       new URLSearchParams({
         client_id: process.env.DISCORD_CLIENT_ID,
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: "authorization_code",
-        code: code,
+        code,
         redirect_uri: process.env.DISCORD_REDIRECT_URI
       }),
-
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -86,7 +67,6 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     const accessToken = tokenResponse.data.access_token;
 
-    // USERDATEN HOLEN
     const userResponse = await axios.get(
       "https://discord.com/api/users/@me",
       {
@@ -98,93 +78,99 @@ app.get("/auth/discord/callback", async (req, res) => {
 
     const discordUser = userResponse.data;
 
-    // SESSION SPEICHERN
+    const { data: existingUser, error: selectError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("discord_id", discordUser.id)
+      .single();
+
+    if (selectError && selectError.code !== "PGRST116") {
+      console.error(selectError);
+      return res.status(500).send("Datenbankfehler beim Suchen.");
+    }
+
+    if (!existingUser) {
+      const { error: insertError } = await supabase
+        .from("users")
+        .insert({
+          discord_id: discordUser.id,
+          username: discordUser.username,
+          coins: 1000
+        });
+
+      if (insertError) {
+        console.error(insertError);
+        return res.status(500).send("Datenbankfehler beim Erstellen.");
+      }
+    }
+
     req.session.user = {
       discord_id: discordUser.id,
       username: discordUser.username
     };
 
-    // USER IN DB SUCHEN
-    db.get(
-      "SELECT * FROM users WHERE discord_id = ?",
-      [discordUser.id],
-
-      (err, row) => {
-
-        if (!row) {
-
-          // USER ERSTELLEN
-          db.run(
-            "INSERT INTO users VALUES (?, ?, ?)",
-            [discordUser.id, discordUser.username, 1000]
-          );
-        }
-
-        res.redirect(process.env.FRONTEND_URL);
-      }
-    );
-
+    res.redirect(process.env.FRONTEND_URL);
   } catch (err) {
-
     console.error(err.response?.data || err.message);
-    res.send("Discord Login Fehler.");
+    res.status(500).send("Discord Login Fehler.");
   }
 });
 
-// SESSION USER
-app.get("/me", (req, res) => {
-
+app.get("/me", async (req, res) => {
   if (!req.session.user) {
     return res.json(null);
   }
 
-  db.get(
-    "SELECT * FROM users WHERE discord_id = ?",
-    [req.session.user.discord_id],
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("discord_id", req.session.user.discord_id)
+    .single();
 
-    (err, row) => {
+  if (error) {
+    console.error(error);
+    return res.json(null);
+  }
 
-      if (!row) {
-        return res.json(null);
-      }
-
-      res.json(row);
-    }
-  );
+  res.json(data);
 });
 
-// COINS SPEICHERN
-app.post("/save", (req, res) => {
-
+app.post("/save", async (req, res) => {
   if (!req.session.user) {
     return res.sendStatus(401);
   }
 
   const { coins } = req.body;
 
-  db.run(
-    "UPDATE users SET coins = ? WHERE discord_id = ?",
-    [coins, req.session.user.discord_id]
-  );
+  const { error } = await supabase
+    .from("users")
+    .update({ coins })
+    .eq("discord_id", req.session.user.discord_id);
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
 
   res.sendStatus(200);
 });
 
-// LEADERBOARD
-app.get("/leaderboard", (req, res) => {
+app.get("/leaderboard", async (req, res) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("username, coins")
+    .order("coins", { ascending: false })
+    .limit(10);
 
-  db.all(
-    "SELECT username, coins FROM users ORDER BY coins DESC LIMIT 10",
+  if (error) {
+    console.error(error);
+    return res.json([]);
+  }
 
-    (err, rows) => {
-      res.json(rows);
-    }
-  );
+  res.json(data);
 });
 
-// LOGOUT
 app.get("/logout", (req, res) => {
-
   req.session.destroy(() => {
     res.redirect(process.env.FRONTEND_URL);
   });
