@@ -574,6 +574,19 @@ async function save() {
   updateLeaderboard();
 }
 
+const autoSpinStatus = document.getElementById("autoSpinStatus");
+const autoSpinCount = document.getElementById("autoSpinCount");
+
+if (autoSpinStatus && autoSpinCount) {
+  if (autoSpinRunning) {
+    autoSpinStatus.classList.remove("hidden");
+    autoSpinCount.innerText = autoSpinInfinite ? "∞" : autoSpinsRemaining;
+  } else {
+    autoSpinStatus.classList.add("hidden");
+    autoSpinCount.innerText = "0";
+  }
+}
+
 async function updateLeaderboard() {
   const res = await fetch("/leaderboard");
   const board = await res.json();
@@ -694,6 +707,7 @@ async function startAutoSpin(amount) {
   autoSpinsRemaining = amount;
 
   runAutoSpin();
+  updateUI();
 }
 
 async function startInfiniteAutoSpin() {
@@ -706,6 +720,7 @@ async function startInfiniteAutoSpin() {
   autoSpinInfinite = true;
 
   runAutoSpin();
+  updateUI();
 }
 
 function stopAutoSpin() {
@@ -732,6 +747,7 @@ async function runAutoSpin() {
     if (!autoSpinInfinite) {
 
       autoSpinsRemaining--;
+      updateUI();
 
       if (autoSpinsRemaining <= 0) {
         stopAutoSpin();

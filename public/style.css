@@ -383,3 +383,9 @@ button:hover {
     0 0 12px #ff00ff,
     0 0 25px #ffd700;
 }
+
+.auto-spin-status {
+  color: #00ffd5;
+  font-size: 15px;
+  text-shadow: 0 0 10px #00ffd5;
+}
