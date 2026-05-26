@@ -1,5 +1,4 @@
 require("dotenv").config();
-console.log("ICH BIN DIE RICHTIGE SERVER DATEI");
 
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
@@ -41,8 +40,6 @@ CREATE TABLE IF NOT EXISTS users (
 
 // DISCORD LOGIN START
 app.get("/auth/discord", (req, res) => {
-
-  console.log("DISCORD ROUTE EXISTIERT");
 
   const redirect =
     `https://discord.com/api/oauth2/authorize` +
