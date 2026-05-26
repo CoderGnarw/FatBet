@@ -20,6 +20,9 @@ let freeSpins = 0;
 let currentGrid = [];
 let isSpinning = false;
 
+let freeSpinStartCount = 0;
+let freeSpinTotalWin = 0;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -121,6 +124,7 @@ async function spin() {
   clearWinningCells();
 
   const isFreeSpin = freeSpins > 0;
+  const freeSpinsBeforeSpin = freeSpins;
 
   if (!isFreeSpin && coins < bet) {
     result("Nicht genug Coins!");
@@ -149,9 +153,15 @@ async function spin() {
   const scatterData = calculateScatterBonus(isFreeSpin);
 
   let totalWin = winData.totalWin;
+  
+  if (isFreeSpin && totalWin > 0) {
+  freeSpinTotalWin += totalWin;
+  }
 
   if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
-    freeSpins += scatterData.freeSpinsWon;
+  freeSpins += scatterData.freeSpinsWon;
+  freeSpinStartCount = scatterData.freeSpinsWon;
+  freeSpinTotalWin = 0;
   }
 
   if (totalWin > 0) {
@@ -173,6 +183,10 @@ async function spin() {
 
   isSpinning = false;
   updateUI();
+
+  if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
+  showFreeSpinSummary();
+  }
 
   await showBigWin(totalWin);
 
@@ -552,4 +566,27 @@ function showWinDetails(winningLines, scatterData) {
   }
 
   box.classList.remove("hidden");
+}
+
+function showFreeSpinSummary() {
+  const overlay = document.getElementById("freeSpinSummaryOverlay");
+  const text = document.getElementById("freeSpinSummaryText");
+
+  if (!overlay || !text) return;
+
+  text.innerText =
+    `Du hast ${freeSpinTotalWin} Coins in ${freeSpinStartCount} Freispielen gewonnen!`;
+
+  overlay.classList.remove("hidden");
+}
+
+function hideFreeSpinSummary() {
+  const overlay = document.getElementById("freeSpinSummaryOverlay");
+
+  if (overlay) {
+    overlay.classList.add("hidden");
+  }
+
+  freeSpinStartCount = 0;
+  freeSpinTotalWin = 0;
 }
