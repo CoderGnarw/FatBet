@@ -165,7 +165,10 @@ async function spin() {
   highlightScatters();
 
   await save();
+
+  isSpinning = false;
   updateUI();
+
   await showBigWin(totalWin);
 
   if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
@@ -178,8 +181,6 @@ async function spin() {
   } else {
     result("Leider verloren 😢");
   }
-
-  isSpinning = false;
 }
 
 function animateReelsSequentially() {
@@ -410,14 +411,26 @@ function updateUI() {
   if (betText) betText.innerText = bet;
 
   const freeSpinsText = document.getElementById("freeSpins");
-  if (freeSpinsText) freeSpinsText.innerText = freeSpins;
+  const freeSpinsWrapper = document.getElementById("freeSpinsWrapper");
+
+  if (freeSpinsText) {
+    freeSpinsText.innerText = freeSpins;
+  }
+
+  if (freeSpinsWrapper) {
+    if (freeSpins > 0) {
+      freeSpinsWrapper.classList.remove("hidden");
+    } else {
+      freeSpinsWrapper.classList.add("hidden");
+    }   
+  }
+}
 
   const betSelect = document.getElementById("betSelect");
 
   if (betSelect) {
   betSelect.disabled = freeSpins > 0 || isSpinning;
   }
-}
 
 function result(text) {
   document.getElementById("result").innerText = text;
