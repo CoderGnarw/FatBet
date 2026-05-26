@@ -164,6 +164,8 @@ async function spin() {
 
   highlightScatters();
 
+  showWinDetails(winData.winningLines, scatterData);
+
   await save();
 
   isSpinning = false;
@@ -395,6 +397,12 @@ function clearWinningCells() {
     slot.classList.remove("scatter");
   });
 }
+  const winDetails = document.getElementById("winDetails");
+
+  if (winDetails) {
+    winDetails.classList.add("hidden");
+    winDetails.innerHTML = "";
+}
 
 function rand() {
   return symbols[Math.floor(Math.random() * symbols.length)];
@@ -499,4 +507,40 @@ async function showBigWin(totalWin) {
   await new Promise(resolve => setTimeout(resolve, 2600));
 
   overlay.classList.add("hidden");
+}
+
+function showWinDetails(winningLines, scatterData) {
+  const box = document.getElementById("winDetails");
+
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  if (winningLines.length === 0 && scatterData.freeSpinsWon === 0) {
+    box.classList.add("hidden");
+    return;
+  }
+
+  winningLines.forEach(winLine => {
+    const div = document.createElement("div");
+    div.classList.add("win-detail-line");
+
+    div.innerText =
+      `Linie ${winLine.index + 1}: ${winLine.symbol} x${winLine.matches} ` +
+      `→ ${winLine.win} Coins`;
+
+    box.appendChild(div);
+  });
+
+  if (scatterData.freeSpinsWon > 0) {
+    const div = document.createElement("div");
+    div.classList.add("win-detail-line");
+
+    div.innerText =
+      `Scatter: ${scatterData.scatterCount} 🎁 → ${scatterData.freeSpinsWon} Freispiele`;
+
+    box.appendChild(div);
+  }
+
+  box.classList.remove("hidden");
 }

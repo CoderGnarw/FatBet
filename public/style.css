@@ -266,3 +266,24 @@ button:hover {
     opacity: 1;
   }
 }
+
+.win-details {
+  margin: 15px auto;
+  padding: 14px 18px;
+  max-width: 520px;
+
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid #ffd700;
+  border-radius: 16px;
+
+  color: #ffd700;
+  font-size: 14px;
+
+  box-shadow:
+    0 0 12px #ff00ff,
+    0 0 24px rgba(255, 215, 0, 0.4);
+}
+
+.win-detail-line {
+  margin: 6px 0;
+}
