@@ -180,3 +180,21 @@ button:hover {
   margin: 6px 0;
   color: #ffd700;
 }
+
+.slot.scatter {
+  background: linear-gradient(180deg, #00ffd5, #00443a);
+  color: #111;
+  box-shadow:
+    0 0 20px #00ffd5,
+    0 0 45px #00ffd5,
+    inset 0 0 15px #fff;
+}
+
+.slot.line-win {
+  outline: 4px solid #00ffd5;
+}
+
+#freeSpins {
+  color: #00ffd5;
+  text-shadow: 0 0 10px #00ffd5;
+}

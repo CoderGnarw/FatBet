@@ -1,4 +1,6 @@
-const symbols = ["🍒", "🍋", "🔔", "⭐", "💎"];
+const regularSymbols = ["🍒", "🍋", "🔔", "⭐", "💎"];
+const scatterSymbol = "🎁";
+const symbols = [...regularSymbols, scatterSymbol];
 
 const symbolMultipliers = {
   "🍒": 5,
@@ -14,7 +16,9 @@ const reels = 5;
 let coins = 1000;
 let currentUser = "";
 let bet = 50;
+let freeSpins = 0;
 let currentGrid = [];
+let isSpinning = false;
 
 const paylines = [
   [0, 0, 0, 0, 0],
@@ -42,7 +46,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   createSlotGrid();
   fillGridWithRandomSymbols();
   updateUI();
-
   await checkLogin();
 });
 
@@ -100,83 +103,107 @@ function fillGridWithRandomSymbols() {
 }
 
 function changeBet() {
-  const selectedBet = Number(document.getElementById("betSelect").value);
-  bet = selectedBet;
+  bet = Number(document.getElementById("betSelect").value);
   updateUI();
 }
 
 async function spin() {
+  if (isSpinning) return;
+
   clearWinningCells();
 
-  if (coins < bet) {
+  const isFreeSpin = freeSpins > 0;
+
+  if (!isFreeSpin && coins < bet) {
     result("Nicht genug Coins!");
     return;
   }
 
-  coins -= bet;
-  updateUI();
+  isSpinning = true;
 
+  if (isFreeSpin) {
+    freeSpins--;
+    result(`Freispiel läuft 🎁 Noch ${freeSpins} übrig`);
+  } else {
+    coins -= bet;
+  }
+
+  updateUI();
   playSound(spinSound);
 
-  document.querySelectorAll(".slot").forEach(slot => {
-    slot.classList.add("spinning");
-    slot.classList.remove("win");
-  });
+  await animateReelsSequentially();
 
-  animateSlots(async () => {
-    generateFinalGrid();
-    renderGrid();
+  generateFinalGrid();
+  renderGrid();
 
-    document.querySelectorAll(".slot").forEach(slot => {
-      slot.classList.remove("spinning");
-    });
+  const winData = calculateTotalWin();
+  const scatterData = calculateScatterBonus();
 
-    const winData = calculateTotalWin();
-    const totalWin = winData.totalWin;
+  let totalWin = winData.totalWin;
 
-    if (totalWin > 0) {
-      coins += totalWin;
-      highlightWinningLines(winData.winningLines);
+  if (scatterData.freeSpinsWon > 0) {
+    freeSpins += scatterData.freeSpinsWon;
+  }
 
-      if (winData.hasFiveOfAKind) {
-        playSound(jackpotSound);
-      } else {
-        playSound(winSound);
-      }
+  if (totalWin > 0) {
+    coins += totalWin;
+    highlightWinningLines(winData.winningLines);
 
-      const totalMultiplier = totalWin / bet;
-      result(`Gewonnen: ${totalWin} Coins 🎉 | Gesamt x${totalMultiplier}`);
+    if (winData.hasFiveOfAKind) {
+      playSound(jackpotSound);
     } else {
-      result("Leider verloren 😢");
+      playSound(winSound);
     }
+  }
 
-    await save();
-    updateUI();
-  });
+  highlightScatters();
+
+  await save();
+  updateUI();
+
+  if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
+    result(`Gewonnen: ${totalWin} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
+  } else if (totalWin > 0) {
+    const totalMultiplier = totalWin / bet;
+    result(`Gewonnen: ${totalWin} Coins 🎉 | Gesamt x${totalMultiplier}`);
+  } else if (scatterData.freeSpinsWon > 0) {
+    result(`${scatterData.freeSpinsWon} Freispiele gewonnen 🎁`);
+  } else {
+    result("Leider verloren 😢");
+  }
+
+  isSpinning = false;
 }
 
-function animateSlots(callback) {
-  let spins = 22;
+function animateReelsSequentially() {
+  return new Promise(resolve => {
+    const reelIntervals = [];
 
-  const interval = setInterval(() => {
-    for (let row = 0; row < rows; row++) {
-      for (let reel = 0; reel < reels; reel++) {
-        const delay = reel * 45;
-
-        setTimeout(() => {
+    for (let reel = 0; reel < reels; reel++) {
+      const interval = setInterval(() => {
+        for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
+          cell.classList.add("spinning");
           cell.innerText = rand();
-        }, delay);
-      }
-    }
+        }
+      }, 90);
 
-    spins--;
+      reelIntervals.push(interval);
 
-    if (spins <= 0) {
-      clearInterval(interval);
-      setTimeout(callback, 300);
+      setTimeout(() => {
+        clearInterval(interval);
+
+        for (let row = 0; row < rows; row++) {
+          const cell = document.getElementById(`slot-${row}-${reel}`);
+          cell.classList.remove("spinning");
+        }
+
+        if (reel === reels - 1) {
+          setTimeout(resolve, 250);
+        }
+      }, 900 + reel * 350);
     }
-  }, 105);
+  });
 }
 
 function generateFinalGrid() {
@@ -235,6 +262,16 @@ function calculateTotalWin() {
 
 function calculateLineWin(line) {
   const firstSymbol = currentGrid[line[0]][0];
+
+  if (firstSymbol === scatterSymbol) {
+    return {
+      win: 0,
+      symbol: firstSymbol,
+      matches: 0,
+      multiplier: 0
+    };
+  }
+
   let matches = 1;
 
   for (let reel = 1; reel < reels; reel++) {
@@ -261,13 +298,8 @@ function calculateLineWin(line) {
 
   let matchMultiplier = 1;
 
-  if (matches === 4) {
-    matchMultiplier = 2;
-  }
-
-  if (matches === 5) {
-    matchMultiplier = 5;
-  }
+  if (matches === 4) matchMultiplier = 2;
+  if (matches === 5) matchMultiplier = 5;
 
   const finalMultiplier = baseMultiplier * matchMultiplier;
   const win = bet * finalMultiplier;
@@ -280,19 +312,56 @@ function calculateLineWin(line) {
   };
 }
 
+function calculateScatterBonus() {
+  let scatterCount = 0;
+
+  for (let row = 0; row < rows; row++) {
+    for (let reel = 0; reel < reels; reel++) {
+      if (currentGrid[row][reel] === scatterSymbol) {
+        scatterCount++;
+      }
+    }
+  }
+
+  let freeSpinsWon = 0;
+
+  if (scatterCount >= 3) freeSpinsWon = 5;
+  if (scatterCount >= 4) freeSpinsWon = 8;
+  if (scatterCount >= 5) freeSpinsWon = 12;
+
+  return {
+    scatterCount,
+    freeSpinsWon
+  };
+}
+
 function highlightWinningLines(winningLines) {
   winningLines.forEach(winLine => {
     for (let reel = 0; reel < winLine.matches; reel++) {
       const row = winLine.line[reel];
       const cell = document.getElementById(`slot-${row}-${reel}`);
       cell.classList.add("win");
+      cell.classList.add("line-win");
     }
   });
+}
+
+function highlightScatters() {
+  for (let row = 0; row < rows; row++) {
+    for (let reel = 0; reel < reels; reel++) {
+      if (currentGrid[row][reel] === scatterSymbol) {
+        const cell = document.getElementById(`slot-${row}-${reel}`);
+        cell.classList.add("scatter");
+      }
+    }
+  }
 }
 
 function clearWinningCells() {
   document.querySelectorAll(".slot").forEach(slot => {
     slot.classList.remove("win");
+    slot.classList.remove("line-win");
+    slot.classList.remove("scatter");
   });
 }
 
@@ -304,9 +373,10 @@ function updateUI() {
   document.getElementById("coins").innerText = coins;
 
   const betText = document.getElementById("betText");
-  if (betText) {
-    betText.innerText = bet;
-  }
+  if (betText) betText.innerText = bet;
+
+  const freeSpinsText = document.getElementById("freeSpins");
+  if (freeSpinsText) freeSpinsText.innerText = freeSpins;
 }
 
 function result(text) {
