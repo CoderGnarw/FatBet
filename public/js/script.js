@@ -160,6 +160,7 @@ async function spin() {
 
   await save();
   updateUI();
+  await showBigWin(totalWin);
 
   if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
     result(`Gewonnen: ${totalWin} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
@@ -440,4 +441,35 @@ async function updateLeaderboard() {
 function playSound(sound) {
   sound.currentTime = 0;
   sound.play().catch(() => {});
+}
+
+async function showBigWin(totalWin) {
+
+  const multiplier = totalWin / bet;
+
+  if (multiplier < 25) {
+    return;
+  }
+
+  const overlay = document.getElementById("bigWinOverlay");
+  const text = document.getElementById("bigWinText");
+  const amount = document.getElementById("bigWinAmount");
+
+  if (multiplier >= 100) {
+    text.innerText = "💎 FAT WIN 💎";
+  }
+  else if (multiplier >= 50) {
+    text.innerText = "🔥 MEGA WIN 🔥";
+  }
+  else {
+    text.innerText = "🎉 BIG WIN 🎉";
+  }
+
+  amount.innerText = `+${totalWin} Coins`;
+
+  overlay.classList.remove("hidden");
+
+  await new Promise(resolve => setTimeout(resolve, 2600));
+
+  overlay.classList.add("hidden");
 }
