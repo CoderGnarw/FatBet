@@ -8,47 +8,26 @@ const symbolMultipliers = {
   "💎": 25
 };
 
-// 5 Walzen x 3 Reihen
 const rows = 3;
 const reels = 5;
 
 let coins = 1000;
 let currentUser = "";
 let bet = 50;
-
 let currentGrid = [];
 
-/*
-  Gewinnlinien für 5 Walzen x 3 Reihen.
-
-  Jede Linie hat 5 Zahlen.
-  Jede Zahl steht für die Reihe pro Walze.
-
-  Reihen:
-  0 = oben
-  1 = mitte
-  2 = unten
-
-  Beispiel:
-  [1, 1, 1, 1, 1]
-  bedeutet: mittlere Reihe über alle 5 Walzen.
-*/
 const paylines = [
-  [0, 0, 0, 0, 0], // oben
-  [1, 1, 1, 1, 1], // mitte
-  [2, 2, 2, 2, 2], // unten
-
-  [0, 1, 2, 1, 0], // V
-  [2, 1, 0, 1, 2], // umgedrehtes V
-
-  [0, 0, 1, 2, 2], // treppe runter
-  [2, 2, 1, 0, 0], // treppe hoch
-
-  [1, 0, 0, 0, 1], // oben bogen
-  [1, 2, 2, 2, 1], // unten bogen
-
-  [0, 1, 1, 1, 0], // flaches V oben
-  [2, 1, 1, 1, 2]  // flaches V unten
+  [0, 0, 0, 0, 0],
+  [1, 1, 1, 1, 1],
+  [2, 2, 2, 2, 2],
+  [0, 1, 2, 1, 0],
+  [2, 1, 0, 1, 2],
+  [0, 0, 1, 2, 2],
+  [2, 2, 1, 0, 0],
+  [1, 0, 0, 0, 1],
+  [1, 2, 2, 2, 1],
+  [0, 1, 1, 1, 0],
+  [2, 1, 1, 1, 2]
 ];
 
 const spinSound = new Audio("assets/sounds/spin.mp3");
@@ -59,11 +38,37 @@ spinSound.volume = 0.15;
 winSound.volume = 0.08;
 jackpotSound.volume = 0.25;
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   createSlotGrid();
   fillGridWithRandomSymbols();
   updateUI();
+
+  await checkLogin();
 });
+
+async function checkLogin() {
+  const res = await fetch("/me", {
+    credentials: "include"
+  });
+
+  const user = await res.json();
+
+  if (!user) {
+    document.getElementById("login").classList.remove("hidden");
+    document.getElementById("game").classList.add("hidden");
+    return;
+  }
+
+  currentUser = user.username;
+  coins = user.coins;
+
+  document.getElementById("player").innerText = currentUser;
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+
+  updateUI();
+  updateLeaderboard();
+}
 
 function createSlotGrid() {
   const slotGrid = document.getElementById("slotGrid");
@@ -75,7 +80,6 @@ function createSlotGrid() {
       cell.classList.add("slot");
       cell.id = `slot-${row}-${reel}`;
       cell.innerText = "❓";
-
       slotGrid.appendChild(cell);
     }
   }
@@ -95,36 +99,8 @@ function fillGridWithRandomSymbols() {
   }
 }
 
-async function login() {
-  const name = document.getElementById("username").value.trim();
-
-  if (!name) {
-    alert("Bitte gib einen Namen ein.");
-    return;
-  }
-
-  const res = await fetch("http://localhost:3000/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: name })
-  });
-
-  const data = await res.json();
-
-  currentUser = data.username;
-  coins = data.coins;
-
-  document.getElementById("player").innerText = currentUser;
-  document.getElementById("login").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-
-  updateUI();
-  updateLeaderboard();
-}
-
 function changeBet() {
   const selectedBet = Number(document.getElementById("betSelect").value);
-
   bet = selectedBet;
   updateUI();
 }
@@ -160,7 +136,6 @@ async function spin() {
 
     if (totalWin > 0) {
       coins += totalWin;
-
       highlightWinningLines(winData.winningLines);
 
       if (winData.hasFiveOfAKind) {
@@ -219,7 +194,8 @@ function generateFinalGrid() {
 function renderGrid() {
   for (let row = 0; row < rows; row++) {
     for (let reel = 0; reel < reels; reel++) {
-      document.getElementById(`slot-${row}-${reel}`).innerText = currentGrid[row][reel];
+      document.getElementById(`slot-${row}-${reel}`).innerText =
+        currentGrid[row][reel];
     }
   }
 }
@@ -230,22 +206,22 @@ function calculateTotalWin() {
   let hasFiveOfAKind = false;
 
   paylines.forEach((line, index) => {
-    const result = calculateLineWin(line);
+    const lineResult = calculateLineWin(line);
 
-    if (result.win > 0) {
-      totalWin += result.win;
+    if (lineResult.win > 0) {
+      totalWin += lineResult.win;
 
-      if (result.matches === 5) {
+      if (lineResult.matches === 5) {
         hasFiveOfAKind = true;
       }
 
       winningLines.push({
         index,
         line,
-        symbol: result.symbol,
-        matches: result.matches,
-        multiplier: result.multiplier,
-        win: result.win
+        symbol: lineResult.symbol,
+        matches: lineResult.matches,
+        multiplier: lineResult.multiplier,
+        win: lineResult.win
       });
     }
   });
@@ -259,7 +235,6 @@ function calculateTotalWin() {
 
 function calculateLineWin(line) {
   const firstSymbol = currentGrid[line[0]][0];
-
   let matches = 1;
 
   for (let reel = 1; reel < reels; reel++) {
@@ -273,12 +248,11 @@ function calculateLineWin(line) {
     }
   }
 
-  // Gewinn erst ab 3 gleichen Symbolen von links nach rechts
   if (matches < 3) {
     return {
       win: 0,
       symbol: firstSymbol,
-      matches: matches,
+      matches,
       multiplier: 0
     };
   }
@@ -287,11 +261,11 @@ function calculateLineWin(line) {
 
   let matchMultiplier = 1;
 
-  if (matches === 3) {
-    matchMultiplier = 1;
-  } else if (matches === 4) {
+  if (matches === 4) {
     matchMultiplier = 2;
-  } else if (matches === 5) {
+  }
+
+  if (matches === 5) {
     matchMultiplier = 5;
   }
 
@@ -340,11 +314,13 @@ function result(text) {
 }
 
 async function save() {
-  await fetch("http://localhost:3000/save", {
+  await fetch("/save", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
-      username: currentUser,
       coins: coins
     })
   });
@@ -353,7 +329,7 @@ async function save() {
 }
 
 async function updateLeaderboard() {
-  const res = await fetch("http://localhost:3000/leaderboard");
+  const res = await fetch("/leaderboard");
   const board = await res.json();
 
   const list = document.getElementById("leaderboard");
