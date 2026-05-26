@@ -103,6 +103,11 @@ function fillGridWithRandomSymbols() {
 }
 
 function changeBet() {
+  
+  if (freeSpins > 0 || isSpinning) {
+  return;
+  }
+
   bet = Number(document.getElementById("betSelect").value);
   updateUI();
 }
@@ -131,7 +136,7 @@ async function spin() {
   updateUI();
   playSound(spinSound);
 
-  generateFinalGrid();
+  generateFinalGrid(isFreeSpin);
 
   await animateReelsSequentially();
 
@@ -210,7 +215,7 @@ function animateReelsSequentially() {
   });
 }
 
-function generateFinalGrid() {
+function generateFinalGrid(isFreeSpin = false) {
   currentGrid = [];
 
   for (let row = 0; row < rows; row++) {
@@ -221,9 +226,9 @@ function generateFinalGrid() {
     let scatterPlacedOnThisReel = false;
 
     for (let row = 0; row < rows; row++) {
-      let symbol = rand();
+      let symbol = isFreeSpin ? randRegularSymbol() : rand();
 
-      if (symbol === scatterSymbol) {
+      if (!isFreeSpin && symbol === scatterSymbol) {
         if (scatterPlacedOnThisReel) {
           symbol = randRegularSymbol();
         } else {
@@ -406,6 +411,12 @@ function updateUI() {
 
   const freeSpinsText = document.getElementById("freeSpins");
   if (freeSpinsText) freeSpinsText.innerText = freeSpins;
+
+  const betSelect = document.getElementById("betSelect");
+
+  if (betSelect) {
+  betSelect.disabled = freeSpins > 0 || isSpinning;
+  }
 }
 
 function result(text) {
