@@ -45,6 +45,10 @@ let isSpinning = false;
 let freeSpinStartCount = 0;
 let freeSpinTotalWin = 0;
 
+let autoSpinsRemaining = 0;
+let autoSpinInfinite = false;
+let autoSpinRunning = false;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -141,7 +145,9 @@ function changeBet() {
 }
 
 async function spin() {
-  if (isSpinning) return;
+  if (isSpinning) {
+    return;
+  }
 
   clearWinningCells();
 
@@ -675,4 +681,61 @@ function hideFreeSpinSummary() {
 
   freeSpinStartCount = 0;
   freeSpinTotalWin = 0;
+}
+
+async function startAutoSpin(amount) {
+
+  if (autoSpinRunning || isSpinning) {
+    return;
+  }
+
+  autoSpinRunning = true;
+  autoSpinInfinite = false;
+  autoSpinsRemaining = amount;
+
+  runAutoSpin();
+}
+
+async function startInfiniteAutoSpin() {
+
+  if (autoSpinRunning || isSpinning) {
+    return;
+  }
+
+  autoSpinRunning = true;
+  autoSpinInfinite = true;
+
+  runAutoSpin();
+}
+
+function stopAutoSpin() {
+
+  autoSpinRunning = false;
+  autoSpinInfinite = false;
+  autoSpinsRemaining = 0;
+}
+
+async function runAutoSpin() {
+
+  while (autoSpinRunning) {
+
+    if (coins < bet && freeSpins <= 0) {
+      stopAutoSpin();
+      break;
+    }
+
+    await spin();
+
+    // optional kurze Pause
+    await new Promise(resolve => setTimeout(resolve, 250));
+
+    if (!autoSpinInfinite) {
+
+      autoSpinsRemaining--;
+
+      if (autoSpinsRemaining <= 0) {
+        stopAutoSpin();
+      }
+    }
+  }
 }
