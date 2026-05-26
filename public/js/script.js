@@ -496,13 +496,15 @@ function clearWinningCells() {
     slot.classList.remove("win");
     slot.classList.remove("line-win");
     slot.classList.remove("scatter");
+    slot.classList.remove("wild");
   });
-}
+
   const winDetails = document.getElementById("winDetails");
 
   if (winDetails) {
     winDetails.classList.add("hidden");
     winDetails.innerHTML = "";
+  }
 }
 
 function rand() {
