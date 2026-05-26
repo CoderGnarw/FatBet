@@ -1,0 +1,28 @@
+{
+  "rewrites": [
+    {
+      "source": "/auth/:path*",
+      "destination": "/api"
+    },
+    {
+      "source": "/me",
+      "destination": "/api"
+    },
+    {
+      "source": "/save",
+      "destination": "/api"
+    },
+    {
+      "source": "/leaderboard",
+      "destination": "/api"
+    },
+    {
+      "source": "/logout",
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
+    }
+  ]
+}
