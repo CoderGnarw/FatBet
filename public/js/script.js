@@ -1,6 +1,28 @@
 const regularSymbols = ["🍒", "🍋", "🔔", "⭐", "💎"];
 const scatterSymbol = "🎁";
-const symbols = [...regularSymbols, scatterSymbol];
+const wildSymbol = "🃏";
+
+const symbols = [
+  "🍒",
+  "🍒",
+  "🍒",
+
+  "🍋",
+  "🍋",
+  "🍋",
+
+  "🔔",
+  "🔔",
+
+  "⭐",
+  "⭐",
+
+  "💎",
+
+  wildSymbol,
+
+  scatterSymbol
+];
 
 const symbolMultipliers = {
   "🍒": 5,
@@ -264,8 +286,15 @@ function generateFinalGrid(isFreeSpin = false) {
 function renderGrid() {
   for (let row = 0; row < rows; row++) {
     for (let reel = 0; reel < reels; reel++) {
-      document.getElementById(`slot-${row}-${reel}`).innerText =
-        currentGrid[row][reel];
+      const cell = document.getElementById(`slot-${row}-${reel}`);
+
+cell.innerText = currentGrid[row][reel];
+
+cell.classList.remove("wild");
+
+if (currentGrid[row][reel] === wildSymbol) {
+  cell.classList.add("wild");
+      }
     }
   }
 }
@@ -304,9 +333,31 @@ function calculateTotalWin() {
 }
 
 function calculateLineWin(line) {
-  const firstSymbol = currentGrid[line[0]][0];
 
-  if (firstSymbol === scatterSymbol) {
+  let firstSymbol = currentGrid[line[0]][0];
+
+  // WILD ALS STARTSYMBOL SUCHEN
+  if (firstSymbol === wildSymbol) {
+
+    for (let reel = 1; reel < reels; reel++) {
+
+      const nextSymbol = currentGrid[line[reel]][reel];
+
+      if (
+        nextSymbol !== wildSymbol &&
+        nextSymbol !== scatterSymbol
+      ) {
+        firstSymbol = nextSymbol;
+        break;
+      }
+    }
+  }
+
+  // NUR WILDS ODER SCATTER
+  if (
+    firstSymbol === wildSymbol ||
+    firstSymbol === scatterSymbol
+  ) {
     return {
       win: 0,
       symbol: firstSymbol,
@@ -318,12 +369,17 @@ function calculateLineWin(line) {
   let matches = 1;
 
   for (let reel = 1; reel < reels; reel++) {
+
     const row = line[reel];
     const symbol = currentGrid[row][reel];
 
-    if (symbol === firstSymbol) {
+    if (
+      symbol === firstSymbol ||
+      symbol === wildSymbol
+    ) {
       matches++;
-    } else {
+    }
+    else {
       break;
     }
   }
@@ -344,8 +400,20 @@ function calculateLineWin(line) {
   if (matches === 4) matchMultiplier = 2;
   if (matches === 5) matchMultiplier = 5;
 
-  const finalMultiplier = baseMultiplier * matchMultiplier;
-  const win = bet * finalMultiplier;
+  // WILD BONUS
+  const wildCount = countWildsInLine(line, matches);
+
+  let wildMultiplier = 1;
+
+  if (wildCount === 1) wildMultiplier = 1.5;
+  if (wildCount >= 2) wildMultiplier = 2;
+
+  const finalMultiplier =
+    baseMultiplier *
+    matchMultiplier *
+    wildMultiplier;
+
+  const win = Math.floor(bet * finalMultiplier);
 
   return {
     win,
@@ -353,6 +421,22 @@ function calculateLineWin(line) {
     matches,
     multiplier: finalMultiplier
   };
+}
+
+function countWildsInLine(line, matches) {
+
+  let wilds = 0;
+
+  for (let reel = 0; reel < matches; reel++) {
+
+    const row = line[reel];
+
+    if (currentGrid[row][reel] === wildSymbol) {
+      wilds++;
+    }
+  }
+
+  return wilds;
 }
 
 function calculateScatterBonus(isFreeSpin) {

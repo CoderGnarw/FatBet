@@ -338,3 +338,14 @@ button:hover {
 .free-spin-summary-box small {
   color: #ccc;
 }
+
+.slot.wild {
+  background: linear-gradient(180deg, #ff00ff, #32003f);
+
+  color: white;
+
+  box-shadow:
+    0 0 18px #ff00ff,
+    0 0 45px #ff00ff,
+    inset 0 0 12px white;
+}
