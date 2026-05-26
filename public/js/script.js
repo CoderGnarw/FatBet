@@ -131,9 +131,10 @@ async function spin() {
   updateUI();
   playSound(spinSound);
 
+  generateFinalGrid();
+
   await animateReelsSequentially();
 
-  generateFinalGrid();
   renderGrid();
 
   const winData = calculateTotalWin();
@@ -196,6 +197,8 @@ function animateReelsSequentially() {
 
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
+
+          cell.innerText = currentGrid[row][reel];
           cell.classList.remove("spinning");
         }
 
