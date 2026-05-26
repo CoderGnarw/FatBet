@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session");
+const cookieSession = require("cookie-session");
 const axios = require("axios");
 const { createClient } = require("@supabase/supabase-js");
 
@@ -20,14 +20,13 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: true,
-    sameSite: "none"
-  }
+app.use(cookieSession({
+  name: "fatbet_session",
+  keys: [process.env.SESSION_SECRET],
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  secure: true,
+  sameSite: "none",
+  httpOnly: true
 }));
 
 app.get("/auth/discord", (req, res) => {
@@ -117,7 +116,7 @@ app.get("/auth/discord/callback", async (req, res) => {
 });
 
 app.get("/me", async (req, res) => {
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.json(null);
   }
 
@@ -136,7 +135,7 @@ app.get("/me", async (req, res) => {
 });
 
 app.post("/save", async (req, res) => {
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.sendStatus(401);
   }
 
@@ -171,9 +170,8 @@ app.get("/leaderboard", async (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect(process.env.FRONTEND_URL);
-  });
+  req.session = null;
+  res.redirect(process.env.FRONTEND_URL);
 });
 
 module.exports = app;
