@@ -2,27 +2,31 @@
   "rewrites": [
     {
       "source": "/auth/:path*",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
       "source": "/me",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
       "source": "/save",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
       "source": "/leaderboard",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
       "source": "/logout",
-      "destination": "/api"
+      "destination": "/api/index"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/frontend/:path*"
     }
   ]
 }
