@@ -903,7 +903,7 @@ async function loadLiveFeed() {
   const newestFirst = feed.slice(0, 8);
 
   newestFirst.reverse().forEach(item => {
-    if (knownFeedIds.includes(item.id)) return;
+    if (knownFeedIds.includes(item.id) && box.children.length > 0) return;
 
     knownFeedIds.push(item.id);
 

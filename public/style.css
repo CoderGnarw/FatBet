@@ -1213,3 +1213,38 @@ button:hover::before {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.6);
 }
+
+.feed-item {
+  padding: 12px 14px 18px !important;
+}
+
+.feed-message {
+  margin-top: 6px;
+  margin-bottom: 8px;
+  line-height: 1.45;
+  padding-bottom: 2px;
+}
+
+.feed-time {
+  display: block !important;
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.feed-item {
+  padding: 14px 16px 20px !important;
+}
+
+.feed-message {
+  margin-top: 6px;
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+
+.feed-time {
+  display: block !important;
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65) !important;
+}
