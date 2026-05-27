@@ -1095,3 +1095,83 @@ button:hover::before {
     0 0 18px #ffd700,
     0 0 32px #ff00ff;
 }
+
+/* BETTER LEADERBOARD */
+
+#leaderboard li {
+  min-height: 58px;
+  padding: 10px 12px;
+}
+
+.leaderboard-entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.leaderboard-left {
+  min-width: 0;
+}
+
+.leaderboard-name {
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leaderboard-title {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.leaderboard-coins {
+  font-size: 14px;
+  align-self: center;
+}
+
+/* BETTER LIVE FEED */
+
+.feed-item {
+  padding: 12px;
+  text-align: left;
+}
+
+.feed-tag {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.feed-message {
+  margin-top: 5px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.feed-time {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* PANEL BALANCE */
+
+.side-panel {
+  padding: 22px;
+}
+
+.side-panel h2 {
+  font-size: 28px;
+}
+
+.live-feed {
+  max-height: 500px;
+}
+
+/* RANK CLEANUP */
+
+.leaderboard-rank {
+  min-width: 34px;
+  font-size: 20px;
+}
