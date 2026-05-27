@@ -157,18 +157,18 @@ button:hover {
 
 .slot-grid {
   display: grid;
-  grid-template-columns: repeat(5, 120px);
-  grid-template-rows: repeat(3, 120px);
+  grid-template-columns: repeat(5, 135px);
+  grid-template-rows: repeat(3, 135px);
   gap: 14px;
 }
 
 .slot {
-  width: 120px;
-  height: 120px;
+  width: 135px;
+  height: 135px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 58px;
+  font-size: 64px;
   border-radius: 18px;
   background: #111;
   border: 2px solid #ffd700;
@@ -705,7 +705,7 @@ button:hover {
   color: #ffffff;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1100px) {
   .main-game-layout {
     grid-template-columns: 1fr;
   }
