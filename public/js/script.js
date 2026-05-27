@@ -1611,7 +1611,14 @@ async function adminGiveAllCoins() {
 }
 
 async function adminSetJackpot() {
-  const amount = Number(document.getElementById("adminJackpotAmount").value);
+  const raw = document.getElementById("adminJackpotAmount").value;
+
+  const amount = Number(
+    raw
+      .replace(/\./g, "")
+      .replace(/,/g, "")
+      .trim()
+  );
 
   const res = await fetch("/admin/set-jackpot", {
     method: "POST",
@@ -1630,7 +1637,7 @@ async function adminSetJackpot() {
       : data.error
   );
 
-  loadJackpot();
+  await loadJackpot();
 }
 
 function adminStatus(text) {
