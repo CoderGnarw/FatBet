@@ -154,7 +154,15 @@ async function spin() {
   }
 
   updateUI();
-  playSound(spinSound);
+  spinSound.currentTime = 0;
+
+  if (turboSpin) {
+    spinSound.playbackRate = 1.8;
+  } else {
+    spinSound.playbackRate = 0.9;
+  }
+
+  spinSound.play().catch(() => {});
 
   generateFinalGrid(isFreeSpin);
   await animateReelsSequentially();
