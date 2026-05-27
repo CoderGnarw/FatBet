@@ -35,6 +35,10 @@
     {
       "source": "/update-stats",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/achievements",
+      "destination": "/api/index.js"
     }
   ]
 }

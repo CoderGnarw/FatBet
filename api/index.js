@@ -31,6 +31,33 @@ app.use(cookieSession({
   httpOnly: true
 }));
 
+const ACHIEVEMENTS = [
+  { id: "rookie_spinner", name: "Rookie Spinner", category: "Spins", requirement: "100 Spins", reward: "Bronze Badge" },
+  { id: "reel_addict", name: "Reel Addict", category: "Spins", requirement: "500 Spins", reward: "Silber Badge" },
+  { id: "spin_machine", name: "Spin Machine", category: "Spins", requirement: "1.000 Spins", reward: "Titel" },
+  { id: "neon_gambler", name: "Neon Gambler", category: "Spins", requirement: "5.000 Spins", reward: "Profilrahmen" },
+  { id: "eternal_spinner", name: "Eternal Spinner", category: "Spins", requirement: "10.000 Spins", reward: "Animierter Rahmen" },
+
+  { id: "high_roller", name: "High Roller", category: "Coins", requirement: "1 Mio. gewonnene Coins", reward: "Gold Titel" },
+  { id: "coin_tycoon", name: "Coin Tycoon", category: "Coins", requirement: "5 Mio. gewonnene Coins", reward: "Profilfarbe" },
+  { id: "fortune_hunter", name: "Fortune Hunter", category: "Coins", requirement: "10 Mio. gewonnene Coins", reward: "Neon Badge" },
+  { id: "king_of_luck", name: "King of Luck", category: "Coins", requirement: "25 Mio. gewonnene Coins", reward: "Rahmen" },
+  { id: "slot_emperor", name: "Slot Emperor", category: "Coins", requirement: "50 Mio. gewonnene Coins", reward: "Animierter Titel" },
+  { id: "house_edge", name: "The House Edge", category: "Coins", requirement: "75 Mio. gewonnene Coins", reward: "Spezialeffekt" },
+  { id: "casino_legend", name: "Casino Legend", category: "Coins", requirement: "100 Mio. gewonnene Coins", reward: "Legendary Aura" },
+
+  { id: "lucky_scatter", name: "Lucky Scatter", category: "Freispiele", requirement: "100 Freispiele", reward: "Badge" },
+  { id: "free_spin_fanatic", name: "Free Spin Fanatic", category: "Freispiele", requirement: "250 Freispiele", reward: "Titel" },
+  { id: "scatter_collector", name: "Scatter Collector", category: "Freispiele", requirement: "500 Freispiele", reward: "Rahmen" },
+  { id: "wild_fortune", name: "Wild Fortune", category: "Freispiele", requirement: "750 Freispiele", reward: "Spezialfarbe" },
+  { id: "scatter_god", name: "Scatter God", category: "Freispiele", requirement: "1.000 Freispiele", reward: "Legendary Titel" },
+
+  { id: "jackpot_hunter", name: "Jackpot Hunter", category: "Jackpot", requirement: "1 Jackpot", reward: "Badge" },
+  { id: "jackpot_addict", name: "Jackpot Addict", category: "Jackpot", requirement: "5 Jackpots", reward: "Titel" },
+  { id: "mega_winner", name: "Mega Winner", category: "Jackpot", requirement: "10 Jackpots", reward: "Animierter Rahmen" },
+  { id: "god_of_fortune", name: "God of Fortune", category: "Jackpot", requirement: "25 Jackpots", reward: "Mythic Titel" }
+];
+
 app.get("/auth/discord", (req, res) => {
   const redirect =
     "https://discord.com/api/oauth2/authorize" +
@@ -296,7 +323,6 @@ app.get("/live-feed", async (req, res) => {
   res.json(data);
 });
 
-
 app.post("/live-feed", async (req, res) => {
   if (!req.session || !req.session.user) {
     return res.sendStatus(401);
@@ -321,7 +347,6 @@ app.post("/update-stats", async (req, res) => {
   }
 
   const { totalWin, freeSpinsWon, jackpotWon } = req.body;
-
   const discordId = req.session.user.discord_id;
 
   const { data: user, error } = await supabase
@@ -356,23 +381,111 @@ app.post("/update-stats", async (req, res) => {
     updates.jackpots_won = (user.jackpots_won || 0) + 1;
   }
 
-  const { error: updateError } = await supabase
+  const { data: updatedUser, error: updateError } = await supabase
     .from("users")
     .update(updates)
-    .eq("discord_id", discordId);
+    .eq("discord_id", discordId)
+    .select("*")
+    .single();
 
   if (updateError) {
     console.error(updateError);
     return res.sendStatus(500);
   }
 
-  res.sendStatus(200);
+  const unlockedAchievements = await unlockAchievements(discordId, updatedUser);
+
+  res.json({
+    ok: true,
+    unlockedAchievements
+  });
+});
+
+app.get("/achievements", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const discordId = req.session.user.discord_id;
+
+  const { data: unlockedRows, error } = await supabase
+    .from("user_achievements")
+    .select("achievement_id, unlocked_at")
+    .eq("discord_id", discordId);
+
+  if (error) {
+    console.error(error);
+    return res.json([]);
+  }
+
+  const unlockedMap = new Map(
+    unlockedRows.map(row => [row.achievement_id, row.unlocked_at])
+  );
+
+  const achievements = ACHIEVEMENTS.map(achievement => ({
+    ...achievement,
+    unlocked: unlockedMap.has(achievement.id),
+    unlocked_at: unlockedMap.get(achievement.id) || null
+  }));
+
+  res.json(achievements);
 });
 
 app.get("/logout", (req, res) => {
   req.session = null;
   res.redirect(process.env.FRONTEND_URL);
 });
+
+async function unlockAchievements(discordId, user) {
+  const unlockedNow = [];
+
+  const checks = [
+    ["rookie_spinner", user.spins_total >= 100],
+    ["reel_addict", user.spins_total >= 500],
+    ["spin_machine", user.spins_total >= 1000],
+    ["neon_gambler", user.spins_total >= 5000],
+    ["eternal_spinner", user.spins_total >= 10000],
+
+    ["high_roller", user.coins_won_total >= 1000000],
+    ["coin_tycoon", user.coins_won_total >= 5000000],
+    ["fortune_hunter", user.coins_won_total >= 10000000],
+    ["king_of_luck", user.coins_won_total >= 25000000],
+    ["slot_emperor", user.coins_won_total >= 50000000],
+    ["house_edge", user.coins_won_total >= 75000000],
+    ["casino_legend", user.coins_won_total >= 100000000],
+
+    ["lucky_scatter", user.free_spins_won >= 100],
+    ["free_spin_fanatic", user.free_spins_won >= 250],
+    ["scatter_collector", user.free_spins_won >= 500],
+    ["wild_fortune", user.free_spins_won >= 750],
+    ["scatter_god", user.free_spins_won >= 1000],
+
+    ["jackpot_hunter", user.jackpots_won >= 1],
+    ["jackpot_addict", user.jackpots_won >= 5],
+    ["mega_winner", user.jackpots_won >= 10],
+    ["god_of_fortune", user.jackpots_won >= 25]
+  ];
+
+  for (const [achievementId, condition] of checks) {
+    if (!condition) continue;
+
+    const { error } = await supabase
+      .from("user_achievements")
+      .insert({
+        discord_id: discordId,
+        achievement_id: achievementId
+      });
+
+    if (!error) {
+      const achievement = ACHIEVEMENTS.find(item => item.id === achievementId);
+      if (achievement) {
+        unlockedNow.push(achievement);
+      }
+    }
+  }
+
+  return unlockedNow;
+}
 
 function getDiscordAvatarUrl(discordUser) {
   if (!discordUser.avatar) {
