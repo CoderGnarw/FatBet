@@ -27,6 +27,10 @@
     {
       "source": "/profile/:path*",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/live-feed",
+      "destination": "/api/index.js"
     }
   ]
 }

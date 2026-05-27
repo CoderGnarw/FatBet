@@ -332,4 +332,37 @@ function getDiscordAvatarUrl(discordUser) {
   return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
 }
 
+app.get("/live-feed", async (req, res) => {
+  const { data, error } = await supabase
+    .from("live_feed")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.error(error);
+    return res.json([]);
+  }
+
+  res.json(data);
+});
+
+app.post("/live-feed", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { message } = req.body;
+
+  if (!message) {
+    return res.sendStatus(400);
+  }
+
+  await supabase
+    .from("live_feed")
+    .insert({ message });
+
+  res.sendStatus(200);
+});
+
 module.exports = app;

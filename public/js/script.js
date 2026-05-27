@@ -68,6 +68,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   updateUI();
   await checkLogin();
   await loadJackpot();
+  await loadLiveFeed();
+  setInterval(loadLiveFeed, 10000);
 });
 
 async function checkLogin() {
@@ -196,6 +198,18 @@ async function spin() {
     showJackpotOverlay(jackpotData.jackpotWin);
   }
 
+  if (jackpotData.jackpotWon) {
+    await addLiveFeedMessage(
+      `${currentUser} hat den Jackpot mit ${jackpotData.jackpotWin} Coins geknackt 💰`
+    );
+  }
+
+  if (totalWin >= bet * 25) {
+    await addLiveFeedMessage(
+      `${currentUser} gewann ${totalWin} Coins 🎉`
+    );
+  } 
+
   if (isFreeSpin && totalWin > 0) {
     freeSpinTotalWin += totalWin;
   }
@@ -241,7 +255,7 @@ async function spin() {
   }
 
   await showBigWin(totalWin);
-}
+}   
 
 function animateReelsSequentially() {
   return new Promise(resolve => {
@@ -889,4 +903,34 @@ function openSettingsOverlay() {
 
 function closeSettingsOverlay() {
   document.getElementById("settingsOverlay").classList.add("hidden");
+}
+
+async function loadLiveFeed() {
+  const res = await fetch("/live-feed");
+  const feed = await res.json();
+
+  const box = document.getElementById("liveFeed");
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  feed.forEach(item => {
+    const div = document.createElement("div");
+    div.classList.add("feed-item");
+    div.innerText = item.message;
+    box.appendChild(div);
+  });
+}
+
+async function addLiveFeedMessage(message) {
+  await fetch("/live-feed", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
+
+  loadLiveFeed();
 }
