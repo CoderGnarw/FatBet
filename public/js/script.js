@@ -617,11 +617,32 @@ async function updateLeaderboard() {
   const list = document.getElementById("leaderboard");
   list.innerHTML = "";
 
-  board.forEach(user => {
+  board.forEach((user, index) => {
     const li = document.createElement("li");
-    const name = user.display_name || user.username;
+    li.classList.add("leaderboard-entry");
 
-    li.innerText = `${name}: ${user.coins} Coins`;
+    if (index === 0) li.classList.add("rank-1");
+    if (index === 1) li.classList.add("rank-2");
+    if (index === 2) li.classList.add("rank-3");
+
+    const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+    const name = user.display_name || user.username;
+    const title = user.selected_title ? `👑 ${user.selected_title}` : "";
+
+    li.innerHTML = `
+      <div class="leaderboard-left">
+        <span class="leaderboard-rank">${medal}</span>
+        <div>
+          <div class="leaderboard-name">${name}</div>
+          <div class="leaderboard-title">${title}</div>
+        </div>
+      </div>
+
+      <div class="leaderboard-coins">
+        ${formatNumber(user.coins)} Coins
+      </div>
+    `;
+
     list.appendChild(li);
   });
 }
@@ -888,7 +909,21 @@ async function loadLiveFeed() {
 
     const div = document.createElement("div");
     div.classList.add("feed-item");
-    div.innerText = item.message;
+
+    const isJackpot = item.message.toLowerCase().includes("jackpot");
+    const isBigWin = item.message.toLowerCase().includes("gewann");
+
+    if (isJackpot) div.classList.add("feed-jackpot");
+    else if (isBigWin) div.classList.add("feed-bigwin");
+
+    const tag = isJackpot ? "💰 JACKPOT" : isBigWin ? "💎 BIG WIN" : "📢 WIN";
+    const time = item.created_at ? timeAgo(item.created_at) : "";
+
+    div.innerHTML = `
+      <div class="feed-tag">${tag}</div>
+      <div class="feed-message">${item.message}</div>
+      <div class="feed-time">${time}</div>
+    `;
 
     box.prepend(div);
 
@@ -1292,4 +1327,15 @@ async function saveSelectedTitle() {
 
   const data = await res.json();
   selectedTitle = data.selected_title;
+}
+
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+  if (seconds < 60) return `vor ${seconds}s`;
+  if (seconds < 3600) return `vor ${Math.floor(seconds / 60)}min`;
+  if (seconds < 86400) return `vor ${Math.floor(seconds / 3600)}h`;
+
+  return `vor ${Math.floor(seconds / 86400)}d`;
 }

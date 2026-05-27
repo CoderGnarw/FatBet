@@ -1004,3 +1004,94 @@ button:hover::before {
       0 0 36px rgba(255,215,0,0.35);
   }
 }
+
+.leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.leaderboard-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.leaderboard-rank {
+  font-size: 24px;
+  min-width: 42px;
+}
+
+.leaderboard-name {
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.leaderboard-title {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #00ffd5;
+  text-shadow: 0 0 8px #00ffd5;
+}
+
+.leaderboard-coins {
+  font-weight: bold;
+  color: #00ffd5;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.rank-1 {
+  border-color: #ffd700 !important;
+  box-shadow: 0 0 18px #ffd700 !important;
+}
+
+.rank-2 {
+  border-color: #c0c0c0 !important;
+  box-shadow: 0 0 14px #c0c0c0 !important;
+}
+
+.rank-3 {
+  border-color: #cd7f32 !important;
+  box-shadow: 0 0 14px #cd7f32 !important;
+}
+
+.feed-tag {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 8px #ff00ff;
+}
+
+.feed-message {
+  margin-top: 6px;
+  color: #00ffd5;
+}
+
+.feed-time {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.feed-bigwin {
+  border-color: #00ffd5;
+  box-shadow:
+    0 0 12px #00ffd5,
+    0 0 22px rgba(255, 0, 255, 0.35);
+}
+
+.feed-jackpot {
+  border-color: #ffd700;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 215, 0, 0.18),
+      rgba(255, 0, 255, 0.14)
+    );
+  box-shadow:
+    0 0 18px #ffd700,
+    0 0 32px #ff00ff;
+}

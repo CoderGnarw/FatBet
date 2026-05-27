@@ -387,7 +387,7 @@ app.post("/save", async (req, res) => {
 app.get("/leaderboard", async (req, res) => {
   const { data, error } = await supabase
     .from("users")
-    .select("display_name, username, avatar_url, coins")
+    .select("display_name, username, avatar_url, selected_title, coins")
     .order("coins", { ascending: false })
     .limit(10);
 
