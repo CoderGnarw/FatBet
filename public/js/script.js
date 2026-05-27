@@ -37,6 +37,8 @@ let autoSpinsRemaining = 0;
 let autoSpinInfinite = false;
 let autoSpinRunning = false;
 
+let turboSpin = false;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -219,7 +221,7 @@ function animateReelsSequentially() {
           cell.classList.add("spinning");
           cell.innerText = rand();
         }
-      }, 90);
+      }, turboSpin ? 45 : 125);
 
       setTimeout(() => {
         clearInterval(interval);
@@ -233,7 +235,9 @@ function animateReelsSequentially() {
         if (reel === reels - 1) {
           setTimeout(resolve, 250);
         }
-      }, 900 + reel * 350);
+      }, turboSpin
+          ? 450 + reel * 120
+          : 1250 + reel * 450);
     }
   });
 }
@@ -686,6 +690,28 @@ async function runAutoSpin() {
       }
     }
 
-    await new Promise(resolve => setTimeout(resolve, 350));
+    await new Promise(resolve =>
+      setTimeout(resolve, turboSpin ? 80 : 450)
+    );
+  }
+}
+
+function toggleTurboSpin() {
+
+  turboSpin = !turboSpin;
+
+  const button = document.getElementById("turboButton");
+
+  if (!button) return;
+
+  if (turboSpin) {
+
+    button.innerText = "⚡ Turbo AN";
+    button.classList.add("active");
+
+  } else {
+
+    button.innerText = "⚡ Turbo AUS";
+    button.classList.remove("active");
   }
 }

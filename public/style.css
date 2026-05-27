@@ -389,3 +389,13 @@ button:hover {
   font-size: 15px;
   text-shadow: 0 0 10px #00ffd5;
 }
+
+#turboButton.active {
+  background: #ff00ff;
+
+  color: white;
+
+  box-shadow:
+    0 0 15px #ff00ff,
+    0 0 35px #ff00ff;
+}
