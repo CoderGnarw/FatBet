@@ -1409,47 +1409,57 @@ async function saveSelectedTitle() {
 async function openLootboxAnimated() {
   const overlay = document.getElementById("lootboxOverlay");
   const chest = document.getElementById("lootboxChest");
-  const reward = document.getElementById("lootboxReward");
+  const rewardBox = document.getElementById("lootboxReward");
 
-  if (!overlay || !chest || !reward) {
+  if (!overlay || !chest || !rewardBox) {
     openLootbox();
     return;
   }
 
   overlay.classList.remove("hidden");
-  reward.classList.add("hidden");
-  reward.classList.remove("mythic");
-  chest.classList.remove("opening");
+
+  rewardBox.className = "lootbox-reward hidden";
+  chest.className = "lootbox-chest";
   chest.innerText = "🎁";
 
   await new Promise(resolve => setTimeout(resolve, 500));
 
   chest.classList.add("opening");
 
-  await new Promise(resolve => setTimeout(resolve, 650));
+  await new Promise(resolve => setTimeout(resolve, 700));
 
-  chest.innerText = "✨";
+  const result = openLootbox();
 
-  // bestehende Lootbox-Logik aus loot.js ausführen
-  openLootbox();
+  chest.innerText = result.success ? "✨" : "❌";
 
-  const rarityRoll = Math.random();
+  rewardBox.classList.remove("hidden");
 
-  if (rarityRoll > 0.96) {
-    reward.classList.add("mythic");
-    reward.querySelector(".lootbox-rarity").innerText = "💎 MYTHIC 💎";
-  } else if (rarityRoll > 0.82) {
-    reward.querySelector(".lootbox-rarity").innerText = "✨ EPIC ✨";
+  const rarity = rewardBox.querySelector(".lootbox-rarity");
+  const text = rewardBox.querySelector(".lootbox-reward-text");
+
+  rewardBox.classList.add(result.rarity);
+
+  if (!result.success) {
+    rarity.innerText = "FEHLER";
+    text.innerText = result.text;
   } else {
-    reward.querySelector(".lootbox-rarity").innerText = "🎁 REWARD 🎁";
+    const labels = {
+      common: "🎁 COMMON",
+      rare: "💙 RARE",
+      epic: "💜 EPIC",
+      legendary: "🌟 LEGENDARY",
+      mythic: "💎 MYTHIC 💎"
+    };
+
+    rarity.innerText = labels[result.rarity];
+    text.innerText = result.text;
   }
 
-  reward.querySelector(".lootbox-reward-text").innerText =
-    "Belohnung erhalten!";
+  if (result.success) {
+    createFlyingCoins();
+  }
 
-  reward.classList.remove("hidden");
-
-  await new Promise(resolve => setTimeout(resolve, 2200));
+  await new Promise(resolve => setTimeout(resolve, 2400));
 
   overlay.classList.add("hidden");
 }
