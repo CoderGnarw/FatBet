@@ -111,14 +111,26 @@ app.get("/auth/discord/callback", async (req, res) => {
         .insert({
           discord_id: discordUser.id,
           username: discordUser.username,
+          display_name: discordUser.username,
+          avatar_url: getDiscordAvatarUrl(discordUser),
           coins: 1000
-        });
+    });
 
       if (insertError) {
         console.error(insertError);
         return res.status(500).send("Fehler beim Erstellen.");
       }
     }
+
+      else {
+        await supabase
+          .from("users")
+          .update({
+            username: discordUser.username,
+            avatar_url: getDiscordAvatarUrl(discordUser)
+          })
+          .eq("discord_id", discordUser.id);
+      }
 
     // SESSION SPEICHERN
     req.session.user = {
@@ -185,7 +197,7 @@ app.get("/leaderboard", async (req, res) => {
 
   const { data, error } = await supabase
     .from("users")
-    .select("username, coins")
+    .select("display_name, username, avatar_url, coins")
     .order("coins", { ascending: false })
     .limit(10);
 
@@ -278,5 +290,43 @@ app.post("/jackpot", async (req, res) => {
     newJackpotAmount: newAmount
   });
 });
+
+app.post("/profile/display-name", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { displayName } = req.body;
+
+  if (!displayName || displayName.trim().length < 2) {
+    return res.status(400).json({ error: "Displayname zu kurz." });
+  }
+
+  if (displayName.length > 20) {
+    return res.status(400).json({ error: "Displayname zu lang." });
+  }
+
+  const cleanName = displayName.trim();
+
+  const { error } = await supabase
+    .from("users")
+    .update({ display_name: cleanName })
+    .eq("discord_id", req.session.user.discord_id);
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
+
+  res.json({ display_name: cleanName });
+});
+
+function getDiscordAvatarUrl(discordUser) {
+  if (!discordUser.avatar) {
+    return "https://cdn.discordapp.com/embed/avatars/0.png";
+  }
+
+  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`;
+}
 
 module.exports = app;

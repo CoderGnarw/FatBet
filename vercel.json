@@ -23,6 +23,10 @@
     {
       "source": "/jackpot",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/profile/:path*",
+      "destination": "/api/index.js"
     }
   ]
 }

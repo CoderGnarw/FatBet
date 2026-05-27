@@ -452,3 +452,34 @@ button:hover {
     0 0 8px #00ffd5,
     0 0 18px #00ffd5;
 }
+
+.profile-card {
+  margin: 20px auto;
+  padding: 16px;
+  max-width: 520px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid #ffd700;
+  border-radius: 18px;
+
+  box-shadow:
+    0 0 15px #ff00ff,
+    0 0 28px rgba(255, 215, 0, 0.35);
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #ffd700;
+  object-fit: cover;
+}
+
+.profile-name {
+  color: #ffd700;
+}

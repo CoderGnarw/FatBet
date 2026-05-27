@@ -31,6 +31,23 @@
       <span id="player"></span>
     </p>
 
+    <div class="profile-card">
+      <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar">
+
+      <div>
+        <p class="profile-name">
+          Anzeigename:
+          <span id="displayNameText"></span>
+        </p>
+
+        <input id="displayNameInput" type="text" maxlength="20" placeholder="Neuer Anzeigename">
+
+        <button onclick="saveDisplayName()">
+            Speichern
+        </button>
+      </div>
+    </div>
+
     <p>
       Coins:
       <span id="coins">1000</span>

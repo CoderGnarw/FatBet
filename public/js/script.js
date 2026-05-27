@@ -84,6 +84,7 @@ async function checkLogin() {
   coins = user.coins;
 
   document.getElementById("player").innerText = currentUser;
+  updateProfileUI(user);
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
 
@@ -561,7 +562,8 @@ async function updateLeaderboard() {
 
   board.forEach(user => {
     const li = document.createElement("li");
-    li.innerText = `${user.username}: ${user.coins} Coins`;
+    const name = user.display_name || user.username;
+    li.innerText = `${name}: ${user.coins} Coins`;
     list.appendChild(li);
   });
 }
@@ -814,4 +816,45 @@ function animateCoins(from, to) {
   }
 
   requestAnimationFrame(update);
+}
+
+function updateProfileUI(user) {
+  const displayNameText = document.getElementById("displayNameText");
+  const displayNameInput = document.getElementById("displayNameInput");
+  const profileAvatar = document.getElementById("profileAvatar");
+
+  const displayName = user.display_name || user.username;
+
+  if (displayNameText) displayNameText.innerText = displayName;
+  if (displayNameInput) displayNameInput.value = displayName;
+  if (profileAvatar) profileAvatar.src = user.avatar_url || "";
+}
+
+async function saveDisplayName() {
+  const input = document.getElementById("displayNameInput");
+
+  if (!input) return;
+
+  const displayName = input.value.trim();
+
+  const res = await fetch("/profile/display-name", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ displayName })
+  });
+
+  if (!res.ok) {
+    alert("Displayname konnte nicht gespeichert werden.");
+    return;
+  }
+
+  const data = await res.json();
+
+  const displayNameText = document.getElementById("displayNameText");
+  if (displayNameText) displayNameText.innerText = data.display_name;
+
+  updateLeaderboard();
 }
