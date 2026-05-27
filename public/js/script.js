@@ -899,6 +899,35 @@ async function addLiveFeedMessage(message) {
 }
 
 async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
+
+  if (!currentStats) return;
+
+  currentStats.spins_total += 1;
+
+  if (totalWin > 0) {
+
+    currentStats.wins_total += 1;
+
+    currentStats.coins_won_total += totalWin;
+
+    if (totalWin > currentStats.biggest_win) {
+      currentStats.biggest_win = totalWin;
+    }
+
+  }
+
+  if (freeSpinsWon > 0) {
+    currentStats.free_spins_won += freeSpinsWon;
+  }
+
+  if (jackpotWon) {
+    currentStats.jackpots_won += 1;
+  }
+
+  // SOFORT FRONTEND UPDATEN
+  updateStatsUI(currentStats);
+
+  // DANN BACKEND SPEICHERN
   await fetch("/update-stats", {
     method: "POST",
     credentials: "include",
@@ -911,6 +940,7 @@ async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
       jackpotWon
     })
   });
+
 }
 
 function updateProfileUI(user) {
