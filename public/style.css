@@ -749,3 +749,41 @@ button:hover {
     height: 94vh;
   }
 }
+
+.slot.spinning {
+  animation: reelSpin 0.18s linear infinite;
+  filter: blur(1.2px);
+  opacity: 0.75;
+}
+
+.slot.reel-stop {
+  animation: reelStopBounce 0.28s ease;
+}
+
+@keyframes reelSpin {
+  0% {
+    transform: translateY(-8px) scale(0.96);
+  }
+
+  50% {
+    transform: translateY(8px) scale(1.02);
+  }
+
+  100% {
+    transform: translateY(-8px) scale(0.96);
+  }
+}
+
+@keyframes reelStopBounce {
+  0% {
+    transform: translateY(-18px) scale(0.96);
+  }
+
+  60% {
+    transform: translateY(6px) scale(1.04);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}

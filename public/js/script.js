@@ -279,24 +279,33 @@ function animateReelsSequentially() {
       const interval = setInterval(() => {
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
+
           cell.classList.add("spinning");
+          cell.classList.remove("reel-stop");
           cell.innerText = rand();
         }
-      }, turboSpin ? 45 : 125);
+      }, turboSpin ? 35 : 95);
 
       setTimeout(() => {
         clearInterval(interval);
 
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
+
           cell.innerText = currentGrid[row][reel];
           cell.classList.remove("spinning");
+
+          cell.classList.add("reel-stop");
+
+          setTimeout(() => {
+            cell.classList.remove("reel-stop");
+          }, 320);
         }
 
         if (reel === reels - 1) {
-          setTimeout(resolve, 250);
+          setTimeout(resolve, turboSpin ? 180 : 350);
         }
-      }, turboSpin ? 450 + reel * 120 : 1250 + reel * 450);
+      }, turboSpin ? 380 + reel * 90 : 1150 + reel * 420);
     }
   });
 }
