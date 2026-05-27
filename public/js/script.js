@@ -45,6 +45,12 @@ let currentStats = null;
 let achievementsCache = [];
 let selectedTitle = null;
 
+let displayedJackpot = 0;
+let jackpotPollInterval = null;
+
+let pendingLootboxResult = null;
+let lootboxCanClose = false;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -82,6 +88,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await checkLogin();
   await loadJackpot();
+  startJackpotPolling();
+
   await loadLiveFeed();
   await loadAchievements();
 
@@ -95,17 +103,13 @@ async function checkLogin() {
   });
 
   const user = await res.json();
-
   const profileWrapper = document.getElementById("profileMenuWrapper");
 
   if (!user) {
     document.getElementById("login").classList.remove("hidden");
     document.getElementById("game").classList.add("hidden");
 
-    if (profileWrapper) {
-      profileWrapper.classList.add("hidden");
-    }
-
+    if (profileWrapper) profileWrapper.classList.add("hidden");
     return;
   }
 
@@ -116,9 +120,7 @@ async function checkLogin() {
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
 
-  if (profileWrapper) {
-    profileWrapper.classList.remove("hidden");
-  }
+  if (profileWrapper) profileWrapper.classList.remove("hidden");
 
   updateProfileUI(user);
 
@@ -227,7 +229,7 @@ async function spin() {
     showJackpotOverlay(jackpotData.jackpotWin);
 
     await addLiveFeedMessage(
-      `${currentUser} hat den Jackpot mit ${jackpotData.jackpotWin} Coins geknackt 💰`
+      `${currentUser} hat den Jackpot mit ${formatNumber(jackpotData.jackpotWin)} Coins geknackt 💰`
     );
   }
 
@@ -254,7 +256,7 @@ async function spin() {
 
   if (totalWin >= bet * 25) {
     await addLiveFeedMessage(
-      `${currentUser} gewann ${totalWin} Coins 🎉`
+      `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`
     );
   }
 
@@ -264,10 +266,10 @@ async function spin() {
   showWinDetails(winData.winningLines, scatterData);
 
   if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
-    result(`Gewonnen: ${totalWin} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
+    result(`Gewonnen: ${formatNumber(totalWin)} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
   } else if (totalWin > 0) {
     const totalMultiplier = totalWin / bet;
-    result(`Gewonnen: ${totalWin} Coins 🎉 | Gesamt x${totalMultiplier}`);
+    result(`Gewonnen: ${formatNumber(totalWin)} Coins 🎉 | Gesamt x${totalMultiplier}`);
   } else if (scatterData.freeSpinsWon > 0) {
     result(`${scatterData.freeSpinsWon} Freispiele gewonnen 🎁`);
   } else {
@@ -565,9 +567,7 @@ function updateUI() {
   const freeSpinsText = document.getElementById("freeSpins");
   const freeSpinsWrapper = document.getElementById("freeSpinsWrapper");
 
-  if (freeSpinsText) {
-    freeSpinsText.innerText = freeSpins;
-  }
+  if (freeSpinsText) freeSpinsText.innerText = freeSpins;
 
   if (freeSpinsWrapper) {
     if (freeSpins > 0) {
@@ -672,7 +672,6 @@ async function showBigWin(amount) {
   if (amount <= 0) return;
 
   const multiplier = amount / bet;
-
   if (multiplier < 25) return;
 
   const overlay = document.getElementById("bigWinOverlay");
@@ -741,7 +740,7 @@ function showWinDetails(winningLines, scatterData) {
 
     div.innerText =
       `Linie ${winLine.index + 1}: ${winLine.symbol} x${winLine.matches} ` +
-      `→ ${winLine.win} Coins`;
+      `→ ${formatNumber(winLine.win)} Coins`;
 
     box.appendChild(div);
   });
@@ -766,7 +765,7 @@ function showFreeSpinSummary() {
   if (!overlay || !text) return;
 
   text.innerText =
-    `Du hast ${freeSpinTotalWin} Coins in ${freeSpinStartCount} Freispielen gewonnen!`;
+    `Du hast ${formatNumber(freeSpinTotalWin)} Coins in ${freeSpinStartCount} Freispielen gewonnen!`;
 
   overlay.classList.remove("hidden");
 }
@@ -774,9 +773,7 @@ function showFreeSpinSummary() {
 function hideFreeSpinSummary() {
   const overlay = document.getElementById("freeSpinSummaryOverlay");
 
-  if (overlay) {
-    overlay.classList.add("hidden");
-  }
+  if (overlay) overlay.classList.add("hidden");
 
   freeSpinStartCount = 0;
   freeSpinTotalWin = 0;
@@ -841,7 +838,6 @@ function toggleTurboSpin() {
   turboSpin = !turboSpin;
 
   const button = document.getElementById("turboButton");
-
   if (!button) return;
 
   if (turboSpin) {
@@ -886,12 +882,44 @@ async function loadJackpot() {
   });
 
   const data = await res.json();
+  const newAmount = Number(data.amount || 0);
 
+  animateJackpot(displayedJackpot, newAmount);
+  displayedJackpot = newAmount;
+}
+
+function startJackpotPolling() {
+  if (jackpotPollInterval) return;
+
+  jackpotPollInterval = setInterval(async () => {
+    await loadJackpot();
+  }, 2500);
+}
+
+function animateJackpot(from, to) {
   const jackpotAmount = document.getElementById("jackpotAmount");
 
-  if (jackpotAmount) {
-    jackpotAmount.innerText = formatNumber(data.amount);
+  if (!jackpotAmount) return;
+
+  const duration = 650;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const currentValue = Math.floor(from + (to - from) * progress);
+
+    jackpotAmount.innerText = formatNumber(currentValue);
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      jackpotAmount.innerText = formatNumber(to);
+    }
   }
+
+  requestAnimationFrame(update);
 }
 
 async function rollJackpot(isFreeSpin) {
@@ -909,10 +937,10 @@ async function rollJackpot(isFreeSpin) {
 
   const data = await res.json();
 
-  const jackpotAmount = document.getElementById("jackpotAmount");
-
-  if (jackpotAmount && data.newJackpotAmount !== undefined) {
-    jackpotAmount.innerText = formatNumber(data.newJackpotAmount);
+  if (data.newJackpotAmount !== undefined) {
+    const newAmount = Number(data.newJackpotAmount || 0);
+    animateJackpot(displayedJackpot, newAmount);
+    displayedJackpot = newAmount;
   }
 
   return data;
@@ -937,6 +965,12 @@ function showJackpotOverlay(amount) {
   }, 650);
 }
 
+function hideJackpotOverlay() {
+  const overlay = document.getElementById("jackpotOverlay");
+
+  if (overlay) overlay.classList.add("hidden");
+}
+
 function createJackpotCoins() {
   const container = document.getElementById("flyingCoins");
 
@@ -957,14 +991,6 @@ function createJackpotCoins() {
     setTimeout(() => {
       coin.remove();
     }, 3400);
-  }
-}
-
-function hideJackpotOverlay() {
-  const overlay = document.getElementById("jackpotOverlay");
-
-  if (overlay) {
-    overlay.classList.add("hidden");
   }
 }
 
@@ -1170,6 +1196,107 @@ function closeSettingsOverlay() {
   document.getElementById("settingsOverlay").classList.add("hidden");
 }
 
+function openAdminOverlay() {
+  document.getElementById("adminOverlay").classList.remove("hidden");
+  document.getElementById("profileMenu").classList.add("hidden");
+}
+
+function closeAdminOverlay() {
+  document.getElementById("adminOverlay").classList.add("hidden");
+}
+
+async function checkAdminPanel() {
+  const res = await fetch("/admin/me", {
+    credentials: "include"
+  });
+
+  const menuButton = document.getElementById("adminMenuButton");
+
+  if (!menuButton) return;
+
+  if (res.ok) {
+    menuButton.classList.remove("hidden");
+  } else {
+    menuButton.classList.add("hidden");
+  }
+}
+
+async function adminAddCoins() {
+  const username = document.getElementById("adminUsername").value.trim();
+  const amount = document.getElementById("adminCoinAmount").value;
+
+  const res = await fetch("/admin/add-coins", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `Coins geändert. Neuer Stand: ${formatNumber(data.coins)}`
+      : data.error
+  );
+
+  updateLeaderboard();
+}
+
+async function adminGiveAllCoins() {
+  const amount = document.getElementById("adminGiveAllAmount").value;
+
+  const res = await fetch("/admin/give-all-coins", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `${formatNumber(data.added)} Coins an ${data.affected} Spieler gegeben.`
+      : data.error
+  );
+
+  updateLeaderboard();
+}
+
+async function adminSetJackpot() {
+  const amount = document.getElementById("adminJackpotAmount").value;
+
+  const res = await fetch("/admin/set-jackpot", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `Jackpot gesetzt auf ${formatNumber(data.amount)} Coins.`
+      : data.error
+  );
+
+  await loadJackpot();
+}
+
+function adminStatus(text) {
+  const status = document.getElementById("adminStatus");
+
+  if (status) status.innerText = text;
+}
+
 async function loadAchievements() {
   const res = await fetch("/achievements", {
     credentials: "include"
@@ -1325,9 +1452,7 @@ function getAchievementProgress(achievement) {
 }
 
 async function handleAchievementUnlocks(unlockedAchievements) {
-  if (!unlockedAchievements || unlockedAchievements.length === 0) {
-    return;
-  }
+  if (!unlockedAchievements || unlockedAchievements.length === 0) return;
 
   for (const achievement of unlockedAchievements) {
     showAchievementPopup(achievement);
@@ -1336,9 +1461,7 @@ async function handleAchievementUnlocks(unlockedAchievements) {
       item => item.id === achievement.id
     );
 
-    if (cached) {
-      cached.unlocked = true;
-    }
+    if (cached) cached.unlocked = true;
 
     renderAchievements();
     renderTitleOptions();
@@ -1415,9 +1538,6 @@ async function saveSelectedTitle() {
   updateLeaderboard();
 }
 
-let pendingLootboxResult = null;
-let lootboxCanClose = false;
-
 async function openLootboxAnimated() {
   const overlay = document.getElementById("lootboxOverlay");
   const chest = document.getElementById("lootboxChest");
@@ -1456,6 +1576,7 @@ async function openLootboxAnimated() {
     `lootbox-card-shimmer ${pendingLootboxResult.rarity}`;
 
   await new Promise(resolve => setTimeout(resolve, 350));
+
   card.classList.remove("hidden");
 }
 
@@ -1467,7 +1588,6 @@ function revealLootboxCard(event) {
   const text = document.getElementById("lootboxRewardText");
 
   if (!card || !rarity || !text || !pendingLootboxResult) return;
-
   if (card.classList.contains("revealed")) return;
 
   const labels = {
@@ -1483,61 +1603,52 @@ function revealLootboxCard(event) {
   text.innerText = pendingLootboxResult.text;
 
   card.classList.add("revealed");
-
   card.classList.add(pendingLootboxResult.rarity);
 
-  const raritySound =
-    lootboxSounds[pendingLootboxResult.rarity];
+  const raritySound = lootboxSounds[pendingLootboxResult.rarity];
 
   if (raritySound) {
     raritySound.currentTime = 0;
-    raritySound.volume = 0.2;
+    raritySound.volume = 0.35;
+
     setTimeout(() => {
       raritySound.play().catch(() => {});
     }, 150);
   }
 
   if (pendingLootboxResult.rarity === "legendary") {
+    document.body.classList.add("screen-shake");
 
-  document.body.classList.add("screen-shake");
+    setTimeout(() => {
+      document.body.classList.remove("screen-shake");
+    }, 450);
+  }
 
-  setTimeout(() => {
-    document.body.classList.remove("screen-shake");
-  }, 450);
+  if (pendingLootboxResult.rarity === "mythic") {
+    document.body.classList.add("screen-shake-mythic");
 
-}
+    createFlyingCoins();
+    createFlyingCoins();
+    createFlyingCoins();
+    createFlyingCoins();
+    createFlyingCoins();
 
-if (pendingLootboxResult.rarity === "mythic") {
-
-  document.body.classList.add("screen-shake-mythic");
-
-  createFlyingCoins();
-  createFlyingCoins();
-  createFlyingCoins();
-  createFlyingCoins();
-  createFlyingCoins();
-
-  setTimeout(() => {
-    document.body.classList.remove("screen-shake-mythic");
-  }, 1200);
-}
+    setTimeout(() => {
+      document.body.classList.remove("screen-shake-mythic");
+    }, 1200);
+  }
 
   if (pendingLootboxResult.success) {
     createFlyingCoins();
   }
 
-  if (pendingLootboxResult.rarity === "mythic") {
-    createFlyingCoins();
-    createFlyingCoins();
-    createFlyingCoins();
-  }
-
   lootboxCanClose = true;
+
   const continueText = document.getElementById("lootboxContinue");
   if (continueText) continueText.classList.remove("hidden");
 }
 
-document.addEventListener("click", event => {
+document.addEventListener("click", () => {
   const overlay = document.getElementById("lootboxOverlay");
 
   if (!overlay || overlay.classList.contains("hidden")) return;
@@ -1545,114 +1656,3 @@ document.addEventListener("click", event => {
 
   overlay.classList.add("hidden");
 });
-
-async function checkAdminPanel() {
-  const res = await fetch("/admin/me", {
-    credentials: "include"
-  });
-
-  const panel = document.getElementById("adminPanel");
-  const menuButton = document.getElementById("adminMenuButton");
-
-  if (res.ok) {
-    if (panel) panel.classList.remove("hidden");
-    if (menuButton) menuButton.classList.remove("hidden");
-  } else {
-    if (panel) panel.classList.add("hidden");
-    if (menuButton) menuButton.classList.add("hidden");
-  }
-}
-
-async function adminAddCoins() {
-  const username = document.getElementById("adminUsername").value.trim();
-  const amount = Number(document.getElementById("adminCoinAmount").value);
-
-  const res = await fetch("/admin/add-coins", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ username, amount })
-  });
-
-  const data = await res.json();
-
-  adminStatus(
-    res.ok
-      ? `Coins geändert. Neuer Stand: ${formatNumber(data.coins)}`
-      : data.error
-  );
-
-  updateLeaderboard();
-}
-
-async function adminGiveAllCoins() {
-  const amount = Number(document.getElementById("adminGiveAllAmount").value);
-
-  const res = await fetch("/admin/give-all-coins", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ amount })
-  });
-
-  const data = await res.json();
-
-  adminStatus(
-    res.ok
-      ? `${formatNumber(data.added)} Coins an ${data.affected} Spieler gegeben.`
-      : data.error
-  );
-
-  updateLeaderboard();
-}
-
-async function adminSetJackpot() {
-  const raw = document.getElementById("adminJackpotAmount").value;
-
-  const amount = Number(
-    raw
-      .replace(/\./g, "")
-      .replace(/,/g, "")
-      .trim()
-  );
-
-  const res = await fetch("/admin/set-jackpot", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ amount })
-  });
-
-  const data = await res.json();
-
-  adminStatus(
-    res.ok
-      ? `Jackpot gesetzt auf ${formatNumber(data.amount)} Coins.`
-      : data.error
-  );
-
-  await loadJackpot();
-}
-
-function adminStatus(text) {
-  const status = document.getElementById("adminStatus");
-
-  if (status) {
-    status.innerText = text;
-  }
-}
-
-function openAdminOverlay() {
-  document.getElementById("adminOverlay").classList.remove("hidden");
-  document.getElementById("profileMenu").classList.add("hidden");
-}
-
-function closeAdminOverlay() {
-  document.getElementById("adminOverlay").classList.add("hidden");
-}
