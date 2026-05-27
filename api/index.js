@@ -693,4 +693,46 @@ function getDiscordAvatarUrl(discordUser) {
   return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
 }
 
+app.post("/profile/title", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { title } = req.body;
+  const discordId = req.session.user.discord_id;
+
+  if (!title) {
+    await supabase
+      .from("users")
+      .update({ selected_title: null })
+      .eq("discord_id", discordId);
+
+    return res.json({ selected_title: null });
+  }
+
+  const achievement = ACHIEVEMENTS.find(item => item.title === title);
+
+  if (!achievement) {
+    return res.status(400).json({ error: "Ungültiger Titel." });
+  }
+
+  const { data: unlocked } = await supabase
+    .from("user_achievements")
+    .select("*")
+    .eq("discord_id", discordId)
+    .eq("achievement_id", achievement.id)
+    .single();
+
+  if (!unlocked) {
+    return res.status(403).json({ error: "Titel nicht freigeschaltet." });
+  }
+
+  await supabase
+    .from("users")
+    .update({ selected_title: title })
+    .eq("discord_id", discordId);
+
+  res.json({ selected_title: title });
+});
+
 module.exports = app;

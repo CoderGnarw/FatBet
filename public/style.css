@@ -688,3 +688,45 @@ body::before {
   font-size: 13px;
   color: #00ffd5;
 }
+
+.title-select-box {
+  margin-top: 22px;
+  padding: 16px;
+  border: 2px solid #ffd700;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 12px #ff00ff;
+}
+
+.title-select-box h3 {
+  margin-top: 0;
+}
+
+.achievement-card.rarity-common.unlocked {
+  border-color: #aaa;
+}
+
+.achievement-card.rarity-rare.unlocked {
+  border-color: #00aaff;
+  box-shadow: 0 0 14px #00aaff;
+}
+
+.achievement-card.rarity-epic.unlocked {
+  border-color: #b000ff;
+  box-shadow: 0 0 16px #b000ff;
+}
+
+.achievement-card.rarity-legendary.unlocked {
+  border-color: #ffd700;
+  box-shadow:
+    0 0 18px #ffd700,
+    0 0 28px #ff00ff;
+}
+
+.achievement-card.rarity-mythic.unlocked {
+  border-color: #ff004c;
+  box-shadow:
+    0 0 20px #ff004c,
+    0 0 35px #ff00ff,
+    0 0 50px #ffd700;
+}

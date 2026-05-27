@@ -44,6 +44,8 @@ let knownFeedIds = [];
 let currentStats = null;
 let achievementsCache = [];
 
+let selectedTitle = null;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -958,6 +960,8 @@ function updateProfileUI(user) {
 
   const displayName = user.display_name || user.username;
 
+  selectedTitle = user.selected_title || null;
+
   const topAvatar = document.getElementById("topProfileAvatar");
   const settingsAvatar = document.getElementById("settingsAvatar");
   const discordUsernameInput = document.getElementById("discordUsernameInput");
@@ -1042,6 +1046,7 @@ async function loadAchievements() {
   achievementsCache = achievements;
 
   renderAchievements();
+  renderTitleOptions();
 
 }
 
@@ -1078,6 +1083,10 @@ function renderAchievements() {
 
       const card = document.createElement("div");
       card.classList.add("achievement-card");
+
+      if (achievement.rarity) {
+        card.classList.add(`rarity-${achievement.rarity}`);
+      }
 
       if (achievement.unlocked) {
         card.classList.add("unlocked");
@@ -1199,6 +1208,7 @@ async function handleAchievementUnlocks(unlockedAchievements) {
     }
 
     renderAchievements();
+    renderTitleOptions();
 
     await new Promise(resolve =>
       setTimeout(resolve, 2600)
@@ -1226,4 +1236,51 @@ function showAchievementPopup(achievement) {
     popup.classList.add("hidden");
   }, 2200);
 
+}
+
+function renderTitleOptions() {
+  const select = document.getElementById("titleSelect");
+
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Kein Titel</option>`;
+
+  achievementsCache
+    .filter(achievement => achievement.unlocked && achievement.title)
+    .forEach(achievement => {
+      const option = document.createElement("option");
+      option.value = achievement.title;
+      option.innerText = achievement.title;
+
+      if (achievement.title === selectedTitle) {
+        option.selected = true;
+      }
+
+      select.appendChild(option);
+    });
+}
+
+async function saveSelectedTitle() {
+  const select = document.getElementById("titleSelect");
+
+  if (!select) return;
+
+  const title = select.value || null;
+
+  const res = await fetch("/profile/title", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ title })
+  });
+
+  if (!res.ok) {
+    alert("Titel konnte nicht gespeichert werden.");
+    return;
+  }
+
+  const data = await res.json();
+  selectedTitle = data.selected_title;
 }
