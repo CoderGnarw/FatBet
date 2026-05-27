@@ -1835,8 +1835,116 @@ button:hover::before {
 
 .lootbox-card-back {
   transform: rotateY(180deg);
+
+  position: relative;
+  overflow: hidden;
+
+  .lootbox-card.mythic .lootbox-card-back::before {
+  content: "";
+
+  position: absolute;
+  inset: -30%;
+
+  background:
+    linear-gradient(
+      45deg,
+      #ff0000,
+      #ff9900,
+      #ffee00,
+      #00ff66,
+      #00ffff,
+      #0066ff,
+      #aa00ff,
+      #ff0099
+    );
+
+  opacity: 0.35;
+
+  animation:
+    holoRotate 4s linear infinite;
+
+  mix-blend-mode: screen;
+}
+
+@keyframes holoRotate {
+  from {
+    transform: rotate(0deg) scale(1.2);
+  }
+
+  to {
+    transform: rotate(360deg) scale(1.2);
+  }
+}
 }
 
 .lootbox-card-inner {
   transform-style: preserve-3d;
+}
+
+.lootbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(255,0,255,0.18),
+      rgba(0,0,0,0.92));
+
+  backdrop-filter: blur(8px);
+
+  overflow: hidden;
+}
+
+.lootbox-overlay::before {
+  content: "";
+
+  position: absolute;
+  width: 900px;
+  height: 900px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(circle,
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0));
+
+  animation: spotlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes spotlightPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+}
+
+.screen-shake {
+  animation: screenShake 0.45s ease;
+}
+
+@keyframes screenShake {
+  0% { transform: translate(0px, 0px); }
+  15% { transform: translate(-8px, 5px); }
+  30% { transform: translate(7px, -4px); }
+  45% { transform: translate(-6px, 4px); }
+  60% { transform: translate(5px, -3px); }
+  75% { transform: translate(-3px, 2px); }
+  100% { transform: translate(0px, 0px); }
 }

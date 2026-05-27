@@ -63,6 +63,14 @@ const spinSound = new Audio("assets/sounds/spin.mp3");
 const winSound = new Audio("assets/sounds/win.mp3");
 const jackpotSound = new Audio("assets/sounds/jackpot.mp3");
 
+const lootboxSounds = {
+  common: new Audio("sounds/common.mp3"),
+  rare: new Audio("sounds/rare.mp3"),
+  epic: new Audio("sounds/epic.mp3"),
+  legendary: new Audio("sounds/legendary.mp3"),
+  mythic: new Audio("sounds/mythic.mp3")
+};
+
 spinSound.volume = 0.15;
 winSound.volume = 0.08;
 jackpotSound.volume = 0.25;
@@ -1475,7 +1483,35 @@ function revealLootboxCard(event) {
 
   card.classList.add("revealed");
 
+  card.classList.add(pendingLootboxResult.rarity);
+
+  const raritySound =
+    lootboxSounds[pendingLootboxResult.rarity];
+
+  if (raritySound) {
+    raritySound.currentTime = 0;
+    raritySound.volume = 0.6;
+    raritySound.play().catch(() => {});
+  }
+
+  if (
+    pendingLootboxResult.rarity === "legendary" ||
+    pendingLootboxResult.rarity === "mythic"
+  ) {
+    document.body.classList.add("screen-shake");
+
+    setTimeout(() => {
+      document.body.classList.remove("screen-shake");
+    }, 450);
+  }
+
   if (pendingLootboxResult.success) {
+    createFlyingCoins();
+  }
+
+  if (pendingLootboxResult.rarity === "mythic") {
+    createFlyingCoins();
+    createFlyingCoins();
     createFlyingCoins();
   }
 
