@@ -1361,10 +1361,17 @@ function updateFeedTimes() {
   });
 }
 
-function showBigWin(amount) {
+async function showBigWin(amount) {
+  if (amount <= 0) return;
+
+  const multiplier = amount / bet;
+
+  if (multiplier < 25) return;
 
   const overlay = document.getElementById("bigWinOverlay");
   const amountText = document.getElementById("bigWinAmount");
+
+  if (!overlay || !amountText) return;
 
   amountText.innerText = `+${formatNumber(amount)} Coins`;
 
@@ -1372,9 +1379,9 @@ function showBigWin(amount) {
 
   createFlyingCoins();
 
-  setTimeout(() => {
-    overlay.classList.add("hidden");
-  }, 2200);
+  await new Promise(resolve => setTimeout(resolve, 2200));
+
+  overlay.classList.add("hidden");
 }
 
 function createFlyingCoins() {
