@@ -2,245 +2,157 @@ html,
 body {
   margin: 0;
   padding: 0;
-
   min-height: 100vh;
-
   background:
     radial-gradient(
-      circle at top,
-      #2a003f 0%,
-      #140018 45%,
+      ellipse at top,
+      rgba(80, 0, 120, 0.95) 0%,
+      rgba(35, 0, 55, 0.8) 32%,
+      rgba(8, 0, 12, 0.96) 72%,
       #050505 100%
     );
-
   background-attachment: fixed;
-
   color: #ffd700;
-
   font-family: Arial, sans-serif;
-
   text-align: center;
-
   overflow-x: hidden;
-}
-
-body {
-  position: relative;
 }
 
 .hidden {
   display: none !important;
 }
 
-/* HEADINGS */
-
 h1 {
-
   margin-top: 20px;
-
   font-size: 72px;
-
   color: #ffd700;
-
   text-shadow:
     0 0 12px #ff00ff,
     0 0 26px #ffd700;
 }
 
-h2,
-h3 {
-
-  color: #ffd700;
-
-  text-shadow:
-    0 0 10px #ff00ff;
-}
-
-/* BUTTONS */
-
 button,
 select,
 input {
-
   padding: 12px 18px;
-
   border-radius: 14px;
-
   border: 2px solid #ff00ff;
-
   background: #111;
-
   color: #ffd700;
-
   font-size: 16px;
-
-  box-shadow:
-    0 0 10px #ff00ff;
-
+  box-shadow: 0 0 10px #ff00ff;
   box-sizing: border-box;
 }
 
 button {
-
   cursor: pointer;
-
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-
   transform: translateY(-2px);
-
   box-shadow:
     0 0 16px #ff00ff,
     0 0 28px #ffd700;
 }
 
-/* PROFILE */
-
 .profile-menu-wrapper {
-
   position: fixed;
-
   top: 14px;
   right: 14px;
-
   z-index: 9999;
 }
 
 .profile-avatar-button {
-
   width: 72px;
   height: 72px;
-
   padding: 0;
-
   border-radius: 50%;
-
   overflow: hidden;
-
   border: 3px solid #ff00ff;
-
   background: #111;
-
   box-shadow:
     0 0 16px #ff00ff,
-    0 0 28px rgba(255,215,0,0.4);
+    0 0 28px rgba(255, 215, 0, 0.4);
 }
 
 .profile-avatar-button img {
-
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
 .profile-menu {
-
   position: absolute;
-
   top: 90px;
   right: 0;
-
   width: 220px;
-
   display: flex;
   flex-direction: column;
-
   gap: 12px;
-
   padding: 18px;
-
   border-radius: 22px;
-
   background:
     linear-gradient(
       180deg,
-      rgba(35,0,50,0.96),
-      rgba(5,5,5,0.95)
+      rgba(35, 0, 50, 0.96),
+      rgba(5, 5, 5, 0.95)
     );
-
   border: 2px solid #ff00ff;
-
-  box-shadow:
-    0 0 18px #ff00ff;
+  box-shadow: 0 0 18px #ff00ff;
 }
 
 .profile-menu a {
   text-decoration: none;
 }
 
-/* GAME LAYOUT */
-
-.main-game-layout {
-
-  display: grid;
-
-  grid-template-columns:
-    320px
-    minmax(760px, 1fr)
-    320px;
-
-  gap: 42px;
-
-  align-items: start;
-
-  justify-content: center;
-
-  width: min(96vw, 1800px);
-
-  margin: 40px auto;
+.coins-display {
+  margin-top: 4px;
+  margin-bottom: 18px;
+  font-size: 24px;
+  color: #00ffd5;
+  text-shadow:
+    0 0 10px #00ffd5,
+    0 0 22px #00ffd5,
+    0 0 36px #ff00ff;
 }
 
-.side-panel {
+#coins {
+  font-weight: bold;
+  color: #00ffd5;
+}
 
-  min-height: 520px;
-
-  padding: 24px;
-
-  border-radius: 28px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(30,0,45,0.96),
-      rgba(5,5,5,0.92)
-    );
-
-  border: 2px solid #ffd700;
-
-  box-shadow:
-    0 0 20px #ff00ff,
-    0 0 42px rgba(255,215,0,0.25);
+.main-game-layout {
+  display: grid;
+  grid-template-columns: 320px auto 320px;
+  gap: 42px;
+  align-items: start;
+  justify-content: center;
+  width: min(96vw, 1800px);
+  margin: 28px auto;
 }
 
 .slot-center {
-  width: 100%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* SLOT */
-
 .slot-machine {
-
+  width: fit-content;
   padding: 18px;
-
   border-radius: 32px;
-
   background:
     linear-gradient(
       180deg,
-      rgba(30,0,45,0.98),
-      rgba(8,8,8,0.96)
+      rgba(30, 0, 45, 0.98),
+      rgba(8, 8, 8, 0.96)
     );
-
   border: 3px solid #ffd700;
-
   box-shadow:
     0 0 28px #ff00ff,
-    0 0 60px rgba(255,215,0,0.28);
+    0 0 60px rgba(255, 215, 0, 0.28);
 }
 
 .slot-grid {
@@ -253,26 +165,17 @@ button:hover {
 .slot {
   width: 120px;
   height: 120px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   font-size: 58px;
-
   border-radius: 18px;
-
   background: #111;
-
   border: 2px solid #ffd700;
-
   box-shadow:
-    inset 0 0 12px rgba(255,255,255,0.08),
-    0 0 14px rgba(255,215,0,0.35);
-
-  transition:
-    transform 0.15s,
-    box-shadow 0.2s;
+    inset 0 0 12px rgba(255, 255, 255, 0.08),
+    0 0 14px rgba(255, 215, 0, 0.35);
+  transition: transform 0.15s, box-shadow 0.2s;
 }
 
 .slot.win {
@@ -280,20 +183,15 @@ button:hover {
 }
 
 .slot.wild {
-  background:
-    radial-gradient(circle, #ffffff 0%, #cfcfcf 100%);
-
+  background: radial-gradient(circle, #ffffff 0%, #cfcfcf 100%);
   box-shadow:
     0 0 18px #00ffd5,
     0 0 45px #00ffd5;
 }
 
 .slot.scatter {
-  background:
-    linear-gradient(180deg, #00ffd5, #00443a);
-
+  background: linear-gradient(180deg, #00ffd5, #00443a);
   color: #111;
-
   box-shadow:
     0 0 20px #00ffd5,
     0 0 45px #00ffd5,
@@ -305,88 +203,146 @@ button:hover {
 }
 
 @keyframes winPulse {
-
   from {
-
     transform: scale(1);
-
-    box-shadow:
-      0 0 12px #ff00ff;
+    box-shadow: 0 0 12px #ff00ff;
   }
 
   to {
-
     transform: scale(1.05);
-
     box-shadow:
       0 0 24px #ff00ff,
       0 0 42px #ffd700;
   }
 }
 
-/* CONTROLS */
+.jackpot-display {
+  margin-top: 0;
+  margin-bottom: 18px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  width: fit-content;
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid #ffd700;
+  font-size: 30px;
+  color: #ffd700;
+  box-shadow:
+    0 0 16px #ff00ff,
+    0 0 36px rgba(255, 215, 0, 0.35);
+  text-shadow:
+    0 0 12px #ff00ff,
+    0 0 22px #ffd700;
+}
 
 .bet-controls,
 .auto-spin-controls,
 .bonus-controls {
-
   margin-top: 24px;
-
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   gap: 14px;
-
   flex-wrap: wrap;
 }
 
-.jackpot-display {
-
-  margin-top: 22px;
-
-  font-size: 32px;
-
-  color: #ffd700;
-
-  text-shadow:
-    0 0 14px #ff00ff;
+.auto-spin-status {
+  margin-top: 12px;
+  color: #00ffd5;
+  text-shadow: 0 0 10px #00ffd5;
 }
 
-/* FEED */
+#result {
+  margin-top: 20px;
+  font-size: 34px;
+  color: #ffd700;
+  text-shadow: 0 0 12px #ff00ff;
+}
+
+.win-details {
+  margin-top: 18px;
+  padding: 14px 18px;
+  max-width: 520px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.48);
+  border: 2px solid #ffd700;
+  box-shadow:
+    0 0 14px #ff00ff,
+    0 0 26px rgba(255, 215, 0, 0.28);
+}
+
+.win-detail-line {
+  margin: 6px 0;
+  color: #ffd700;
+}
+
+.side-panel {
+  min-height: 520px;
+  padding: 26px;
+  border-radius: 30px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(38, 0, 58, 0.98),
+      rgba(8, 0, 16, 0.94)
+    );
+  border: 2px solid #ffd700;
+  box-shadow:
+    0 0 22px #ff00ff,
+    inset 0 0 22px rgba(255, 0, 255, 0.12),
+    0 0 46px rgba(255, 215, 0, 0.22);
+}
+
+.side-panel h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 30px;
+  color: #ffd700;
+  text-shadow:
+    0 0 12px #ff00ff,
+    0 0 22px #ffd700;
+}
+
+#leaderboard {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#leaderboard li {
+  margin: 10px 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: rgba(255, 0, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  color: #ffd700;
+  text-shadow: 0 0 8px #ff00ff;
+}
 
 .live-feed {
-
   display: flex;
   flex-direction: column;
-
   gap: 12px;
+  max-height: 430px;
+  overflow: hidden;
 }
 
-.feed-entry {
-
-  padding: 14px;
-
-  border-radius: 16px;
-
+.feed-item {
+  padding: 12px 14px;
+  border-radius: 14px;
   background:
     linear-gradient(
       90deg,
-      rgba(35,0,50,0.92),
-      rgba(15,15,15,0.92)
+      rgba(255, 0, 255, 0.16),
+      rgba(0, 255, 213, 0.06)
     );
-
   border: 1px solid #ff00ff;
-
   color: #00ffd5;
-
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.45);
   animation: feedSlideIn 0.35s ease;
 }
 
 @keyframes feedSlideIn {
-
   from {
     opacity: 0;
     transform: translateX(24px);
@@ -398,118 +354,82 @@ button:hover {
   }
 }
 
-/* SETTINGS OVERLAY */
-
-.settings-overlay {
-
+.settings-overlay,
+.jackpot-overlay,
+.free-spin-summary {
   position: fixed;
-
   inset: 0;
-
   display: flex;
-
   justify-content: center;
   align-items: center;
-
-  background: rgba(0,0,0,0.72);
-
+  background: rgba(0, 0, 0, 0.72);
   z-index: 999999;
 }
 
 .settings-box {
-
   position: relative;
-
   width: min(96vw, 1800px);
-
   height: min(88vh, 1100px);
-
   padding: 26px;
-
   border-radius: 34px;
-
   background:
     linear-gradient(
       180deg,
-      rgba(35,0,50,0.98),
-      rgba(5,5,5,0.96)
+      rgba(35, 0, 50, 0.98),
+      rgba(5, 5, 5, 0.96)
     );
-
   border: 3px solid #ffd700;
-
   box-shadow:
     0 0 30px #ff00ff,
-    0 0 70px rgba(255,215,0,0.35);
-
+    0 0 70px rgba(255, 215, 0, 0.35);
   overflow: hidden;
-
   box-sizing: border-box;
 }
 
 .settings-close {
-
   position: absolute;
-
   top: 16px;
   right: 16px;
-
   width: 52px;
   height: 52px;
-
   border-radius: 16px;
 }
 
 .settings-layout {
-
   display: grid;
-
   grid-template-columns:
     minmax(360px, 420px)
     minmax(760px, 1fr)
     minmax(320px, 380px);
-
   gap: clamp(24px, 2vw, 42px);
-
   height: calc(100% - 70px);
-
   margin-top: 20px;
-
   align-items: stretch;
 }
 
 .settings-left,
 .settings-middle,
 .settings-right {
-
   border-radius: 28px;
-
   padding: 24px;
-
   background:
     linear-gradient(
       180deg,
-      rgba(25,0,35,0.95),
-      rgba(5,5,5,0.9)
+      rgba(25, 0, 35, 0.95),
+      rgba(5, 5, 5, 0.9)
     );
-
-  border: 2px solid rgba(255,215,0,0.65);
-
-  box-shadow:
-    0 0 18px #ff00ff;
+  border: 2px solid rgba(255, 215, 0, 0.65);
+  box-shadow: 0 0 18px #ff00ff;
 }
 
 .settings-left {
-
   display: flex;
   flex-direction: column;
-
   align-items: center;
 }
 
 .settings-middle {
-
   overflow: hidden;
-
   min-width: 0;
 }
 
@@ -518,113 +438,72 @@ button:hover {
 }
 
 .settings-avatar {
-
   width: 140px;
   height: 140px;
-
   border-radius: 50%;
-
   object-fit: cover;
-
   border: 4px solid #ffd700;
-
   box-shadow:
     0 0 22px #ff00ff,
-    0 0 38px rgba(255,215,0,0.45);
-
+    0 0 38px rgba(255, 215, 0, 0.45);
   margin-bottom: 20px;
 }
 
 .displayname-row {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
-
   width: 100%;
 }
 
 .displayname-row input,
 .displayname-row button {
-
   width: 100%;
 }
 
 .title-select-box {
-
   width: 100%;
-
   margin-top: 26px;
-
   padding: 18px;
-
   border-radius: 22px;
-
   background:
     linear-gradient(
       180deg,
-      rgba(20,20,20,0.96),
-      rgba(45,0,60,0.82)
+      rgba(20, 20, 20, 0.96),
+      rgba(45, 0, 60, 0.82)
     );
-
   border: 2px solid #ffd700;
-
-  box-shadow:
-    0 0 16px #ff00ff;
+  box-shadow: 0 0 16px #ff00ff;
 }
 
-/* STATS */
-
 .profile-stats {
-
   height: 100%;
-
   overflow-y: auto;
-
   padding-right: 6px;
-
   text-align: left;
+  scrollbar-width: none;
 }
 
 .profile-stats::-webkit-scrollbar {
   display: none;
 }
 
-.profile-stats {
-  scrollbar-width: none;
-}
-
-/* ACHIEVEMENTS */
-
 .settings-section-title {
-
   margin-top: 0;
   margin-bottom: 20px;
-
   font-size: 42px;
-
   color: #ffd700;
-
-  text-shadow:
-    0 0 16px #ff00ff;
+  text-shadow: 0 0 16px #ff00ff;
 }
 
 .achievements-list {
-
   display: flex;
   flex-direction: column;
-
   gap: 18px;
-
   height: calc(100% - 80px);
-
   overflow-y: auto;
   overflow-x: hidden;
-
   padding-right: 8px;
-
   scrollbar-width: none;
 }
 
@@ -633,47 +512,31 @@ button:hover {
 }
 
 .achievement-category-section {
-
   display: flex;
   flex-direction: column;
-
   gap: 14px;
 }
 
 .achievement-section-title {
-
   font-size: 28px;
-
   font-weight: bold;
-
   text-align: left;
-
   color: #ffd700;
-
-  text-shadow:
-    0 0 10px #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
 }
 
 .achievement-card {
-
   padding: 18px;
-
   border-radius: 22px;
-
   text-align: left;
-
   background:
     linear-gradient(
       145deg,
-      rgba(25,25,25,0.96),
-      rgba(45,0,60,0.82)
+      rgba(25, 25, 25, 0.96),
+      rgba(45, 0, 60, 0.82)
     );
-
-  border: 2px solid rgba(255,255,255,0.08);
-
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .achievement-card:hover {
@@ -681,62 +544,43 @@ button:hover {
 }
 
 .achievement-card.unlocked {
-
   border: 2px solid #ffd700;
-
   box-shadow:
     0 0 16px #ff00ff,
-    0 0 30px rgba(255,215,0,0.28);
+    0 0 30px rgba(255, 215, 0, 0.28);
 }
 
 .achievement-card.locked {
-
   opacity: 0.45;
-
   filter: grayscale(0.7);
 }
 
 .achievement-name {
-
   font-size: 26px;
-
   font-weight: bold;
-
   color: #ffd700;
 }
 
 .achievement-requirement,
 .achievement-reward {
-
   margin-top: 10px;
-
   font-size: 16px;
-
   color: #ffffff;
 }
 
 .achievement-progress {
-
   margin-top: 14px;
-
   width: 100%;
   height: 12px;
-
   overflow: hidden;
-
   border-radius: 999px;
-
-  background: rgba(255,255,255,0.12);
-
-  border: 1px solid rgba(255,215,0,0.35);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
 }
 
 .achievement-progress-fill {
-
   height: 100%;
-
   border-radius: 999px;
-
   background:
     linear-gradient(
       90deg,
@@ -744,77 +588,97 @@ button:hover {
       #ffd700,
       #00ffd5
     );
-
   box-shadow:
     0 0 12px #ff00ff,
     0 0 20px #ffd700;
 }
 
 .achievement-progress-text {
-
   margin-top: 8px;
-
   font-size: 14px;
-
   color: #00ffd5;
 }
-
-/* RARITIES */
 
 .achievement-card.rarity-common.unlocked {
   border-color: #aaa;
 }
 
 .achievement-card.rarity-rare.unlocked {
-
   border-color: #00aaff;
-
-  box-shadow:
-    0 0 16px #00aaff;
+  box-shadow: 0 0 16px #00aaff;
 }
 
 .achievement-card.rarity-epic.unlocked {
-
   border-color: #b000ff;
-
-  box-shadow:
-    0 0 18px #b000ff;
+  box-shadow: 0 0 18px #b000ff;
 }
 
 .achievement-card.rarity-legendary.unlocked {
-
   border-color: #ffd700;
-
   box-shadow:
     0 0 20px #ffd700,
     0 0 34px #ff00ff;
 }
 
 .achievement-card.rarity-mythic.unlocked {
-
   border-color: #ff004c;
-
   box-shadow:
     0 0 22px #ff004c,
     0 0 40px #ff00ff,
     0 0 56px #ffd700;
 }
 
-/* POPUP */
-
-.achievement-popup {
-
+.big-win {
   position: fixed;
-
   inset: 0;
-
   display: flex;
-
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 999999;
+}
 
-  background: rgba(0,0,0,0.78);
+.big-win-text {
+  font-size: 92px;
+  color: #ffd700;
+  text-shadow:
+    0 0 25px #ff00ff,
+    0 0 45px #ffd700;
+}
 
+.big-win-amount {
+  margin-top: 20px;
+  font-size: 64px;
+  color: #00ffd5;
+  text-shadow: 0 0 20px #00ffd5;
+}
+
+.jackpot-box,
+.free-spin-summary-box,
+.achievement-popup-content {
+  width: 620px;
+  padding: 42px;
+  border-radius: 34px;
+  background:
+    linear-gradient(
+      180deg,
+      #240030,
+      #050505
+    );
+  border: 3px solid #ffd700;
+  box-shadow:
+    0 0 36px #ff00ff,
+    0 0 72px rgba(255, 215, 0, 0.42);
+}
+
+.achievement-popup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.78);
   z-index: 9999999;
 }
 
@@ -822,97 +686,36 @@ button:hover {
   display: none;
 }
 
-.achievement-popup-content {
-
-  width: 620px;
-
-  padding: 42px;
-
-  border-radius: 34px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #240030,
-      #050505
-    );
-
-  border: 3px solid #ffd700;
-
-  box-shadow:
-    0 0 36px #ff00ff,
-    0 0 72px rgba(255,215,0,0.42);
-
-  animation: popupEnter 0.45s ease;
-}
-
 .achievement-popup-title {
-
   font-size: 36px;
-
   font-weight: bold;
-
   color: #ffd700;
 }
 
 .achievement-popup-name {
-
   margin-top: 18px;
-
   font-size: 54px;
-
   color: #00ffd5;
-
-  text-shadow:
-    0 0 18px #00ffd5;
+  text-shadow: 0 0 18px #00ffd5;
 }
 
 .achievement-popup-reward {
-
   margin-top: 18px;
-
   font-size: 24px;
-
   color: #ffffff;
 }
 
-@keyframes popupEnter {
-
-  from {
-
-    opacity: 0;
-
-    transform:
-      scale(0.75);
-  }
-
-  to {
-
-    opacity: 1;
-
-    transform:
-      scale(1);
-  }
-}
-
-/* RESPONSIVE */
-
 @media (max-width: 1400px) {
-
   .main-game-layout {
-
     grid-template-columns: 1fr;
   }
 
   .settings-layout {
-
     grid-template-columns: 1fr;
-
     overflow-y: auto;
   }
 
   .settings-box {
-
     height: 94vh;
   }
 }
