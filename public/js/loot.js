@@ -1,5 +1,5 @@
 function openLootbox() {
-  const cost = 100;
+  const cost = 25000;
 
   if (coins < cost) {
     return {
@@ -13,24 +13,24 @@ function openLootbox() {
 
   const roll = Math.random();
 
-  let reward = 0;
   let rarity = "common";
+  let reward = 0;
 
-  if (roll < 0.60) {
-    reward = 250;
+  if (roll < 0.55) {
     rarity = "common";
-  } else if (roll < 0.85) {
-    reward = 500;
+    reward = randomCoins(1000, 3500);
+  } else if (roll < 0.80) {
     rarity = "rare";
-  } else if (roll < 0.96) {
-    reward = 1500;
+    reward = randomCoins(5000, 12000);
+  } else if (roll < 0.94) {
     rarity = "epic";
-  } else if (roll < 0.995) {
-    reward = 5000;
+    reward = randomCoins(15000, 30000);
+  } else if (roll < 0.99) {
     rarity = "legendary";
+    reward = randomCoins(35000, 55000);
   } else {
-    reward = 25000;
     rarity = "mythic";
+    reward = randomCoins(50000, 75000);
   }
 
   coins += reward;
@@ -44,4 +44,8 @@ function openLootbox() {
     reward,
     text: `+${formatNumber(reward)} Coins`
   };
+}
+
+function randomCoins(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
