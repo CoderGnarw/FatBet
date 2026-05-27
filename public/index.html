@@ -12,14 +12,17 @@
 <body>
 
   <!-- PROFILE -->
-  <div class="profile-menu-wrapper">
+  <div
+    id="profileMenuWrapper"
+    class="profile-menu-wrapper hidden"
+  >
 
     <button
       class="profile-avatar-button"
       onclick="toggleProfileMenu()"
     >
       <img
-        id="profileAvatar"
+        id="topProfileAvatar"
         src="https://cdn.discordapp.com/embed/avatars/0.png"
         alt="Avatar"
       />
@@ -27,8 +30,8 @@
 
     <div id="profileMenu" class="profile-menu hidden">
 
-      <button onclick="openSettings()">
-        ⚙ Einstellungen
+      <button onclick="openSettingsOverlay()">
+        ⚙️ Einstellungen
       </button>
 
       <a href="/auth/discord">
@@ -70,7 +73,7 @@
           Coins
         </div>
 
-        <!-- SLOT MACHINE -->
+        <!-- SLOT -->
         <div class="slot-machine">
 
           <div class="slot-grid">
@@ -100,11 +103,14 @@
         <!-- BET -->
         <div class="bet-controls">
 
-          <label for="betAmount">
+          <label for="betSelect">
             Einsatz:
           </label>
 
-          <select id="betAmount">
+          <select
+            id="betSelect"
+            onchange="changeBet()"
+          >
 
             <option value="50">
               50 Coins
@@ -128,13 +134,17 @@
 
           </select>
 
-          <button id="spinButton">
-            Spin
+          <button onclick="spin()">
+
+            Spin (
+            <span id="betText">50</span>
+            )
+
           </button>
 
         </div>
 
-        <!-- AUTO SPIN -->
+        <!-- AUTO -->
         <div class="auto-spin-controls">
 
           <button onclick="startAutoSpin(10)">
@@ -178,7 +188,7 @@
             🎁 Lootbox öffnen (100)
           </button>
 
-          <button onclick="claimDailyReward()">
+          <button onclick="dailyReward()">
             🎉 Daily Reward
           </button>
 
@@ -212,7 +222,7 @@
 
       <button
         class="settings-close"
-        onclick="closeSettings()"
+        onclick="closeSettingsOverlay()"
       >
         ✕
       </button>
@@ -367,7 +377,7 @@
 
   <!-- FREE SPIN SUMMARY -->
   <div
-    id="freeSpinSummary"
+    id="freeSpinSummaryOverlay"
     class="free-spin-summary hidden"
   >
 
@@ -385,7 +395,7 @@
 
   </div>
 
-  <!-- ACHIEVEMENT POPUP -->
+  <!-- ACHIEVEMENT -->
   <div
     id="achievementPopup"
     class="achievement-popup hidden"
