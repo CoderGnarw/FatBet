@@ -15,7 +15,13 @@
     </button>
 
     <div id="profileMenu" class="profile-menu hidden">
+
       <button onclick="openSettingsOverlay()">⚙️ Einstellungen</button>
+
+      <button id="adminMenuButton" class="hidden" onclick="openAdminOverlay()">
+        👑 Admin Panel
+      </button>
+
       <a href="/logout">🚪 Abmelden</a>
     </div>
   </div>
@@ -293,6 +299,51 @@
   </div>
 
 </div>
+  </div>
+</div>
+
+<div id="adminOverlay" class="settings-overlay hidden">
+  <div class="settings-box admin-overlay-box">
+
+    <button class="settings-close" onclick="closeAdminOverlay()">✕</button>
+
+    <h2>👑 Admin Panel</h2>
+
+    <div class="admin-panel admin-panel-large">
+
+      <h3>💰 Spieler Coins ändern</h3>
+
+      <input id="adminUsername" type="text" placeholder="Username / Displayname">
+      <input id="adminCoinAmount" type="number" placeholder="Coins +/-">
+
+      <button onclick="adminAddCoins()">
+        Coins Spieler ändern
+      </button>
+
+      <hr>
+
+      <h3>🌍 Allen Spielern Coins geben</h3>
+
+      <input id="adminGiveAllAmount" type="number" placeholder="Coins für alle">
+
+      <button onclick="adminGiveAllCoins()">
+        Allen Coins geben
+      </button>
+
+      <hr>
+
+      <h3>🎰 Jackpot setzen</h3>
+
+      <input id="adminJackpotAmount" type="number" placeholder="Jackpot setzen">
+
+      <button onclick="adminSetJackpot()">
+        Jackpot setzen
+      </button>
+
+      <p id="adminStatus"></p>
+
+    </div>
+
   </div>
 </div>
 

@@ -1552,13 +1552,14 @@ async function checkAdminPanel() {
   });
 
   const panel = document.getElementById("adminPanel");
-
-  if (!panel) return;
+  const menuButton = document.getElementById("adminMenuButton");
 
   if (res.ok) {
-    panel.classList.remove("hidden");
+    if (panel) panel.classList.remove("hidden");
+    if (menuButton) menuButton.classList.remove("hidden");
   } else {
-    panel.classList.add("hidden");
+    if (panel) panel.classList.add("hidden");
+    if (menuButton) menuButton.classList.add("hidden");
   }
 }
 
@@ -1638,4 +1639,13 @@ function adminStatus(text) {
   if (status) {
     status.innerText = text;
   }
+}
+
+function openAdminOverlay() {
+  document.getElementById("adminOverlay").classList.remove("hidden");
+  document.getElementById("profileMenu").classList.add("hidden");
+}
+
+function closeAdminOverlay() {
+  document.getElementById("adminOverlay").classList.add("hidden");
 }

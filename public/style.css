@@ -2063,3 +2063,14 @@ button:hover::before {
   color: #00ffd5;
   text-shadow: 0 0 10px #00ffd5;
 }
+
+.admin-overlay-box {
+  max-width: 720px;
+  height: auto;
+  min-height: 640px;
+}
+
+.admin-panel-large {
+  max-width: 520px;
+  margin: 30px auto 0;
+}
