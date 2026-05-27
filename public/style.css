@@ -445,3 +445,10 @@ button:hover {
   font-size: 32px;
   color: #00ffd5;
 }
+
+#coins {
+  color: #00ffd5;
+  text-shadow:
+    0 0 8px #00ffd5,
+    0 0 18px #00ffd5;
+}

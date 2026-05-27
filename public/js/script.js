@@ -24,6 +24,7 @@ const rows = 3;
 const reels = 5;
 
 let coins = 1000;
+let displayedCoins = 1000;
 let currentUser = "";
 let bet = 50;
 let freeSpins = 0;
@@ -491,7 +492,7 @@ function randRegularOrWildSymbol() {
 }
 
 function updateUI() {
-  document.getElementById("coins").innerText = coins;
+  animateCoins(displayedCoins, coins);
 
   const betText = document.getElementById("betText");
   if (betText) betText.innerText = bet;
@@ -786,4 +787,31 @@ function hideJackpotOverlay() {
   if (overlay) {
     overlay.classList.add("hidden");
   }
+}
+
+function animateCoins(from, to) {
+  const coinsElement = document.getElementById("coins");
+
+  if (!coinsElement) return;
+
+  const duration = 650;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const currentValue = Math.floor(from + (to - from) * progress);
+
+    coinsElement.innerText = currentValue;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      coinsElement.innerText = to;
+      displayedCoins = to;
+    }
+  }
+
+  requestAnimationFrame(update);
 }
