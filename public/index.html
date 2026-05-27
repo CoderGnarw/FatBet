@@ -12,15 +12,30 @@
 
 <body>
 
-  <div class="profile-menu-wrapper">
+  <div id="profileMenuWrapper" class="profile-menu-wrapper hidden">
+
   <button class="profile-avatar-button" onclick="toggleProfileMenu()">
-    <img id="topProfileAvatar" src="" alt="Avatar">
+
+    <img
+      id="topProfileAvatar"
+      src="https://cdn.discordapp.com/embed/avatars/0.png"
+      alt="Avatar"
+    >
+
   </button>
 
   <div id="profileMenu" class="profile-menu hidden">
-    <button onclick="openSettingsOverlay()">⚙️ Einstellungen</button>
-    <a href="/logout">🚪 Abmelden</a>
+
+    <button onclick="openSettingsOverlay()">
+      ⚙️ Einstellungen
+    </button>
+
+    <a href="/logout">
+      🚪 Abmelden
+    </a>
+
   </div>
+
 </div>
 
   <h1>🎰 FatBet</h1>

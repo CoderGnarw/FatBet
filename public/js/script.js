@@ -71,23 +71,36 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function checkLogin() {
-  const res = await fetch("/me", { credentials: "include" });
+  const res = await fetch("/me", {
+    credentials: "include"
+  });
+
   const user = await res.json();
+
+  const profileWrapper = document.getElementById("profileMenuWrapper");
 
   if (!user) {
     document.getElementById("login").classList.remove("hidden");
     document.getElementById("game").classList.add("hidden");
+
+    if (profileWrapper) {
+      profileWrapper.classList.add("hidden");
+    }
+
     return;
   }
 
-  currentUser = user.username;
+  currentUser = user.display_name || user.username;
   coins = user.coins;
 
-  document.getElementById("player").innerText = currentUser;
-  updateProfileUI(user);
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
 
+  if (profileWrapper) {
+    profileWrapper.classList.remove("hidden");
+  }
+
+  updateProfileUI(user);
   updateUI();
   updateLeaderboard();
 }
@@ -819,7 +832,10 @@ function animateCoins(from, to) {
 }
 
 function updateProfileUI(user) {
-  const avatarUrl = user.avatar_url || "https://cdn.discordapp.com/embed/avatars/0.png";
+  const avatarUrl =
+    user.avatar_url ||
+    "https://cdn.discordapp.com/embed/avatars/0.png";
+
   const displayName = user.display_name || user.username;
 
   const topAvatar = document.getElementById("topProfileAvatar");
