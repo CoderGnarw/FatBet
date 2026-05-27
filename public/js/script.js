@@ -41,6 +41,8 @@ let autoSpinRunning = false;
 let turboSpin = false;
 let knownFeedIds = [];
 
+let currentStats = null;
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -107,9 +109,19 @@ async function checkLogin() {
   }
 
   updateProfileUI(user);
+
+  currentStats = {
+    spins_total: user.spins_total || 0,
+    wins_total: user.wins_total || 0,
+    coins_won_total: user.coins_won_total || 0,
+    biggest_win: user.biggest_win || 0,
+    jackpots_won: user.jackpots_won || 0,
+    free_spins_won: user.free_spins_won || 0
+  };
+  
   updateUI();
   updateLeaderboard();
-  updateStatsUI(user);
+  updateStatsUI(currentStats);
 }
 
 function createSlotGrid() {
