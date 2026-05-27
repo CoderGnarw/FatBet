@@ -1,288 +1,172 @@
 require("dotenv").config();
 
 const express = require("express");
-const session = require("express-session");
 const cors = require("cors");
-const passport = require("passport");
-const DiscordStrategy = require("passport-discord").Strategy;
-
+const cookieSession = require("cookie-session");
+const axios = require("axios");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 
-app.use(express.json());
-
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: true,
-    sameSite: "none"
-  }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
+app.set("trust proxy", 1);
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-passport.serializeUser((user, done) => {
-  done(null, user);
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
+
+app.use(express.json());
+
+app.use(cookieSession({
+  name: "fatbet_session",
+  keys: [process.env.SESSION_SECRET],
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  secure: true,
+  sameSite: "lax",
+  httpOnly: true
+}));
+
+app.get("/auth/discord", (req, res) => {
+  const redirect =
+    "https://discord.com/api/oauth2/authorize" +
+    `?client_id=${process.env.DISCORD_CLIENT_ID}` +
+    "&response_type=code" +
+    `&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}` +
+    "&scope=identify";
+
+  res.redirect(redirect);
 });
 
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
+app.get("/auth/discord/callback", async (req, res) => {
+  const code = req.query.code;
 
-passport.use(new DiscordStrategy({
-
-  clientID: process.env.DISCORD_CLIENT_ID,
-  clientSecret: process.env.DISCORD_CLIENT_SECRET,
-  callbackURL: process.env.DISCORD_REDIRECT_URI,
-  scope: ["identify"]
-
-}, async (accessToken, refreshToken, profile, done) => {
+  if (!code) return res.send("Kein Discord Code erhalten.");
 
   try {
+    const tokenResponse = await axios.post(
+      "https://discord.com/api/oauth2/token",
+      new URLSearchParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: process.env.DISCORD_REDIRECT_URI
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
 
-    const avatarUrl =
-      `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`;
+    const accessToken = tokenResponse.data.access_token;
+
+    const userResponse = await axios.get(
+      "https://discord.com/api/users/@me",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      }
+    );
+
+    const discordUser = userResponse.data;
 
     const { data: existingUser } = await supabase
       .from("users")
       .select("*")
-      .eq("discord_id", profile.id)
+      .eq("discord_id", discordUser.id)
       .single();
 
-    await supabase
-      .from("users")
-      .upsert({
+    const avatarUrl = getDiscordAvatarUrl(discordUser);
 
-        discord_id: profile.id,
-        username: profile.username,
-        avatar_url: avatarUrl,
-
-        display_name:
-          existingUser?.display_name || profile.username,
-
-        spins_total:
-          existingUser?.spins_total || 0,
-
-        wins_total:
-          existingUser?.wins_total || 0,
-
-        coins_won_total:
-          existingUser?.coins_won_total || 0,
-
-        biggest_win:
-          existingUser?.biggest_win || 0,
-
-        jackpots_won:
-          existingUser?.jackpots_won || 0,
-
-        free_spins_won:
-          existingUser?.free_spins_won || 0,
-
-        coins:
-          existingUser?.coins || 1000
-
-      }, {
-        onConflict: "discord_id"
-      });
-
-    return done(null, profile);
-
-  } catch (err) {
-
-    console.error(err);
-    return done(err);
-
-  }
-
-}));
-
-app.get("/auth/discord",
-  passport.authenticate("discord")
-);
-
-app.get("/auth/discord/callback",
-
-  passport.authenticate("discord", {
-    failureRedirect: "/"
-  }),
-
-  async (req, res) => {
+    if (!existingUser) {
+      await supabase
+        .from("users")
+        .insert({
+          discord_id: discordUser.id,
+          username: discordUser.username,
+          display_name: discordUser.username,
+          avatar_url: avatarUrl,
+          coins: 1000,
+          spins_total: 0,
+          wins_total: 0,
+          coins_won_total: 0,
+          biggest_win: 0,
+          jackpots_won: 0,
+          free_spins_won: 0
+        });
+    } else {
+      await supabase
+        .from("users")
+        .update({
+          username: discordUser.username,
+          avatar_url: avatarUrl
+        })
+        .eq("discord_id", discordUser.id);
+    }
 
     req.session.user = {
-      discord_id: req.user.id,
-      username: req.user.username
+      discord_id: discordUser.id,
+      username: discordUser.username
     };
 
-    req.session.save(() => {
-      res.redirect("/");
-    });
-
+    res.redirect(process.env.FRONTEND_URL);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).send("Discord Login Fehler.");
   }
-);
-
-app.get("/logout", (req, res) => {
-
-  req.logout(() => {
-
-    req.session.destroy(() => {
-      res.redirect("/");
-    });
-
-  });
-
 });
 
 app.get("/me", async (req, res) => {
-
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.json(null);
   }
 
-  const { data: user } = await supabase
+  const { data, error } = await supabase
     .from("users")
     .select("*")
     .eq("discord_id", req.session.user.discord_id)
     .single();
 
-  res.json(user);
+  if (error) {
+    console.error(error);
+    return res.json(null);
+  }
 
+  res.json(data);
 });
 
 app.post("/save", async (req, res) => {
-
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.sendStatus(401);
   }
 
   const { coins } = req.body;
 
-  await supabase
+  const { error } = await supabase
     .from("users")
     .update({ coins })
     .eq("discord_id", req.session.user.discord_id);
 
-  res.sendStatus(200);
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
 
+  res.sendStatus(200);
 });
 
 app.get("/leaderboard", async (req, res) => {
-
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .order("coins", { ascending: false })
-    .limit(5);
-
-  res.json(data || []);
-
-});
-
-app.post("/profile/display-name", async (req, res) => {
-
-  if (!req.session.user) {
-    return res.sendStatus(401);
-  }
-
-  const displayName =
-    String(req.body.displayName || "")
-      .trim()
-      .slice(0, 20);
-
-  if (!displayName) {
-    return res.sendStatus(400);
-  }
-
-  await supabase
-    .from("users")
-    .update({
-      display_name: displayName
-    })
-    .eq("discord_id", req.session.user.discord_id);
-
-  res.json({
-    display_name: displayName
-  });
-
-});
-
-app.get("/jackpot", async (req, res) => {
-
-  const { data } = await supabase
-    .from("jackpot")
-    .select("*")
-    .eq("id", 1)
-    .single();
-
-  res.json({
-    amount: data?.amount || 10000
-  });
-
-});
-
-app.post("/jackpot", async (req, res) => {
-
-  const { bet, isFreeSpin } = req.body;
-
-  const { data: jackpotData } = await supabase
-    .from("jackpot")
-    .select("*")
-    .eq("id", 1)
-    .single();
-
-  let jackpotAmount = jackpotData?.amount || 10000;
-
-  if (!isFreeSpin) {
-    jackpotAmount += Math.floor(bet * 0.02);
-  }
-
-  const jackpotChance = 0.001;
-
-  let jackpotWon = false;
-  let jackpotWin = 0;
-
-  if (Math.random() < jackpotChance) {
-    jackpotWon = true;
-    jackpotWin = jackpotAmount;
-    jackpotAmount = 10000;
-  }
-
-  await supabase
-    .from("jackpot")
-    .update({
-      amount: jackpotAmount
-    })
-    .eq("id", 1);
-
-  res.json({
-    jackpotWon,
-    jackpotWin,
-    newJackpotAmount: jackpotAmount
-  });
-
-});
-
-app.get("/live-feed", async (req, res) => {
-
   const { data, error } = await supabase
-    .from("live_feed")
-    .select("*")
-    .order("created_at", {
-      ascending: false
-    })
+    .from("users")
+    .select("display_name, username, avatar_url, coins")
+    .order("coins", { ascending: false })
     .limit(10);
 
   if (error) {
@@ -291,12 +175,129 @@ app.get("/live-feed", async (req, res) => {
   }
 
   res.json(data);
+});
 
+app.post("/profile/display-name", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { displayName } = req.body;
+
+  if (!displayName || displayName.trim().length < 2) {
+    return res.status(400).json({ error: "Displayname zu kurz." });
+  }
+
+  if (displayName.length > 20) {
+    return res.status(400).json({ error: "Displayname zu lang." });
+  }
+
+  const cleanName = displayName.trim();
+
+  const { error } = await supabase
+    .from("users")
+    .update({ display_name: cleanName })
+    .eq("discord_id", req.session.user.discord_id);
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
+
+  res.json({ display_name: cleanName });
+});
+
+app.get("/jackpot", async (req, res) => {
+  const { data, error } = await supabase
+    .from("jackpot")
+    .select("amount")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return res.json({ amount: 0 });
+  }
+
+  res.json({ amount: data.amount });
+});
+
+app.post("/jackpot", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { bet, isFreeSpin } = req.body;
+
+  if (isFreeSpin) {
+    return res.json({
+      contribution: 0,
+      jackpotWon: false,
+      jackpotWin: 0
+    });
+  }
+
+  const contribution = Math.max(1, Math.floor(bet * 0.02));
+
+  const { data, error } = await supabase
+    .from("jackpot")
+    .select("amount")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
+
+  const newAmount = data.amount + contribution;
+  const jackpotChance = 0.002;
+  const jackpotWon = Math.random() < jackpotChance;
+
+  if (jackpotWon) {
+    await supabase
+      .from("jackpot")
+      .update({ amount: 10000 })
+      .eq("id", 1);
+
+    return res.json({
+      contribution,
+      jackpotWon: true,
+      jackpotWin: newAmount,
+      newJackpotAmount: 10000
+    });
+  }
+
+  await supabase
+    .from("jackpot")
+    .update({ amount: newAmount })
+    .eq("id", 1);
+
+  res.json({
+    contribution,
+    jackpotWon: false,
+    jackpotWin: 0,
+    newJackpotAmount: newAmount
+  });
+});
+
+app.get("/live-feed", async (req, res) => {
+  const { data, error } = await supabase
+    .from("live_feed")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (error) {
+    console.error(error);
+    return res.json([]);
+  }
+
+  res.json(data);
 });
 
 app.post("/live-feed", async (req, res) => {
-
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.sendStatus(401);
   }
 
@@ -308,81 +309,79 @@ app.post("/live-feed", async (req, res) => {
 
   await supabase
     .from("live_feed")
-    .insert({
-      message
-    });
+    .insert({ message });
 
   res.sendStatus(200);
-
 });
 
 app.post("/update-stats", async (req, res) => {
-
-  if (!req.session.user) {
+  if (!req.session || !req.session.user) {
     return res.sendStatus(401);
   }
 
-  const {
-    totalWin,
-    freeSpinsWon,
-    jackpotWon
-  } = req.body;
+  const { totalWin, freeSpinsWon, jackpotWon } = req.body;
 
-  const discordId =
-    req.session.user.discord_id;
+  const discordId = req.session.user.discord_id;
 
-  const { data: user } = await supabase
+  const { data: user, error } = await supabase
     .from("users")
     .select("*")
     .eq("discord_id", discordId)
     .single();
 
-  if (!user) {
+  if (error || !user) {
+    console.error(error);
     return res.sendStatus(404);
   }
 
   const updates = {
-
-    spins_total:
-      (user.spins_total || 0) + 1
-
+    spins_total: (user.spins_total || 0) + 1
   };
 
   if (totalWin > 0) {
-
-    updates.wins_total =
-      (user.wins_total || 0) + 1;
-
-    updates.coins_won_total =
-      (user.coins_won_total || 0) + totalWin;
+    updates.wins_total = (user.wins_total || 0) + 1;
+    updates.coins_won_total = (user.coins_won_total || 0) + totalWin;
 
     if (totalWin > (user.biggest_win || 0)) {
       updates.biggest_win = totalWin;
     }
-
   }
 
   if (freeSpinsWon > 0) {
-
-    updates.free_spins_won =
-      (user.free_spins_won || 0) + freeSpinsWon;
-
+    updates.free_spins_won = (user.free_spins_won || 0) + freeSpinsWon;
   }
 
   if (jackpotWon) {
-
-    updates.jackpots_won =
-      (user.jackpots_won || 0) + 1;
-
+    updates.jackpots_won = (user.jackpots_won || 0) + 1;
   }
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("users")
     .update(updates)
     .eq("discord_id", discordId);
 
-  res.sendStatus(200);
+  if (updateError) {
+    console.error(updateError);
+    return res.sendStatus(500);
+  }
 
+  res.sendStatus(200);
 });
+
+app.get("/logout", (req, res) => {
+  req.session = null;
+  res.redirect(process.env.FRONTEND_URL);
+});
+
+function getDiscordAvatarUrl(discordUser) {
+  if (!discordUser.avatar) {
+    const defaultAvatar = Number(discordUser.discriminator || 0) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${defaultAvatar}.png`;
+  }
+
+  const extension = discordUser.avatar.startsWith("a_") ? "gif" : "png";
+
+  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
+}
 
 module.exports = app;
