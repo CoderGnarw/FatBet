@@ -51,7 +51,7 @@ button:hover {
   display: grid;
   grid-template-columns: 320px 720px 320px;
   gap: 34px;
-  align-items: stretch;
+  align-items: start;
   justify-content: center;
   max-width: 1600px;
   margin: 30px auto;
@@ -67,11 +67,12 @@ button:hover {
 .slot-machine {
   padding: 18px;
   border-radius: 30px;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.28);
   border: 3px solid #ffd700;
+
   box-shadow:
-    0 0 20px #ff00ff,
-    0 0 55px #ff00ff;
+    0 0 14px #ff00ff,
+    0 0 28px rgba(255, 0, 255, 0.55);
 }
 
 .slot-grid {
@@ -84,6 +85,7 @@ button:hover {
 .slot {
   width: 120px;
   height: 120px;
+
   border-radius: 18px;
   background: #111;
   border: 2px solid #ffd700;
@@ -117,6 +119,7 @@ button:hover {
 }
 
 @keyframes pulseWin {
+
   from {
     transform: scale(1);
     box-shadow:
@@ -129,6 +132,7 @@ button:hover {
       0 0 25px #ffd700,
       0 0 45px #ff00ff;
   }
+
 }
 
 .bet-controls,
@@ -144,12 +148,14 @@ button:hover {
 .auto-spin-status {
   margin-top: 14px;
   color: #00ffd5;
+
   text-shadow:
     0 0 10px #00ffd5;
 }
 
 #coins {
   color: #00ffd5;
+
   text-shadow:
     0 0 8px #00ffd5,
     0 0 18px #00ffd5;
@@ -159,6 +165,7 @@ button:hover {
   margin-top: 24px;
   color: #ffd700;
   font-size: 22px;
+
   text-shadow:
     0 0 10px #ff00ff,
     0 0 25px #ffd700;
@@ -168,6 +175,7 @@ button:hover {
   margin-top: 20px;
   font-size: 34px;
   color: #ffd700;
+
   text-shadow:
     0 0 10px #ff00ff;
 }
@@ -188,29 +196,25 @@ button:hover {
 }
 
 .side-panel {
-  min-height: 360px;
-  height: fit-content;
+  min-height: 390px;
+  height: 390px;
 
   padding: 18px;
 
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.42);
 
   border: 2px solid #ffd700;
   border-radius: 20px;
 
   box-shadow:
-    0 0 18px #ff00ff,
-    0 0 35px rgba(255, 215, 0, 0.35);
-}
-
-.leaderboard-panel,
-.feed-panel {
-  margin-top: 40px;
+    0 0 12px #ff00ff,
+    0 0 24px rgba(255, 215, 0, 0.25);
 }
 
 .side-panel h2 {
   margin-top: 0;
   color: #ffd700;
+
   text-shadow:
     0 0 12px #ff00ff;
 }
@@ -230,12 +234,13 @@ button:hover {
   flex-direction: column;
   gap: 10px;
 
-  max-height: 300px;
+  max-height: 310px;
   overflow: hidden;
 }
 
 .feed-item {
   padding: 10px 12px;
+
   border: 1px solid #ff00ff;
   border-radius: 12px;
 
@@ -247,6 +252,7 @@ button:hover {
 }
 
 @keyframes feedSlideIn {
+
   from {
     opacity: 0;
     transform: translateX(30px);
@@ -256,6 +262,7 @@ button:hover {
     opacity: 1;
     transform: translateX(0);
   }
+
 }
 
 .big-win {
@@ -341,8 +348,10 @@ button:hover {
 .settings-avatar {
   width: 96px;
   height: 96px;
+
   border-radius: 50%;
   border: 3px solid #ffd700;
+
   object-fit: cover;
 }
 
@@ -350,6 +359,7 @@ button:hover {
   position: fixed;
   top: 18px;
   right: 18px;
+
   z-index: 99999;
 }
 
@@ -401,11 +411,6 @@ button:hover {
 
   .main-game-layout {
     grid-template-columns: 1fr;
-  }
-
-  .leaderboard-panel,
-  .feed-panel {
-    margin-top: 0;
   }
 
 }
