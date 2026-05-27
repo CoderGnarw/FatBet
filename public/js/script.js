@@ -1494,16 +1494,30 @@ function revealLootboxCard(event) {
     raritySound.play().catch(() => {});
   }
 
-  if (
-    pendingLootboxResult.rarity === "legendary" ||
-    pendingLootboxResult.rarity === "mythic"
-  ) {
-    document.body.classList.add("screen-shake");
+  if (pendingLootboxResult.rarity === "legendary") {
 
-    setTimeout(() => {
-      document.body.classList.remove("screen-shake");
-    }, 450);
-  }
+  document.body.classList.add("screen-shake");
+
+  setTimeout(() => {
+    document.body.classList.remove("screen-shake");
+  }, 450);
+
+}
+
+if (pendingLootboxResult.rarity === "mythic") {
+
+  document.body.classList.add("screen-shake-mythic");
+
+  createFlyingCoins();
+  createFlyingCoins();
+  createFlyingCoins();
+  createFlyingCoins();
+  createFlyingCoins();
+
+  setTimeout(() => {
+    document.body.classList.remove("screen-shake-mythic");
+  }, 1200);
+}
 
   if (pendingLootboxResult.success) {
     createFlyingCoins();

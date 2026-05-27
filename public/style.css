@@ -1949,6 +1949,37 @@ button:hover::before {
   100% { transform: translate(0px, 0px); }
 }
 
+.screen-shake-mythic {
+  animation: mythicShake 1.2s ease;
+}
+
+@keyframes mythicShake {
+  0% { transform: scale(1) translate(0px, 0px); }
+
+  10% { transform: scale(1.02) translate(-12px, 8px); }
+  20% { transform: scale(1.04) translate(10px, -7px); }
+  30% { transform: scale(1.06) translate(-14px, 10px); }
+  40% { transform: scale(1.08) translate(14px, -10px); }
+
+  50% {
+    transform: scale(1.12);
+    filter:
+      brightness(1.35)
+      saturate(1.5);
+  }
+
+  60% { transform: scale(1.08) translate(-12px, 7px); }
+  70% { transform: scale(1.05) translate(11px, -6px); }
+  80% { transform: scale(1.03) translate(-8px, 5px); }
+
+  100% {
+    transform: scale(1) translate(0px, 0px);
+    filter:
+      brightness(1)
+      saturate(1);
+  }
+}
+
 .lootbox-card-front,
 .lootbox-card-back {
   justify-content: center;
