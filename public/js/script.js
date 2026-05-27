@@ -3,24 +3,12 @@ const scatterSymbol = "🎁";
 const wildSymbol = "🃏";
 
 const symbols = [
-  "🍒",
-  "🍒",
-  "🍒",
-
-  "🍋",
-  "🍋",
-  "🍋",
-
-  "🔔",
-  "🔔",
-
-  "⭐",
-  "⭐",
-
+  "🍒", "🍒", "🍒",
+  "🍋", "🍋", "🍋",
+  "🔔", "🔔",
+  "⭐", "⭐",
   "💎",
-
   wildSymbol,
-
   scatterSymbol
 ];
 
@@ -79,10 +67,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 async function checkLogin() {
-  const res = await fetch("/me", {
-    credentials: "include"
-  });
-
+  const res = await fetch("/me", { credentials: "include" });
   const user = await res.json();
 
   if (!user) {
@@ -134,9 +119,7 @@ function fillGridWithRandomSymbols() {
 function changeBet() {
   if (freeSpins > 0 || isSpinning) {
     const betSelect = document.getElementById("betSelect");
-    if (betSelect) {
-      betSelect.value = bet;
-    }
+    if (betSelect) betSelect.value = bet;
     return;
   }
 
@@ -145,9 +128,7 @@ function changeBet() {
 }
 
 async function spin() {
-  if (isSpinning) {
-    return;
-  }
+  if (isSpinning) return;
 
   clearWinningCells();
 
@@ -156,10 +137,12 @@ async function spin() {
 
   if (!isFreeSpin && coins < bet) {
     result("Nicht genug Coins!");
+    stopAutoSpin();
     return;
   }
 
   isSpinning = true;
+  updateUI();
 
   if (isFreeSpin) {
     freeSpins--;
@@ -172,24 +155,22 @@ async function spin() {
   playSound(spinSound);
 
   generateFinalGrid(isFreeSpin);
-
   await animateReelsSequentially();
-
   renderGrid();
 
   const winData = calculateTotalWin();
   const scatterData = calculateScatterBonus(isFreeSpin);
 
   let totalWin = winData.totalWin;
-  
+
   if (isFreeSpin && totalWin > 0) {
-  freeSpinTotalWin += totalWin;
+    freeSpinTotalWin += totalWin;
   }
 
   if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
-  freeSpins += scatterData.freeSpinsWon;
-  freeSpinStartCount = scatterData.freeSpinsWon;
-  freeSpinTotalWin = 0;
+    freeSpins += scatterData.freeSpinsWon;
+    freeSpinStartCount = scatterData.freeSpinsWon;
+    freeSpinTotalWin = 0;
   }
 
   if (totalWin > 0) {
@@ -204,19 +185,7 @@ async function spin() {
   }
 
   highlightScatters();
-
   showWinDetails(winData.winningLines, scatterData);
-
-  await save();
-
-  isSpinning = false;
-  updateUI();
-
-  if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
-  showFreeSpinSummary();
-  }
-
-  await showBigWin(totalWin);
 
   if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
     result(`Gewonnen: ${totalWin} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
@@ -228,12 +197,21 @@ async function spin() {
   } else {
     result("Leider verloren 😢");
   }
+
+  await save();
+
+  isSpinning = false;
+  updateUI();
+
+  if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
+    showFreeSpinSummary();
+  }
+
+  await showBigWin(totalWin);
 }
 
 function animateReelsSequentially() {
   return new Promise(resolve => {
-    const reelIntervals = [];
-
     for (let reel = 0; reel < reels; reel++) {
       const interval = setInterval(() => {
         for (let row = 0; row < rows; row++) {
@@ -243,14 +221,11 @@ function animateReelsSequentially() {
         }
       }, 90);
 
-      reelIntervals.push(interval);
-
       setTimeout(() => {
         clearInterval(interval);
 
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
-
           cell.innerText = currentGrid[row][reel];
           cell.classList.remove("spinning");
         }
@@ -274,11 +249,11 @@ function generateFinalGrid(isFreeSpin = false) {
     let scatterPlacedOnThisReel = false;
 
     for (let row = 0; row < rows; row++) {
-      let symbol = isFreeSpin ? randRegularSymbol() : rand();
+      let symbol = isFreeSpin ? randRegularOrWildSymbol() : rand();
 
       if (!isFreeSpin && symbol === scatterSymbol) {
         if (scatterPlacedOnThisReel) {
-          symbol = randRegularSymbol();
+          symbol = randRegularOrWildSymbol();
         } else {
           scatterPlacedOnThisReel = true;
         }
@@ -294,12 +269,12 @@ function renderGrid() {
     for (let reel = 0; reel < reels; reel++) {
       const cell = document.getElementById(`slot-${row}-${reel}`);
 
-cell.innerText = currentGrid[row][reel];
+      cell.innerText = currentGrid[row][reel];
 
-cell.classList.remove("wild");
+      cell.classList.remove("wild");
 
-if (currentGrid[row][reel] === wildSymbol) {
-  cell.classList.add("wild");
+      if (currentGrid[row][reel] === wildSymbol) {
+        cell.classList.add("wild");
       }
     }
   }
@@ -331,39 +306,24 @@ function calculateTotalWin() {
     }
   });
 
-  return {
-    totalWin,
-    winningLines,
-    hasFiveOfAKind
-  };
+  return { totalWin, winningLines, hasFiveOfAKind };
 }
 
 function calculateLineWin(line) {
-
   let firstSymbol = currentGrid[line[0]][0];
 
-  // WILD ALS STARTSYMBOL SUCHEN
   if (firstSymbol === wildSymbol) {
-
     for (let reel = 1; reel < reels; reel++) {
-
       const nextSymbol = currentGrid[line[reel]][reel];
 
-      if (
-        nextSymbol !== wildSymbol &&
-        nextSymbol !== scatterSymbol
-      ) {
+      if (nextSymbol !== wildSymbol && nextSymbol !== scatterSymbol) {
         firstSymbol = nextSymbol;
         break;
       }
     }
   }
 
-  // NUR WILDS ODER SCATTER
-  if (
-    firstSymbol === wildSymbol ||
-    firstSymbol === scatterSymbol
-  ) {
+  if (firstSymbol === wildSymbol || firstSymbol === scatterSymbol) {
     return {
       win: 0,
       symbol: firstSymbol,
@@ -375,17 +335,12 @@ function calculateLineWin(line) {
   let matches = 1;
 
   for (let reel = 1; reel < reels; reel++) {
-
     const row = line[reel];
     const symbol = currentGrid[row][reel];
 
-    if (
-      symbol === firstSymbol ||
-      symbol === wildSymbol
-    ) {
+    if (symbol === firstSymbol || symbol === wildSymbol) {
       matches++;
-    }
-    else {
+    } else {
       break;
     }
   }
@@ -402,23 +357,16 @@ function calculateLineWin(line) {
   const baseMultiplier = symbolMultipliers[firstSymbol];
 
   let matchMultiplier = 1;
-
   if (matches === 4) matchMultiplier = 2;
   if (matches === 5) matchMultiplier = 5;
 
-  // WILD BONUS
   const wildCount = countWildsInLine(line, matches);
 
   let wildMultiplier = 1;
-
   if (wildCount === 1) wildMultiplier = 1.5;
   if (wildCount >= 2) wildMultiplier = 2;
 
-  const finalMultiplier =
-    baseMultiplier *
-    matchMultiplier *
-    wildMultiplier;
-
+  const finalMultiplier = baseMultiplier * matchMultiplier * wildMultiplier;
   const win = Math.floor(bet * finalMultiplier);
 
   return {
@@ -430,11 +378,9 @@ function calculateLineWin(line) {
 }
 
 function countWildsInLine(line, matches) {
-
   let wilds = 0;
 
   for (let reel = 0; reel < matches; reel++) {
-
     const row = line[reel];
 
     if (currentGrid[row][reel] === wildSymbol) {
@@ -469,10 +415,7 @@ function calculateScatterBonus(isFreeSpin) {
   if (scatterCount === 4) freeSpinsWon = 7;
   if (scatterCount >= 5) freeSpinsWon = 10;
 
-  return {
-    scatterCount,
-    freeSpinsWon
-  };
+  return { scatterCount, freeSpinsWon };
 }
 
 function highlightWinningLines(winningLines) {
@@ -480,6 +423,7 @@ function highlightWinningLines(winningLines) {
     for (let reel = 0; reel < winLine.matches; reel++) {
       const row = winLine.line[reel];
       const cell = document.getElementById(`slot-${row}-${reel}`);
+
       cell.classList.add("win");
       cell.classList.add("line-win");
     }
@@ -521,6 +465,11 @@ function randRegularSymbol() {
   return regularSymbols[Math.floor(Math.random() * regularSymbols.length)];
 }
 
+function randRegularOrWildSymbol() {
+  const pool = [...regularSymbols, wildSymbol];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function updateUI() {
   document.getElementById("coins").innerText = coins;
 
@@ -539,21 +488,29 @@ function updateUI() {
       freeSpinsWrapper.classList.remove("hidden");
     } else {
       freeSpinsWrapper.classList.add("hidden");
-    }   
+    }
   }
-  
+
   const betSelect = document.getElementById("betSelect");
 
   if (betSelect) {
-  betSelect.disabled = freeSpins > 0 || isSpinning;
+    betSelect.disabled = freeSpins > 0 || isSpinning;
+    betSelect.value = bet;
+  }
+
+  const autoSpinStatus = document.getElementById("autoSpinStatus");
+  const autoSpinCount = document.getElementById("autoSpinCount");
+
+  if (autoSpinStatus && autoSpinCount) {
+    if (autoSpinRunning) {
+      autoSpinStatus.classList.remove("hidden");
+      autoSpinCount.innerText = autoSpinInfinite ? "∞" : autoSpinsRemaining;
+    } else {
+      autoSpinStatus.classList.add("hidden");
+      autoSpinCount.innerText = "0";
+    }
   }
 }
-
-  const betSelect = document.getElementById("betSelect");
-
-  if (betSelect) {
-  betSelect.disabled = freeSpins > 0 || isSpinning;
-  }
 
 function result(text) {
   document.getElementById("result").innerText = text;
@@ -572,26 +529,6 @@ async function save() {
   });
 
   updateLeaderboard();
-}
-
-const autoSpinStatus = document.getElementById("autoSpinStatus");
-const autoSpinCount = document.getElementById("autoSpinCount");
-
-if (autoSpinStatus && autoSpinCount) {
-
-  if (autoSpinRunning) {
-
-    autoSpinStatus.classList.remove("hidden");
-
-    autoSpinCount.innerText =
-      autoSpinInfinite ? "∞" : autoSpinsRemaining;
-  }
-  else {
-
-    autoSpinStatus.classList.add("hidden");
-
-    autoSpinCount.innerText = "0";
-  }
 }
 
 async function updateLeaderboard() {
@@ -614,24 +551,21 @@ function playSound(sound) {
 }
 
 async function showBigWin(totalWin) {
-
   const multiplier = totalWin / bet;
 
-  if (multiplier < 25) {
-    return;
-  }
+  if (multiplier < 25) return;
 
   const overlay = document.getElementById("bigWinOverlay");
   const text = document.getElementById("bigWinText");
   const amount = document.getElementById("bigWinAmount");
 
+  if (!overlay || !text || !amount) return;
+
   if (multiplier >= 100) {
     text.innerText = "💎 FAT WIN 💎";
-  }
-  else if (multiplier >= 50) {
+  } else if (multiplier >= 50) {
     text.innerText = "🔥 MEGA WIN 🔥";
-  }
-  else {
+  } else {
     text.innerText = "🎉 BIG WIN 🎉";
   }
 
@@ -704,34 +638,28 @@ function hideFreeSpinSummary() {
 }
 
 async function startAutoSpin(amount) {
-
-  if (autoSpinRunning || isSpinning) {
-    return;
-  }
+  if (autoSpinRunning || isSpinning) return;
 
   autoSpinRunning = true;
   autoSpinInfinite = false;
   autoSpinsRemaining = amount;
 
-  runAutoSpin();
   updateUI();
+  runAutoSpin();
 }
 
 async function startInfiniteAutoSpin() {
-
-  if (autoSpinRunning || isSpinning) {
-    return;
-  }
+  if (autoSpinRunning || isSpinning) return;
 
   autoSpinRunning = true;
   autoSpinInfinite = true;
+  autoSpinsRemaining = 0;
 
-  runAutoSpin();
   updateUI();
+  runAutoSpin();
 }
 
 function stopAutoSpin() {
-
   autoSpinRunning = false;
   autoSpinInfinite = false;
   autoSpinsRemaining = 0;
@@ -740,9 +668,7 @@ function stopAutoSpin() {
 }
 
 async function runAutoSpin() {
-
   while (autoSpinRunning) {
-
     if (coins < bet && freeSpins <= 0) {
       stopAutoSpin();
       break;
@@ -750,17 +676,16 @@ async function runAutoSpin() {
 
     await spin();
 
-    // optional kurze Pause
-    await new Promise(resolve => setTimeout(resolve, 250));
-
     if (!autoSpinInfinite) {
-
       autoSpinsRemaining--;
       updateUI();
 
       if (autoSpinsRemaining <= 0) {
         stopAutoSpin();
+        break;
       }
     }
+
+    await new Promise(resolve => setTimeout(resolve, 350));
   }
 }
