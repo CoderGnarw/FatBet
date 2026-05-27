@@ -710,9 +710,14 @@ button:hover {
   color: #ffffff;
 }
 
-@media (max-width: 1500px) {
+@media (max-width: 900px) {
   .main-game-layout {
     grid-template-columns: 1fr;
+    max-width: 96vw;
+  }
+
+  .slot-center {
+    width: 100%;
   }
 
   .settings-layout {
