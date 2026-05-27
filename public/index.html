@@ -1,341 +1,245 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>FatBet</title>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-  <!-- PROFILE MENU -->
-  <div id="profileMenuWrapper" class="profile-menu-wrapper hidden">
-
-    <button class="profile-avatar-button" onclick="toggleProfileMenu()">
-      <img
-        id="topProfileAvatar"
-        src="https://cdn.discordapp.com/embed/avatars/0.png"
-        alt="Avatar"
-      >
-    </button>
-
-    <div id="profileMenu" class="profile-menu hidden">
-
-      <button onclick="openSettingsOverlay()">
-        ⚙️ Einstellungen
-      </button>
-
-      <a href="/logout">
-        🚪 Abmelden
-      </a>
-
-    </div>
-
-  </div>
+<div id="game">
 
   <h1>🎰 FatBet</h1>
 
-  <!-- LOGIN -->
-  <div id="login">
-
-    <a href="/auth/discord">
-      <button>
-        Mit Discord einloggen
-      </button>
-    </a>
-
+  <div class="coins-display">
+    Coins: <span id="coins">0</span>
   </div>
 
-  <!-- GAME -->
-  <div id="game" class="hidden">
+  <div class="main-game-layout">
 
-    <p class="coins-display">
-      Coins:
-      <span id="coins">1000</span>
-    </p>
+    <!-- LEADERBOARD -->
+    <aside class="side-panel leaderboard-panel">
+      <h2>🏆 Leaderboard</h2>
 
-    <p id="freeSpinsWrapper" class="hidden">
-      Freispiele:
-      <span id="freeSpins">0</span>
-    </p>
+      <ul id="leaderboard"></ul>
+    </aside>
 
-    <div class="main-game-layout">
+    <!-- SLOT CENTER -->
+    <section class="slot-center">
 
-      <!-- LEFT: LEADERBOARD -->
-      <aside class="side-panel leaderboard-panel">
-
-        <h2>🏆 Leaderboard</h2>
-
-        <ul id="leaderboard"></ul>
-
-      </aside>
-
-      <!-- CENTER: SLOT -->
-      <section class="slot-center">
-
-        <p class="jackpot-display">
-          💰 Jackpot:
-          <span id="jackpotAmount">0</span>
-          Coins
-        </p>
-
-        <div class="slot-machine">
-          <div id="slotGrid" class="slot-grid"></div>
-        </div>
+      <div class="jackpot-display">
+        💰 Jackpot:
+        <span id="jackpotAmount">10000</span>
+        Coins
       </div>
 
-        <div class="bet-controls">
+      <div class="slot-machine">
 
-          <label for="betSelect">
-            Einsatz:
-          </label>
+        <div class="slot-grid">
 
-          <select id="betSelect" onchange="changeBet()">
-            <option value="10">10 Coins</option>
-            <option value="25">25 Coins</option>
-            <option value="50" selected>50 Coins</option>
-            <option value="100">100 Coins</option>
-            <option value="250">250 Coins</option>
-            <option value="500">500 Coins</option>
-          </select>
+          <div class="slot" id="slot0">🍋</div>
+          <div class="slot" id="slot1">🍒</div>
+          <div class="slot" id="slot2">⭐</div>
+          <div class="slot" id="slot3">🔔</div>
+          <div class="slot" id="slot4">💎</div>
 
-          <button onclick="spin()">
-            Spin (<span id="betText">50</span>)
-          </button>
+          <div class="slot" id="slot5">🍋</div>
+          <div class="slot" id="slot6">🍒</div>
+          <div class="slot" id="slot7">⭐</div>
+          <div class="slot" id="slot8">🔔</div>
+          <div class="slot" id="slot9">💎</div>
 
-        </div>
-
-        <div class="auto-spin-controls">
-
-          <button onclick="startAutoSpin(10)">
-            Auto x10
-          </button>
-
-          <button onclick="startAutoSpin(25)">
-            Auto x25
-          </button>
-
-          <button onclick="startInfiniteAutoSpin()">
-            Auto ∞
-          </button>
-
-          <button onclick="stopAutoSpin()">
-            Stop
-          </button>
-
-          <button onclick="toggleTurboSpin()" id="turboButton">
-            ⚡ Turbo AUS
-          </button>
+          <div class="slot" id="slot10">🍋</div>
+          <div class="slot" id="slot11">🍒</div>
+          <div class="slot" id="slot12">⭐</div>
+          <div class="slot" id="slot13">🔔</div>
+          <div class="slot" id="slot14">💎</div>
 
         </div>
 
-        <p id="autoSpinStatus" class="auto-spin-status hidden">
-          Auto Spins übrig:
-          <span id="autoSpinCount">0</span>
-        </p>
+      </div>
 
-        <p id="result"></p>
+      <!-- CONTROLS -->
+      <div class="bet-controls">
 
-        <div id="winDetails" class="win-details hidden"></div>
+        <label for="betAmount">
+          Einsatz:
+        </label>
 
-        <div class="bonus-controls">
+        <select id="betAmount">
+          <option value="50">50 Coins</option>
+          <option value="100">100 Coins</option>
+          <option value="250">250 Coins</option>
+          <option value="500">500 Coins</option>
+          <option value="1000">1000 Coins</option>
+        </select>
 
-          <button onclick="openLootbox()">
-            🎁 Lootbox öffnen (100)
-          </button>
+        <button id="spinButton">
+          Spin
+        </button>
 
-          <button onclick="dailyReward()">
-            🎉 Daily Reward
-          </button>
+      </div>
 
-        </div>
+      <!-- AUTO SPIN -->
+      <div class="auto-spin-controls">
 
-      </section>
+        <button onclick="startAutoSpin(10)">
+          Auto x10
+        </button>
 
-      <!-- RIGHT: LIVE FEED -->
-      <aside class="side-panel feed-panel">
+        <button onclick="startAutoSpin(25)">
+          Auto x25
+        </button>
 
-        <h2>📢 Live Wins</h2>
+        <button onclick="startInfiniteAutoSpin()">
+          Auto ∞
+        </button>
 
-        <div id="liveFeed" class="live-feed"></div>
+        <button onclick="stopAutoSpin()">
+          Stop
+        </button>
 
-      </aside>
+        <button id="turboButton" onclick="toggleTurboMode()">
+          ⚡ Turbo AUS
+        </button>
 
-    </div>
+      </div>
 
-  </div>
+      <!-- RESULT -->
+      <div id="result"></div>
 
-  <!-- BIG WIN OVERLAY -->
-  <div id="bigWinOverlay" class="big-win hidden">
+      <!-- WIN DETAILS -->
+      <div id="winDetails" class="win-details hidden"></div>
 
-    <div id="bigWinText" class="big-win-text">
-      BIG WIN
-    </div>
+      <!-- BONUS -->
+      <div class="bonus-controls">
 
-    <div id="bigWinAmount" class="big-win-amount">
-      +5000
-    </div>
+        <button onclick="openLootbox()">
+          🎁 Lootbox öffnen (100)
+        </button>
 
-  </div>
+        <button onclick="claimDailyReward()">
+          🎉 Daily Reward
+        </button>
 
-  <!-- JACKPOT OVERLAY -->
-  <div id="jackpotOverlay" class="jackpot-overlay hidden" onclick="hideJackpotOverlay()">
+      </div>
 
-    <div class="jackpot-box">
+    </section>
 
-      <h2>💰 JACKPOT 💰</h2>
+    <!-- LIVE FEED -->
+    <aside class="side-panel feed-panel">
 
-      <p id="jackpotWinText"></p>
+      <h2>📢 Live Wins</h2>
 
-      <small>
-        Klicke irgendwo, um weiterzuspielen
-      </small>
+      <div id="liveFeed" class="live-feed"></div>
 
-    </div>
-
-  </div>
-
-  <!-- FREE SPIN SUMMARY OVERLAY -->
-  <div
-    id="freeSpinSummaryOverlay"
-    class="free-spin-summary hidden"
-    onclick="hideFreeSpinSummary()"
-  >
-
-    <div class="free-spin-summary-box">
-
-      <h2>🎁 Freispiele beendet!</h2>
-
-      <p id="freeSpinSummaryText"></p>
-
-      <small>
-        Klicke irgendwo, um weiterzuspielen
-      </small>
-
-    </div>
+    </aside>
 
   </div>
 
-  <!-- SETTINGS OVERLAY -->
-  <div id="settingsOverlay" class="settings-overlay hidden">
+</div>
 
-    <div class="settings-box">
+<!-- SETTINGS OVERLAY -->
+<div id="settingsOverlay" class="settings-overlay hidden">
 
-      <button class="settings-close" onclick="closeSettingsOverlay()">
-        ✕
-      </button>
+  <div class="settings-box">
 
-      <h2>⚙️ Einstellungen</h2>
+    <button
+      class="settings-close"
+      onclick="closeSettings()"
+    >
+      ✕
+    </button>
 
-      <div class="settings-layout">
+    <h2>⚙ Einstellungen</h2>
 
-        <!-- LEFT: PROFILE -->
-        <div class="settings-left">
+    <div class="settings-layout">
 
-          <img
-            id="settingsAvatar"
-            class="settings-avatar"
-            src="https://cdn.discordapp.com/embed/avatars/0.png"
-            alt="Avatar"
+      <!-- LEFT -->
+      <div class="settings-left">
+
+        <img
+          id="settingsAvatar"
+          class="settings-avatar"
+          src="https://cdn.discordapp.com/embed/avatars/0.png"
+          alt="Avatar"
+        >
+
+        <p>Discord Username:</p>
+
+        <input
+          id="discordUsernameInput"
+          type="text"
+          disabled
+        >
+
+        <div class="displayname-row">
+
+          <p>Displayname:</p>
+
+          <input
+            id="displayNameInput"
+            type="text"
+            maxlength="20"
           >
 
-          <p>
-            Discord Username:
-          </p>
-
-          <input id="discordUsernameInput" type="text" disabled>
-
-          <p>
-            Displayname:
-          </p>
-
-          <div class="displayname-row">
-
-            <input
-              id="displayNameInput"
-              type="text"
-              maxlength="20"
-            >
-
-            <button onclick="saveDisplayName()">
-              Speichern
-            </button>
-
-          </div>
-
-          <div class="title-select-box">
-
-            <h3>👑 Aktiver Titel</h3>
-
-            <select
-              id="titleSelect"
-              onchange="saveSelectedTitle()"
-            >
-              <option value="">
-                Kein Titel
-              </option>
-            </select>
-
-          </div>
+          <button onclick="saveDisplayName()">
+            Speichern
+          </button>
 
         </div>
 
-        <!-- MIDDLE: ACHIEVEMENTS -->
-        <div class="settings-middle">
+        <div class="title-select-box">
 
-          <h3 class="settings-section-title">
-            🏆 Achievements
-          </h3>
+          <h3>👑 Aktiver Titel</h3>
 
-          <div
-            id="achievementsList"
-            class="achievements-list"
-          ></div>
+          <select id="titleSelect"></select>
 
         </div>
 
-        <!-- RIGHT: STATS -->
-        <div class="settings-right">
+      </div>
 
-          <div class="profile-stats">
+      <!-- MIDDLE -->
+      <div class="settings-middle">
 
-            <h3>📊 Deine Statistiken</h3>
+        <h2 class="settings-section-title">
+          🏆 Achievements
+        </h2>
 
-            <p>
-              🎰 Spins insgesamt:
-              <span id="statsSpins">0</span>
-            </p>
+        <div
+          id="achievementsList"
+          class="achievements-list"
+        ></div>
 
-            <p>
-              ✅ Gewinne insgesamt:
-              <span id="statsWins">0</span>
-            </p>
+      </div>
 
-            <p>
-              💰 Gewonnene Coins:
-              <span id="statsCoinsWon">0</span>
-            </p>
+      <!-- RIGHT -->
+      <div class="settings-right">
 
-            <p>
-              🏆 Größter Gewinn:
-              <span id="statsBiggestWin">0</span>
-            </p>
+        <div class="profile-stats">
 
-            <p>
-              🎁 Freispiele gewonnen:
-              <span id="statsFreeSpins">0</span>
-            </p>
+          <h3>📊 Deine Statistiken</h3>
 
-            <p>
-              💎 Jackpots geknackt:
-              <span id="statsJackpots">0</span>
-            </p>
+          <p>
+            🎰 Spins insgesamt:
+            <span id="statsSpins">0</span>
+          </p>
 
-          </div>
+          <p>
+            ✅ Gewinne insgesamt:
+            <span id="statsWins">0</span>
+          </p>
+
+          <p>
+            💰 Gewonnene Coins:
+            <span id="statsCoinsWon">0</span>
+          </p>
+
+          <p>
+            🏆 Größter Gewinn:
+            <span id="statsBiggestWin">0</span>
+          </p>
+
+          <p>
+            🎁 Freispiele gewonnen:
+            <span id="statsFreeSpins">0</span>
+          </p>
+
+          <p>
+            💎 Jackpots geknackt:
+            <span id="statsJackpots">0</span>
+          </p>
 
         </div>
 
@@ -345,32 +249,91 @@
 
   </div>
 
-  <!-- ACHIEVEMENT POPUP -->
-  <div id="achievementPopup" class="achievement-popup hidden">
+</div>
 
-    <div class="achievement-popup-content">
+<!-- BIG WIN -->
+<div id="bigWinOverlay" class="big-win hidden">
 
-      <div class="achievement-popup-title">
-        🏆 ACHIEVEMENT FREIGESCHALTET
-      </div>
+  <div class="big-win-text">
+    BIG WIN
+  </div>
 
-      <div id="achievementPopupName" class="achievement-popup-name">
-        Achievement
-      </div>
+  <div
+    id="bigWinAmount"
+    class="big-win-amount"
+  >
+    +0
+  </div>
 
-      <div id="achievementPopupReward" class="achievement-popup-reward">
-        Belohnung
-      </div>
+</div>
 
+<!-- JACKPOT -->
+<div id="jackpotOverlay" class="jackpot-overlay hidden">
+
+  <div class="jackpot-box">
+
+    <h2>💎 JACKPOT 💎</h2>
+
+    <p>
+      Du hast den Jackpot geknackt!
+    </p>
+
+    <h1 id="jackpotWinAmount">
+      0
+    </h1>
+
+  </div>
+
+</div>
+
+<!-- FREESPIN SUMMARY -->
+<div
+  id="freeSpinSummary"
+  class="free-spin-summary hidden"
+>
+
+  <div class="free-spin-summary-box">
+
+    <h2>🎁 Freispiele beendet</h2>
+
+    <p>
+      Gesamtgewinn:
+    </p>
+
+    <h1 id="freeSpinTotalWin">
+      0
+    </h1>
+
+  </div>
+
+</div>
+
+<!-- ACHIEVEMENT POPUP -->
+<div
+  id="achievementPopup"
+  class="achievement-popup hidden"
+>
+
+  <div class="achievement-popup-content">
+
+    <div class="achievement-popup-title">
+      🏆 Achievement freigeschaltet!
+    </div>
+
+    <div
+      id="achievementPopupName"
+      class="achievement-popup-name"
+    >
+      Achievement
+    </div>
+
+    <div
+      id="achievementPopupReward"
+      class="achievement-popup-reward"
+    >
+      Belohnung
     </div>
 
   </div>
 
-  <!-- JAVASCRIPT -->
-  <script src="js/script.js"></script>
-  <script src="js/bonus.js"></script>
-  <script src="js/loot.js"></script>
-
-</body>
-
-</html>
+</div>
