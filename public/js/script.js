@@ -923,7 +923,9 @@ async function loadLiveFeed() {
     div.innerHTML = `
       <div class="feed-tag">${tag}</div>
       <div class="feed-message">${item.message}</div>
-      <div class="feed-time">${time}</div>
+      <div class="feed-time" data-timestamp="${item.created_at}">
+        ${time}
+      </div>
     `;
 
     box.prepend(div);
@@ -1339,4 +1341,16 @@ function timeAgo(dateString) {
   if (seconds < 86400) return `vor ${Math.floor(seconds / 3600)}h`;
 
   return `vor ${Math.floor(seconds / 86400)}d`;
+}
+
+setInterval(updateFeedTimes, 1000);
+
+function updateFeedTimes() {
+  document.querySelectorAll(".feed-time").forEach(el => {
+    const timestamp = el.dataset.timestamp;
+
+    if (!timestamp) return;
+
+    el.innerText = timeAgo(timestamp);
+  });
 }
