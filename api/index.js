@@ -32,30 +32,225 @@ app.use(cookieSession({
 }));
 
 const ACHIEVEMENTS = [
-  { id: "rookie_spinner", name: "Rookie Spinner", category: "Spins", requirement: "100 Spins", reward: "Bronze Badge" },
-  { id: "reel_addict", name: "Reel Addict", category: "Spins", requirement: "500 Spins", reward: "Silber Badge" },
-  { id: "spin_machine", name: "Spin Machine", category: "Spins", requirement: "1.000 Spins", reward: "Titel" },
-  { id: "neon_gambler", name: "Neon Gambler", category: "Spins", requirement: "5.000 Spins", reward: "Profilrahmen" },
-  { id: "eternal_spinner", name: "Eternal Spinner", category: "Spins", requirement: "10.000 Spins", reward: "Animierter Rahmen" },
 
-  { id: "high_roller", name: "High Roller", category: "Coins", requirement: "1 Mio. gewonnene Coins", reward: "Gold Titel" },
-  { id: "coin_tycoon", name: "Coin Tycoon", category: "Coins", requirement: "5 Mio. gewonnene Coins", reward: "Profilfarbe" },
-  { id: "fortune_hunter", name: "Fortune Hunter", category: "Coins", requirement: "10 Mio. gewonnene Coins", reward: "Neon Badge" },
-  { id: "king_of_luck", name: "King of Luck", category: "Coins", requirement: "25 Mio. gewonnene Coins", reward: "Rahmen" },
-  { id: "slot_emperor", name: "Slot Emperor", category: "Coins", requirement: "50 Mio. gewonnene Coins", reward: "Animierter Titel" },
-  { id: "house_edge", name: "The House Edge", category: "Coins", requirement: "75 Mio. gewonnene Coins", reward: "Spezialeffekt" },
-  { id: "casino_legend", name: "Casino Legend", category: "Coins", requirement: "100 Mio. gewonnene Coins", reward: "Legendary Aura" },
+  // SPINS
 
-  { id: "lucky_scatter", name: "Lucky Scatter", category: "Freispiele", requirement: "100 Freispiele", reward: "Badge" },
-  { id: "free_spin_fanatic", name: "Free Spin Fanatic", category: "Freispiele", requirement: "250 Freispiele", reward: "Titel" },
-  { id: "scatter_collector", name: "Scatter Collector", category: "Freispiele", requirement: "500 Freispiele", reward: "Rahmen" },
-  { id: "wild_fortune", name: "Wild Fortune", category: "Freispiele", requirement: "750 Freispiele", reward: "Spezialfarbe" },
-  { id: "scatter_god", name: "Scatter God", category: "Freispiele", requirement: "1.000 Freispiele", reward: "Legendary Titel" },
+  {
+    id: "rookie_spinner",
+    name: "Rookie Spinner",
+    category: "Spins",
+    requirement: "100 Spins",
+    reward: "Bronze Badge",
+    rarity: "common",
+    title: null
+  },
 
-  { id: "jackpot_hunter", name: "Jackpot Hunter", category: "Jackpot", requirement: "1 Jackpot", reward: "Badge" },
-  { id: "jackpot_addict", name: "Jackpot Addict", category: "Jackpot", requirement: "5 Jackpots", reward: "Titel" },
-  { id: "mega_winner", name: "Mega Winner", category: "Jackpot", requirement: "10 Jackpots", reward: "Animierter Rahmen" },
-  { id: "god_of_fortune", name: "God of Fortune", category: "Jackpot", requirement: "25 Jackpots", reward: "Mythic Titel" }
+  {
+    id: "reel_addict",
+    name: "Reel Addict",
+    category: "Spins",
+    requirement: "500 Spins",
+    reward: "Silber Badge",
+    rarity: "rare",
+    title: null
+  },
+
+  {
+    id: "spin_machine",
+    name: "Spin Machine",
+    category: "Spins",
+    requirement: "1.000 Spins",
+    reward: "Titel",
+    rarity: "epic",
+    title: "Spin Machine"
+  },
+
+  {
+    id: "neon_gambler",
+    name: "Neon Gambler",
+    category: "Spins",
+    requirement: "5.000 Spins",
+    reward: "Profilrahmen",
+    rarity: "legendary",
+    title: "Neon Gambler"
+  },
+
+  {
+    id: "eternal_spinner",
+    name: "Eternal Spinner",
+    category: "Spins",
+    requirement: "10.000 Spins",
+    reward: "Animierter Rahmen",
+    rarity: "mythic",
+    title: "Eternal Spinner"
+  },
+
+  // COINS
+
+  {
+    id: "high_roller",
+    name: "High Roller",
+    category: "Coins",
+    requirement: "1 Mio. gewonnene Coins",
+    reward: "Gold Titel",
+    rarity: "rare",
+    title: "High Roller"
+  },
+
+  {
+    id: "coin_tycoon",
+    name: "Coin Tycoon",
+    category: "Coins",
+    requirement: "5 Mio. gewonnene Coins",
+    reward: "Profilfarbe",
+    rarity: "epic",
+    title: "Coin Tycoon"
+  },
+
+  {
+    id: "fortune_hunter",
+    name: "Fortune Hunter",
+    category: "Coins",
+    requirement: "10 Mio. gewonnene Coins",
+    reward: "Neon Badge",
+    rarity: "epic",
+    title: "Fortune Hunter"
+  },
+
+  {
+    id: "king_of_luck",
+    name: "King of Luck",
+    category: "Coins",
+    requirement: "25 Mio. gewonnene Coins",
+    reward: "Rahmen",
+    rarity: "legendary",
+    title: "King of Luck"
+  },
+
+  {
+    id: "slot_emperor",
+    name: "Slot Emperor",
+    category: "Coins",
+    requirement: "50 Mio. gewonnene Coins",
+    reward: "Animierter Titel",
+    rarity: "legendary",
+    title: "Slot Emperor"
+  },
+
+  {
+    id: "house_edge",
+    name: "The House Edge",
+    category: "Coins",
+    requirement: "75 Mio. gewonnene Coins",
+    reward: "Spezialeffekt",
+    rarity: "mythic",
+    title: "The House Edge"
+  },
+
+  {
+    id: "casino_legend",
+    name: "Casino Legend",
+    category: "Coins",
+    requirement: "100 Mio. gewonnene Coins",
+    reward: "Legendary Aura",
+    rarity: "mythic",
+    title: "Casino Legend"
+  },
+
+  // FREISPIELE
+
+  {
+    id: "lucky_scatter",
+    name: "Lucky Scatter",
+    category: "Freispiele",
+    requirement: "100 Freispiele",
+    reward: "Badge",
+    rarity: "common",
+    title: null
+  },
+
+  {
+    id: "free_spin_fanatic",
+    name: "Free Spin Fanatic",
+    category: "Freispiele",
+    requirement: "250 Freispiele",
+    reward: "Titel",
+    rarity: "rare",
+    title: "Free Spin Fanatic"
+  },
+
+  {
+    id: "scatter_collector",
+    name: "Scatter Collector",
+    category: "Freispiele",
+    requirement: "500 Freispiele",
+    reward: "Rahmen",
+    rarity: "epic",
+    title: "Scatter Collector"
+  },
+
+  {
+    id: "wild_fortune",
+    name: "Wild Fortune",
+    category: "Freispiele",
+    requirement: "750 Freispiele",
+    reward: "Spezialfarbe",
+    rarity: "legendary",
+    title: "Wild Fortune"
+  },
+
+  {
+    id: "scatter_god",
+    name: "Scatter God",
+    category: "Freispiele",
+    requirement: "1.000 Freispiele",
+    reward: "Legendary Titel",
+    rarity: "mythic",
+    title: "Scatter God"
+  },
+
+  // JACKPOT
+
+  {
+    id: "jackpot_hunter",
+    name: "Jackpot Hunter",
+    category: "Jackpot",
+    requirement: "1 Jackpot",
+    reward: "Badge",
+    rarity: "rare",
+    title: "Jackpot Hunter"
+  },
+
+  {
+    id: "jackpot_addict",
+    name: "Jackpot Addict",
+    category: "Jackpot",
+    requirement: "5 Jackpots",
+    reward: "Titel",
+    rarity: "epic",
+    title: "Jackpot Addict"
+  },
+
+  {
+    id: "mega_winner",
+    name: "Mega Winner",
+    category: "Jackpot",
+    requirement: "10 Jackpots",
+    reward: "Animierter Rahmen",
+    rarity: "legendary",
+    title: "Mega Winner"
+  },
+
+  {
+    id: "god_of_fortune",
+    name: "God of Fortune",
+    category: "Jackpot",
+    requirement: "25 Jackpots",
+    reward: "Mythic Titel",
+    rarity: "mythic",
+    title: "God of Fortune"
+  }
+
 ];
 
 app.get("/auth/discord", (req, res) => {
