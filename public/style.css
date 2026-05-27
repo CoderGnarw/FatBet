@@ -1837,6 +1837,6 @@ button:hover::before {
   transform: rotateY(180deg);
 }
 
-.lootbox-card-back * {
-  transform: rotateY(180deg);
+.lootbox-card-inner {
+  transform-style: preserve-3d;
 }
