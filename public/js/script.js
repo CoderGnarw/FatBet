@@ -43,7 +43,6 @@ let knownFeedIds = [];
 
 let currentStats = null;
 let achievementsCache = [];
-
 let selectedTitle = null;
 
 const paylines = [
@@ -79,6 +78,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadAchievements();
 
   setInterval(loadLiveFeed, 5000);
+  setInterval(updateFeedTimes, 1000);
 });
 
 async function checkLogin() {
@@ -122,7 +122,7 @@ async function checkLogin() {
     jackpots_won: user.jackpots_won || 0,
     free_spins_won: user.free_spins_won || 0
   };
-  
+
   updateUI();
   updateLeaderboard();
   updateStatsUI(currentStats);
@@ -130,6 +130,8 @@ async function checkLogin() {
 
 function createSlotGrid() {
   const slotGrid = document.getElementById("slotGrid");
+  if (!slotGrid) return;
+
   slotGrid.innerHTML = "";
 
   for (let row = 0; row < rows; row++) {
@@ -152,7 +154,9 @@ function fillGridWithRandomSymbols() {
     for (let reel = 0; reel < reels; reel++) {
       const symbol = rand();
       currentGrid[row][reel] = symbol;
-      document.getElementById(`slot-${row}-${reel}`).innerText = symbol;
+
+      const cell = document.getElementById(`slot-${row}-${reel}`);
+      if (cell) cell.innerText = symbol;
     }
   }
 }
@@ -229,21 +233,15 @@ async function spin() {
   }
 
   if (totalWin > 0) {
+    coins += totalWin;
+    highlightWinningLines(winData.winningLines);
 
-  if (totalWin >= currentBet * 25) {
-    showBigWin(totalWin);
+    if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
+      playSound(jackpotSound);
+    } else {
+      playSound(winSound);
+    }
   }
-
-  coins += totalWin;
-
-  highlightWinningLines(winData.winningLines);
-
-  if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
-    playSound(jackpotSound);
-  } else {
-    playSound(winSound);
-  }
-}
 
   if (totalWin >= bet * 25) {
     await addLiveFeedMessage(
@@ -300,7 +298,6 @@ function animateReelsSequentially() {
 
           cell.innerText = currentGrid[row][reel];
           cell.classList.remove("spinning");
-
           cell.classList.add("reel-stop");
 
           setTimeout(() => {
@@ -348,7 +345,6 @@ function renderGrid() {
       const cell = document.getElementById(`slot-${row}-${reel}`);
 
       cell.innerText = currentGrid[row][reel];
-
       cell.classList.remove("wild");
 
       if (currentGrid[row][reel] === wildSymbol) {
@@ -546,10 +542,6 @@ function rand() {
   return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
-function randRegularSymbol() {
-  return regularSymbols[Math.floor(Math.random() * regularSymbols.length)];
-}
-
 function randRegularOrWildSymbol() {
   const pool = [...regularSymbols, wildSymbol];
   return pool[Math.floor(Math.random() * pool.length)];
@@ -598,7 +590,8 @@ function updateUI() {
 }
 
 function result(text) {
-  document.getElementById("result").innerText = text;
+  const resultBox = document.getElementById("result");
+  if (resultBox) resultBox.innerText = text;
 }
 
 async function save() {
@@ -609,7 +602,7 @@ async function save() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      coins: coins
+      coins
     })
   });
 
@@ -621,6 +614,8 @@ async function updateLeaderboard() {
   const board = await res.json();
 
   const list = document.getElementById("leaderboard");
+  if (!list) return;
+
   list.innerHTML = "";
 
   board.forEach((user, index) => {
@@ -631,13 +626,19 @@ async function updateLeaderboard() {
     if (index === 1) li.classList.add("rank-2");
     if (index === 2) li.classList.add("rank-3");
 
-    const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+    const medal =
+      index === 0 ? "🥇" :
+      index === 1 ? "🥈" :
+      index === 2 ? "🥉" :
+      `#${index + 1}`;
+
     const name = user.display_name || user.username;
     const title = user.selected_title ? `👑 ${user.selected_title}` : "";
 
     li.innerHTML = `
       <div class="leaderboard-left">
         <span class="leaderboard-rank">${medal}</span>
+
         <div>
           <div class="leaderboard-name">${name}</div>
           <div class="leaderboard-title">${title}</div>
@@ -658,32 +659,59 @@ function playSound(sound) {
   sound.play().catch(() => {});
 }
 
-async function showBigWin(totalWin) {
-  const multiplier = totalWin / bet;
+async function showBigWin(amount) {
+  if (amount <= 0) return;
+
+  const multiplier = amount / bet;
 
   if (multiplier < 25) return;
 
   const overlay = document.getElementById("bigWinOverlay");
-  const text = document.getElementById("bigWinText");
-  const amount = document.getElementById("bigWinAmount");
+  const amountText = document.getElementById("bigWinAmount");
+  const titleText = document.getElementById("bigWinText");
 
-  if (!overlay || !text || !amount) return;
+  if (!overlay || !amountText) return;
 
-  if (multiplier >= 100) {
-    text.innerText = "💎 FAT WIN 💎";
-  } else if (multiplier >= 50) {
-    text.innerText = "🔥 MEGA WIN 🔥";
-  } else {
-    text.innerText = "🎉 BIG WIN 🎉";
+  if (titleText) {
+    if (multiplier >= 100) {
+      titleText.innerText = "💎 FAT WIN 💎";
+    } else if (multiplier >= 50) {
+      titleText.innerText = "🔥 MEGA WIN 🔥";
+    } else {
+      titleText.innerText = "💎 BIG WIN 💎";
+    }
   }
 
-  amount.innerText = `+${totalWin} Coins`;
+  amountText.innerText = `+${formatNumber(amount)} Coins`;
 
   overlay.classList.remove("hidden");
+  createFlyingCoins();
 
-  await new Promise(resolve => setTimeout(resolve, 2600));
+  await new Promise(resolve => setTimeout(resolve, 2200));
 
   overlay.classList.add("hidden");
+}
+
+function createFlyingCoins() {
+  const container = document.getElementById("flyingCoins");
+  if (!container) return;
+
+  for (let i = 0; i < 40; i++) {
+    const coin = document.createElement("div");
+
+    coin.classList.add("coin-particle");
+    coin.innerText = "🪙";
+
+    coin.style.left = `${Math.random() * 100}%`;
+    coin.style.animationDuration = `${1.2 + Math.random() * 1.2}s`;
+    coin.style.fontSize = `${22 + Math.random() * 18}px`;
+
+    container.appendChild(coin);
+
+    setTimeout(() => {
+      coin.remove();
+    }, 2500);
+  }
 }
 
 function showWinDetails(winningLines, scatterData) {
@@ -830,12 +858,12 @@ function animateCoins(from, to) {
 
     const currentValue = Math.floor(from + (to - from) * progress);
 
-    coinsElement.innerText = currentValue;
+    coinsElement.innerText = formatNumber(currentValue);
 
     if (progress < 1) {
       requestAnimationFrame(update);
     } else {
-      coinsElement.innerText = to;
+      coinsElement.innerText = formatNumber(to);
       displayedCoins = to;
     }
   }
@@ -853,7 +881,7 @@ async function loadJackpot() {
   const jackpotAmount = document.getElementById("jackpotAmount");
 
   if (jackpotAmount) {
-    jackpotAmount.innerText = data.amount;
+    jackpotAmount.innerText = formatNumber(data.amount);
   }
 }
 
@@ -875,7 +903,7 @@ async function rollJackpot(isFreeSpin) {
   const jackpotAmount = document.getElementById("jackpotAmount");
 
   if (jackpotAmount && data.newJackpotAmount !== undefined) {
-    jackpotAmount.innerText = data.newJackpotAmount;
+    jackpotAmount.innerText = formatNumber(data.newJackpotAmount);
   }
 
   return data;
@@ -887,7 +915,7 @@ function showJackpotOverlay(amount) {
 
   if (!overlay || !text) return;
 
-  text.innerText = `Du hast ${amount} Coins gewonnen!`;
+  text.innerText = `Du hast ${formatNumber(amount)} Coins gewonnen!`;
   overlay.classList.remove("hidden");
 }
 
@@ -923,13 +951,12 @@ async function loadLiveFeed() {
     else if (isBigWin) div.classList.add("feed-bigwin");
 
     const tag = isJackpot ? "💰 JACKPOT" : isBigWin ? "💎 BIG WIN" : "📢 WIN";
-    
     const time = item.created_at ? timeAgo(item.created_at) : "";
 
     div.innerHTML = `
       <div class="feed-tag">${tag}</div>
       <div class="feed-message">${item.message}</div>
-      <div class="feed-time" data-timestamp="${item.created_at}">
+      <div class="feed-time" data-timestamp="${item.created_at || ""}">
         ${time}
       </div>
     `;
@@ -955,22 +982,39 @@ async function addLiveFeedMessage(message) {
   loadLiveFeed();
 }
 
-async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
+function updateFeedTimes() {
+  document.querySelectorAll(".feed-time").forEach(el => {
+    const timestamp = el.dataset.timestamp;
 
+    if (!timestamp) return;
+
+    el.innerText = timeAgo(timestamp);
+  });
+}
+
+function timeAgo(dateString) {
+  const date = new Date(dateString);
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+  if (seconds < 60) return `vor ${seconds}s`;
+  if (seconds < 3600) return `vor ${Math.floor(seconds / 60)}min`;
+  if (seconds < 86400) return `vor ${Math.floor(seconds / 3600)}h`;
+
+  return `vor ${Math.floor(seconds / 86400)}d`;
+}
+
+async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
   if (!currentStats) return;
 
   currentStats.spins_total += 1;
 
   if (totalWin > 0) {
-
     currentStats.wins_total += 1;
-
     currentStats.coins_won_total += totalWin;
 
     if (totalWin > currentStats.biggest_win) {
       currentStats.biggest_win = totalWin;
     }
-
   }
 
   if (freeSpinsWon > 0) {
@@ -999,11 +1043,26 @@ async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
   const data = await res.json();
 
   if (data.unlockedAchievements) {
-    await handleAchievementUnlocks(
-      data.unlockedAchievements
-    );
+    await handleAchievementUnlocks(data.unlockedAchievements);
   }
+}
 
+function updateStatsUI(user) {
+  setText("statsSpins", user.spins_total || 0);
+  setText("statsWins", user.wins_total || 0);
+  setText("statsCoinsWon", formatNumber(user.coins_won_total || 0));
+  setText("statsBiggestWin", formatNumber(user.biggest_win || 0));
+  setText("statsFreeSpins", user.free_spins_won || 0);
+  setText("statsJackpots", user.jackpots_won || 0);
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = value;
+}
+
+function formatNumber(number) {
+  return Number(number).toLocaleString("de-DE");
 }
 
 function updateProfileUI(user) {
@@ -1070,29 +1129,12 @@ function closeSettingsOverlay() {
   document.getElementById("settingsOverlay").classList.add("hidden");
 }
 
-function updateStatsUI(user) {
-  setText("statsSpins", user.spins_total || 0);
-  setText("statsWins", user.wins_total || 0);
-  setText("statsCoinsWon", formatNumber(user.coins_won_total || 0));
-  setText("statsBiggestWin", formatNumber(user.biggest_win || 0));
-  setText("statsFreeSpins", user.free_spins_won || 0);
-  setText("statsJackpots", user.jackpots_won || 0);
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.innerText = value;
-}
-
-function formatNumber(number) {
-  return Number(number).toLocaleString("de-DE");
-}
-
 async function loadAchievements() {
-
   const res = await fetch("/achievements", {
     credentials: "include"
   });
+
+  if (!res.ok) return;
 
   const achievements = await res.json();
 
@@ -1100,7 +1142,6 @@ async function loadAchievements() {
 
   renderAchievements();
   renderTitleOptions();
-
 }
 
 function renderAchievements() {
@@ -1243,13 +1284,11 @@ function getAchievementProgress(achievement) {
 }
 
 async function handleAchievementUnlocks(unlockedAchievements) {
-
   if (!unlockedAchievements || unlockedAchievements.length === 0) {
     return;
   }
 
   for (const achievement of unlockedAchievements) {
-
     showAchievementPopup(achievement);
 
     const cached = achievementsCache.find(
@@ -1266,15 +1305,11 @@ async function handleAchievementUnlocks(unlockedAchievements) {
     await new Promise(resolve =>
       setTimeout(resolve, 2600)
     );
-
   }
-
 }
 
 function showAchievementPopup(achievement) {
-
   const popup = document.getElementById("achievementPopup");
-
   const name = document.getElementById("achievementPopupName");
   const reward = document.getElementById("achievementPopupReward");
 
@@ -1288,7 +1323,6 @@ function showAchievementPopup(achievement) {
   setTimeout(() => {
     popup.classList.add("hidden");
   }, 2200);
-
 }
 
 function renderTitleOptions() {
@@ -1336,78 +1370,6 @@ async function saveSelectedTitle() {
 
   const data = await res.json();
   selectedTitle = data.selected_title;
-}
 
-function timeAgo(dateString) {
-  const date = new Date(dateString);
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-
-  if (seconds < 60) return `vor ${seconds}s`;
-  if (seconds < 3600) return `vor ${Math.floor(seconds / 60)}min`;
-  if (seconds < 86400) return `vor ${Math.floor(seconds / 3600)}h`;
-
-  return `vor ${Math.floor(seconds / 86400)}d`;
-}
-
-setInterval(updateFeedTimes, 1000);
-
-function updateFeedTimes() {
-  document.querySelectorAll(".feed-time").forEach(el => {
-    const timestamp = el.dataset.timestamp;
-
-    if (!timestamp) return;
-
-    el.innerText = timeAgo(timestamp);
-  });
-}
-
-async function showBigWin(amount) {
-  if (amount <= 0) return;
-
-  const multiplier = amount / bet;
-
-  if (multiplier < 25) return;
-
-  const overlay = document.getElementById("bigWinOverlay");
-  const amountText = document.getElementById("bigWinAmount");
-
-  if (!overlay || !amountText) return;
-
-  amountText.innerText = `+${formatNumber(amount)} Coins`;
-
-  overlay.classList.remove("hidden");
-
-  createFlyingCoins();
-
-  await new Promise(resolve => setTimeout(resolve, 2200));
-
-  overlay.classList.add("hidden");
-}
-
-function createFlyingCoins() {
-
-  const container = document.getElementById("flyingCoins");
-
-  for (let i = 0; i < 40; i++) {
-
-    const coin = document.createElement("div");
-
-    coin.classList.add("coin-particle");
-
-    coin.innerText = "🪙";
-
-    coin.style.left = `${Math.random() * 100}%`;
-
-    coin.style.animationDuration =
-      `${1.2 + Math.random() * 1.2}s`;
-
-    coin.style.fontSize =
-      `${22 + Math.random() * 18}px`;
-
-    container.appendChild(coin);
-
-    setTimeout(() => {
-      coin.remove();
-    }, 2500);
-  }
+  updateLeaderboard();
 }
