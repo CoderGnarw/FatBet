@@ -787,3 +787,220 @@ button:hover {
     transform: translateY(0) scale(1);
   }
 }
+
+/* PANEL HOVER */
+
+.side-panel,
+.slot-machine,
+.settings-left,
+.settings-middle,
+.settings-right {
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.side-panel:hover,
+.slot-machine:hover,
+.settings-left:hover,
+.settings-middle:hover,
+.settings-right:hover {
+
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 0 28px #ff00ff,
+    0 0 56px rgba(255,215,0,0.22);
+
+  border-color: #ff00ff;
+}
+
+/* BUTTON POLISH */
+
+button {
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+button::before {
+
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -120%;
+
+  width: 100%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent,
+      rgba(255,255,255,0.22),
+      transparent
+    );
+
+  transition: left 0.45s ease;
+}
+
+button:hover::before {
+  left: 120%;
+}
+
+/* SLOT HOVER */
+
+.slot {
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.slot:hover {
+
+  transform: scale(1.04);
+
+  border-color: #ff00ff;
+
+  box-shadow:
+    0 0 18px #ff00ff,
+    0 0 36px #ffd700;
+}
+
+/* LEADERBOARD SPECIAL */
+
+#leaderboard li {
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#leaderboard li:hover {
+
+  transform: translateX(6px);
+
+  background:
+    rgba(255,0,255,0.18);
+
+  box-shadow:
+    0 0 14px #ff00ff;
+}
+
+/* LIVE FEED PREMIUM */
+
+.feed-item {
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.feed-item::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.06),
+      transparent
+    );
+
+  transform: translateX(-100%);
+
+  animation: feedShine 3s linear infinite;
+}
+
+@keyframes feedShine {
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ACHIEVEMENT HOVER */
+
+.achievement-card {
+
+  position: relative;
+
+  overflow: hidden;
+}
+
+.achievement-card::before {
+
+  content: "";
+
+  position: absolute;
+
+  inset: -2px;
+
+  background:
+    linear-gradient(
+      130deg,
+      transparent,
+      rgba(255,255,255,0.08),
+      transparent
+    );
+
+  opacity: 0;
+
+  transition: opacity 0.25s ease;
+}
+
+.achievement-card:hover::before {
+  opacity: 1;
+}
+
+.achievement-card:hover {
+
+  transform:
+    translateY(-4px)
+    scale(1.01);
+}
+
+/* JACKPOT PULSE */
+
+.jackpot-display {
+
+  animation:
+    jackpotPulse 3s ease-in-out infinite;
+}
+
+@keyframes jackpotPulse {
+
+  0% {
+
+    box-shadow:
+      0 0 16px #ff00ff,
+      0 0 36px rgba(255,215,0,0.35);
+  }
+
+  50% {
+
+    box-shadow:
+      0 0 24px #ff00ff,
+      0 0 52px rgba(255,215,0,0.55);
+  }
+
+  100% {
+
+    box-shadow:
+      0 0 16px #ff00ff,
+      0 0 36px rgba(255,215,0,0.35);
+  }
+}
