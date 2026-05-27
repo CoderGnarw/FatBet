@@ -1832,3 +1832,11 @@ button:hover::before {
     transform: translateY(0);
   }
 }
+
+.lootbox-card-back {
+  transform: rotateY(180deg);
+}
+
+.lootbox-card-back * {
+  transform: rotateY(180deg);
+}
