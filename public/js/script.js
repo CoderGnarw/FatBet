@@ -1490,7 +1490,7 @@ function revealLootboxCard(event) {
 
   if (raritySound) {
     raritySound.currentTime = 0;
-    raritySound.volume = 0.6;
+    raritySound.volume = 0.2;
     setTimeout(() => {
       raritySound.play().catch(() => {});
     }, 150);
