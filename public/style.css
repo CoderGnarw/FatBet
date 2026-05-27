@@ -1948,3 +1948,39 @@ button:hover::before {
   75% { transform: translate(-3px, 2px); }
   100% { transform: translate(0px, 0px); }
 }
+
+.lootbox-card {
+  width: 360px;
+  height: 500px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.lootbox-card-front,
+.lootbox-card-back {
+  justify-content: center;
+  gap: 18px;
+  padding: 34px;
+  box-sizing: border-box;
+}
+
+.lootbox-card-back .lootbox-rarity {
+  font-size: 46px;
+  text-align: center;
+  z-index: 2;
+}
+
+.lootbox-card-back .lootbox-reward-text {
+  font-size: 34px;
+  text-align: center;
+  z-index: 2;
+}
+
+.lootbox-card.revealed .lootbox-card-inner {
+  transform: rotateY(180deg);
+}
+
+.lootbox-continue {
+  bottom: 6vh;
+}
