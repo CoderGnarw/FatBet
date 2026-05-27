@@ -483,7 +483,9 @@ body::before {
   gap: 14px;
 
   max-height: 420px;
+
   overflow-y: auto;
+  overflow-x: hidden;
 
   padding-right: 6px;
 }
@@ -522,7 +524,7 @@ body::before {
 }
 
 .achievement-card:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
 }
 
 .achievement-name {
@@ -655,4 +657,34 @@ body::before {
   text-align: left;
 
   padding-left: 4px;
+}
+
+.achievement-progress {
+  margin-top: 10px;
+  width: 100%;
+  height: 10px;
+
+  border-radius: 999px;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+}
+
+.achievement-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+
+  background:
+    linear-gradient(90deg, #ff00ff, #ffd700, #00ffd5);
+
+  box-shadow:
+    0 0 10px #ff00ff,
+    0 0 18px #ffd700;
+}
+
+.achievement-progress-text {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #00ffd5;
 }

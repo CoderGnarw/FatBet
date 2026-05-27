@@ -1046,7 +1046,6 @@ async function loadAchievements() {
 }
 
 function renderAchievements() {
-
   const list = document.getElementById("achievementsList");
 
   if (!list) return;
@@ -1054,18 +1053,14 @@ function renderAchievements() {
   list.innerHTML = "";
 
   const categories = {
-
     "Spins": "🎰 Spin Achievements",
     "Coins": "💰 Win Achievements",
     "Freispiele": "🎁 Freispiele Achievements",
     "Jackpot": "💎 Jackpot Achievements"
-
   };
 
   Object.entries(categories).forEach(([key, title]) => {
-
     const section = document.createElement("div");
-
     section.classList.add("achievement-category-section");
 
     section.innerHTML = `
@@ -1079,9 +1074,9 @@ function renderAchievements() {
     );
 
     filtered.forEach(achievement => {
+      const progressData = getAchievementProgress(achievement);
 
       const card = document.createElement("div");
-
       card.classList.add("achievement-card");
 
       if (achievement.unlocked) {
@@ -1099,19 +1094,90 @@ function renderAchievements() {
           🎯 ${achievement.requirement}
         </div>
 
+        <div class="achievement-progress">
+          <div
+            class="achievement-progress-fill"
+            style="width: ${progressData.percent}%"
+          ></div>
+        </div>
+
+        <div class="achievement-progress-text">
+          ${formatNumber(progressData.current)} / ${formatNumber(progressData.target)}
+        </div>
+
         <div class="achievement-reward">
           🎁 ${achievement.reward}
         </div>
       `;
 
       section.appendChild(card);
-
     });
 
     list.appendChild(section);
-
   });
+}
 
+function getAchievementProgress(achievement) {
+  if (!currentStats) {
+    return {
+      current: 0,
+      target: 1,
+      percent: 0
+    };
+  }
+
+  let current = 0;
+  let target = 1;
+
+  if (achievement.category === "Spins") {
+    current = currentStats.spins_total || 0;
+
+    if (achievement.id === "rookie_spinner") target = 100;
+    if (achievement.id === "reel_addict") target = 500;
+    if (achievement.id === "spin_machine") target = 1000;
+    if (achievement.id === "neon_gambler") target = 5000;
+    if (achievement.id === "eternal_spinner") target = 10000;
+  }
+
+  if (achievement.category === "Coins") {
+    current = currentStats.coins_won_total || 0;
+
+    if (achievement.id === "high_roller") target = 1000000;
+    if (achievement.id === "coin_tycoon") target = 5000000;
+    if (achievement.id === "fortune_hunter") target = 10000000;
+    if (achievement.id === "king_of_luck") target = 25000000;
+    if (achievement.id === "slot_emperor") target = 50000000;
+    if (achievement.id === "house_edge") target = 75000000;
+    if (achievement.id === "casino_legend") target = 100000000;
+  }
+
+  if (achievement.category === "Freispiele") {
+    current = currentStats.free_spins_won || 0;
+
+    if (achievement.id === "lucky_scatter") target = 100;
+    if (achievement.id === "free_spin_fanatic") target = 250;
+    if (achievement.id === "scatter_collector") target = 500;
+    if (achievement.id === "wild_fortune") target = 750;
+    if (achievement.id === "scatter_god") target = 1000;
+  }
+
+  if (achievement.category === "Jackpot") {
+    current = currentStats.jackpots_won || 0;
+
+    if (achievement.id === "jackpot_hunter") target = 1;
+    if (achievement.id === "jackpot_addict") target = 5;
+    if (achievement.id === "mega_winner") target = 10;
+    if (achievement.id === "god_of_fortune") target = 25;
+  }
+
+  const cappedCurrent = Math.min(current, target);
+  const percent = Math.floor((cappedCurrent / target) * 100);
+
+  return {
+    current: cappedCurrent,
+    target,
+    percent
+  };
 }
 
 async function handleAchievementUnlocks(unlockedAchievements) {
