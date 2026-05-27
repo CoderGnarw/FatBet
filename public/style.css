@@ -2026,3 +2026,40 @@ button:hover::before {
   justify-content: center;
   align-items: center;
 }
+
+.admin-panel {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(60, 0, 80, 0.9),
+      rgba(5, 5, 5, 0.95)
+    );
+
+  border: 2px solid #ff00ff;
+
+  box-shadow:
+    0 0 18px #ff00ff,
+    inset 0 0 16px rgba(255, 0, 255, 0.18);
+}
+
+.admin-panel input,
+.admin-panel button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.admin-panel hr {
+  margin: 18px 0;
+  border: none;
+  border-top: 1px solid rgba(255, 215, 0, 0.35);
+}
+
+#adminStatus {
+  margin-top: 12px;
+  color: #00ffd5;
+  text-shadow: 0 0 10px #00ffd5;
+}

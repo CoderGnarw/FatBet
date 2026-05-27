@@ -179,6 +179,54 @@
             <p>🎁 Freispiele gewonnen: <span id="statsFreeSpins">0</span></p>
             <p>💎 Jackpots geknackt: <span id="statsJackpots">0</span></p>
           </div>
+
+          <div id="adminPanel" class="admin-panel hidden">
+
+            <h3>👑 Admin Panel</h3>
+
+            <input
+              id="adminUsername"
+              type="text"
+              placeholder="Username / Displayname"
+            >
+
+            <input
+              id="adminCoinAmount"
+              type="number"
+              placeholder="Coins +/-"
+            >
+
+            <button onclick="adminAddCoins()">
+              Coins Spieler ändern
+            </button>
+
+            <hr>
+
+            <input
+              id="adminGiveAllAmount"
+              type="number"
+              placeholder="Coins für alle"
+            >
+
+            <button onclick="adminGiveAllCoins()">
+              Allen Coins geben
+            </button>
+
+            <hr>
+
+            <input
+              id="adminJackpotAmount"
+              type="number"
+              placeholder="Jackpot setzen"
+            >
+
+            <button onclick="adminSetJackpot()">
+              Jackpot setzen
+            </button>
+
+            <p id="adminStatus"></p>
+
+          </div>
         </div>
 
       </div>

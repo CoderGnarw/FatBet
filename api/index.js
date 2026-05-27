@@ -693,6 +693,109 @@ function getDiscordAvatarUrl(discordUser) {
   return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
 }
 
+function isAdmin(req) {
+  const adminIds = (process.env.ADMIN_DISCORD_IDS || "")
+    .split(",")
+    .map(id => id.trim());
+
+  return req.session?.user?.discord_id &&
+    adminIds.includes(req.session.user.discord_id);
+}
+
+function requireAdmin(req, res, next) {
+  if (!isAdmin(req)) {
+    return res.status(403).json({
+      error: "Keine Adminrechte."
+    });
+  }
+
+  next();
+}
+
+app.get("/admin/me", requireAdmin, async (req, res) => {
+  res.json({ isAdmin: true });
+});
+
+app.post("/admin/add-coins", requireAdmin, async (req, res) => {
+  const { username, amount } = req.body;
+
+  const addAmount = Number(amount);
+
+  if (!username || !Number.isFinite(addAmount)) {
+    return res.status(400).json({ error: "Ungültige Eingabe." });
+  }
+
+  const { data: user, error: userError } = await supabase
+    .from("users")
+    .select("coins")
+    .or(`username.eq.${username},display_name.eq.${username}`)
+    .single();
+
+  if (userError || !user) {
+    return res.status(404).json({ error: "Spieler nicht gefunden." });
+  }
+
+  const newCoins = user.coins + addAmount;
+
+  await supabase
+    .from("users")
+    .update({ coins: newCoins })
+    .or(`username.eq.${username},display_name.eq.${username}`);
+
+  res.json({
+    success: true,
+    username,
+    coins: newCoins
+  });
+});
+
+app.post("/admin/give-all-coins", requireAdmin, async (req, res) => {
+  const { amount } = req.body;
+
+  const addAmount = Number(amount);
+
+  if (!Number.isFinite(addAmount)) {
+    return res.status(400).json({ error: "Ungültiger Betrag." });
+  }
+
+  const { data: users } = await supabase
+    .from("users")
+    .select("discord_id, coins");
+
+  for (const user of users) {
+    await supabase
+      .from("users")
+      .update({ coins: user.coins + addAmount })
+      .eq("discord_id", user.discord_id);
+  }
+
+  res.json({
+    success: true,
+    added: addAmount,
+    affected: users.length
+  });
+});
+
+app.post("/admin/set-jackpot", requireAdmin, async (req, res) => {
+  const { amount } = req.body;
+
+  const jackpotAmount = Number(amount);
+
+  if (!Number.isFinite(jackpotAmount) || jackpotAmount < 0) {
+    return res.status(400).json({ error: "Ungültiger Jackpot." });
+  }
+
+  await supabase
+    .from("jackpot")
+    .update({ amount: jackpotAmount })
+    .eq("id", 1);
+
+  res.json({
+    success: true,
+    amount: jackpotAmount
+  });
+});
+
 app.post("/profile/title", async (req, res) => {
   if (!req.session || !req.session.user) {
     return res.sendStatus(401);

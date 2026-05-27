@@ -134,6 +134,7 @@ async function checkLogin() {
   updateUI();
   updateLeaderboard();
   updateStatsUI(currentStats);
+  checkAdminPanel();
 }
 
 function createSlotGrid() {
@@ -1544,3 +1545,97 @@ document.addEventListener("click", event => {
 
   overlay.classList.add("hidden");
 });
+
+async function checkAdminPanel() {
+  const res = await fetch("/admin/me", {
+    credentials: "include"
+  });
+
+  const panel = document.getElementById("adminPanel");
+
+  if (!panel) return;
+
+  if (res.ok) {
+    panel.classList.remove("hidden");
+  } else {
+    panel.classList.add("hidden");
+  }
+}
+
+async function adminAddCoins() {
+  const username = document.getElementById("adminUsername").value.trim();
+  const amount = Number(document.getElementById("adminCoinAmount").value);
+
+  const res = await fetch("/admin/add-coins", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `Coins geändert. Neuer Stand: ${formatNumber(data.coins)}`
+      : data.error
+  );
+
+  updateLeaderboard();
+}
+
+async function adminGiveAllCoins() {
+  const amount = Number(document.getElementById("adminGiveAllAmount").value);
+
+  const res = await fetch("/admin/give-all-coins", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `${formatNumber(data.added)} Coins an ${data.affected} Spieler gegeben.`
+      : data.error
+  );
+
+  updateLeaderboard();
+}
+
+async function adminSetJackpot() {
+  const amount = Number(document.getElementById("adminJackpotAmount").value);
+
+  const res = await fetch("/admin/set-jackpot", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ amount })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `Jackpot gesetzt auf ${formatNumber(data.amount)} Coins.`
+      : data.error
+  );
+
+  loadJackpot();
+}
+
+function adminStatus(text) {
+  const status = document.getElementById("adminStatus");
+
+  if (status) {
+    status.innerText = text;
+  }
+}
