@@ -66,6 +66,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   fillGridWithRandomSymbols();
   updateUI();
   await checkLogin();
+  await loadJackpot();
 });
 
 async function checkLogin() {
@@ -172,6 +173,13 @@ async function spin() {
   const scatterData = calculateScatterBonus(isFreeSpin);
 
   let totalWin = winData.totalWin;
+
+  const jackpotData = await rollJackpot(isFreeSpin);
+
+  if (jackpotData.jackpotWon) {
+    totalWin += jackpotData.jackpotWin;
+    showJackpotOverlay(jackpotData.jackpotWin);
+  }
 
   if (isFreeSpin && totalWin > 0) {
     freeSpinTotalWin += totalWin;
@@ -721,5 +729,61 @@ function toggleTurboSpin() {
 
     button.innerText = "⚡ Turbo AUS";
     button.classList.remove("active");
+  }
+}
+
+async function loadJackpot() {
+  const res = await fetch("/jackpot", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+
+  const jackpotAmount = document.getElementById("jackpotAmount");
+
+  if (jackpotAmount) {
+    jackpotAmount.innerText = data.amount;
+  }
+}
+
+async function rollJackpot(isFreeSpin) {
+  const res = await fetch("/jackpot", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      bet,
+      isFreeSpin
+    })
+  });
+
+  const data = await res.json();
+
+  const jackpotAmount = document.getElementById("jackpotAmount");
+
+  if (jackpotAmount && data.newJackpotAmount !== undefined) {
+    jackpotAmount.innerText = data.newJackpotAmount;
+  }
+
+  return data;
+}
+
+function showJackpotOverlay(amount) {
+  const overlay = document.getElementById("jackpotOverlay");
+  const text = document.getElementById("jackpotWinText");
+
+  if (!overlay || !text) return;
+
+  text.innerText = `Du hast ${amount} Coins gewonnen!`;
+  overlay.classList.remove("hidden");
+}
+
+function hideJackpotOverlay() {
+  const overlay = document.getElementById("jackpotOverlay");
+
+  if (overlay) {
+    overlay.classList.add("hidden");
   }
 }

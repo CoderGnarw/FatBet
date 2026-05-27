@@ -19,6 +19,10 @@
     {
       "source": "/logout",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/jackpot",
+      "destination": "/api/index.js"
     }
   ]
 }

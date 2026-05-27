@@ -205,4 +205,78 @@ app.get("/logout", (req, res) => {
   res.redirect(process.env.FRONTEND_URL);
 });
 
+app.get("/jackpot", async (req, res) => {
+  const { data, error } = await supabase
+    .from("jackpot")
+    .select("amount")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return res.json({ amount: 0 });
+  }
+
+  res.json({ amount: data.amount });
+});
+
+app.post("/jackpot", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { bet, isFreeSpin } = req.body;
+
+  if (isFreeSpin) {
+    return res.json({
+      contribution: 0,
+      jackpotWon: false,
+      jackpotWin: 0
+    });
+  }
+
+  const contribution = Math.max(1, Math.floor(bet * 0.02));
+
+  const { data, error } = await supabase
+    .from("jackpot")
+    .select("amount")
+    .eq("id", 1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
+
+  const newAmount = data.amount + contribution;
+  const jackpotChance = 0.002;
+  const jackpotWon = Math.random() < jackpotChance;
+
+  if (jackpotWon) {
+    await supabase
+      .from("jackpot")
+      .update({ amount: 10000 })
+      .eq("id", 1);
+
+    return res.json({
+      contribution,
+      jackpotWon: true,
+      jackpotWin: newAmount,
+      newJackpotAmount: 10000
+    });
+  }
+
+  await supabase
+    .from("jackpot")
+    .update({ amount: newAmount })
+    .eq("id", 1);
+
+  res.json({
+    contribution,
+    jackpotWon: false,
+    jackpotWin: 0,
+    newJackpotAmount: newAmount
+  });
+});
+
 module.exports = app;
