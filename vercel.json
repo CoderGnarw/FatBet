@@ -31,6 +31,10 @@
     {
       "source": "/live-feed",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/update-stats",
+      "destination": "/api/index.js"
     }
   ]
 }
