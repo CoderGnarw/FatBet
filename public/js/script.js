@@ -1414,6 +1414,7 @@ async function openLootboxAnimated() {
   const chest = document.getElementById("lootboxChest");
   const card = document.getElementById("lootboxCard");
   const shimmer = document.getElementById("lootboxCardShimmer");
+  const continueText = document.getElementById("lootboxContinue");
 
   if (!overlay || !chest || !card || !shimmer) {
     openLootbox();
@@ -1430,6 +1431,8 @@ async function openLootboxAnimated() {
   card.className = "lootbox-card hidden";
   shimmer.className = "lootbox-card-shimmer common";
 
+  if (continueText) continueText.classList.add("hidden");
+
   await new Promise(resolve => setTimeout(resolve, 450));
 
   chest.classList.add("opening");
@@ -1443,6 +1446,7 @@ async function openLootboxAnimated() {
   shimmer.className =
     `lootbox-card-shimmer ${pendingLootboxResult.rarity}`;
 
+  await new Promise(resolve => setTimeout(resolve, 350));
   card.classList.remove("hidden");
 }
 
@@ -1476,6 +1480,8 @@ function revealLootboxCard(event) {
   }
 
   lootboxCanClose = true;
+  const continueText = document.getElementById("lootboxContinue");
+  if (continueText) continueText.classList.remove("hidden");
 }
 
 document.addEventListener("click", event => {
