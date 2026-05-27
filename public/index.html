@@ -94,9 +94,12 @@
         <div id="winDetails" class="win-details hidden"></div>
 
         <div class="bonus-controls">
-          <button onclick="openLootbox()">🎁 Lootbox öffnen (100)</button>
-          <button onclick="dailyReward()">🎉 Daily Reward</button>
-</button>
+        <button onclick="openLootboxAnimated()">
+          🎁 Lootbox öffnen (100)
+        </button>
+          <button onclick="dailyReward()">
+            🎉 Daily Reward</button>
+        </button>
         </div>
 
       </section>
@@ -210,6 +213,19 @@
 </div>
 
   <div id="flyingCoins"></div>
+
+  <div id="lootboxOverlay" class="lootbox-overlay hidden">
+  <div class="lootbox-light"></div>
+
+  <div id="lootboxChest" class="lootbox-chest">
+    🎁
+  </div>
+
+  <div id="lootboxReward" class="lootbox-reward hidden">
+    <div class="lootbox-rarity">REWARD</div>
+    <div class="lootbox-reward-text">Belohnung erhalten!</div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -1549,3 +1549,123 @@ button:hover::before {
   75% { transform: translate(-4px, 3px); }
   100% { transform: translate(0, 0); }
 }
+
+.lootbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999999;
+  overflow: hidden;
+}
+
+.lootbox-light {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.55), transparent 70%);
+  animation: lootLightPulse 1s ease-in-out infinite;
+}
+
+.lootbox-chest {
+  position: relative;
+  font-size: 120px;
+  animation: lootChestIn 0.45s ease, lootChestIdle 0.7s ease-in-out infinite;
+  z-index: 2;
+}
+
+.lootbox-chest.opening {
+  animation: lootChestShake 0.55s ease;
+}
+
+.lootbox-reward {
+  position: absolute;
+  z-index: 3;
+  padding: 32px 44px;
+  border-radius: 28px;
+  border: 3px solid #ffd700;
+  background: linear-gradient(180deg, #260030, #050505);
+  box-shadow:
+    0 0 35px #ff00ff,
+    0 0 75px rgba(255, 215, 0, 0.55);
+  animation: rewardReveal 0.55s ease;
+}
+
+.lootbox-rarity {
+  font-size: 42px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 18px #ff00ff;
+}
+
+.lootbox-reward-text {
+  margin-top: 14px;
+  font-size: 24px;
+  color: #00ffd5;
+  text-shadow: 0 0 14px #00ffd5;
+}
+
+.lootbox-reward.mythic {
+  border-color: #ff004c;
+  box-shadow:
+    0 0 35px #ff004c,
+    0 0 70px #ff00ff,
+    0 0 110px #ffd700;
+}
+
+@keyframes lootChestIn {
+  from {
+    transform: translateY(-160px) scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes lootChestIdle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes lootChestShake {
+  0% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-8deg) scale(1.08); }
+  40% { transform: rotate(8deg) scale(1.12); }
+  60% { transform: rotate(-6deg) scale(1.1); }
+  80% { transform: rotate(6deg) scale(1.08); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes lootLightPulse {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes rewardReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.55) translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

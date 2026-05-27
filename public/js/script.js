@@ -1405,3 +1405,51 @@ async function saveSelectedTitle() {
 
   updateLeaderboard();
 }
+
+async function openLootboxAnimated() {
+  const overlay = document.getElementById("lootboxOverlay");
+  const chest = document.getElementById("lootboxChest");
+  const reward = document.getElementById("lootboxReward");
+
+  if (!overlay || !chest || !reward) {
+    openLootbox();
+    return;
+  }
+
+  overlay.classList.remove("hidden");
+  reward.classList.add("hidden");
+  reward.classList.remove("mythic");
+  chest.classList.remove("opening");
+  chest.innerText = "🎁";
+
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  chest.classList.add("opening");
+
+  await new Promise(resolve => setTimeout(resolve, 650));
+
+  chest.innerText = "✨";
+
+  // bestehende Lootbox-Logik aus loot.js ausführen
+  openLootbox();
+
+  const rarityRoll = Math.random();
+
+  if (rarityRoll > 0.96) {
+    reward.classList.add("mythic");
+    reward.querySelector(".lootbox-rarity").innerText = "💎 MYTHIC 💎";
+  } else if (rarityRoll > 0.82) {
+    reward.querySelector(".lootbox-rarity").innerText = "✨ EPIC ✨";
+  } else {
+    reward.querySelector(".lootbox-rarity").innerText = "🎁 REWARD 🎁";
+  }
+
+  reward.querySelector(".lootbox-reward-text").innerText =
+    "Belohnung erhalten!";
+
+  reward.classList.remove("hidden");
+
+  await new Promise(resolve => setTimeout(resolve, 2200));
+
+  overlay.classList.add("hidden");
+}
