@@ -916,7 +916,39 @@ function showJackpotOverlay(amount) {
   if (!overlay || !text) return;
 
   text.innerText = `Du hast ${formatNumber(amount)} Coins gewonnen!`;
+
   overlay.classList.remove("hidden");
+
+  document.body.classList.add("jackpot-shake");
+
+  createJackpotCoins();
+
+  setTimeout(() => {
+    document.body.classList.remove("jackpot-shake");
+  }, 650);
+}
+
+function createJackpotCoins() {
+  const container = document.getElementById("flyingCoins");
+
+  if (!container) return;
+
+  for (let i = 0; i < 90; i++) {
+    const coin = document.createElement("div");
+
+    coin.classList.add("coin-particle");
+    coin.innerText = Math.random() > 0.75 ? "💎" : "🪙";
+
+    coin.style.left = `${Math.random() * 100}%`;
+    coin.style.animationDuration = `${1.4 + Math.random() * 1.8}s`;
+    coin.style.fontSize = `${26 + Math.random() * 26}px`;
+
+    container.appendChild(coin);
+
+    setTimeout(() => {
+      coin.remove();
+    }, 3400);
+  }
 }
 
 function hideJackpotOverlay() {
