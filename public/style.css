@@ -1281,3 +1281,181 @@ button:hover::before {
   line-height: 1;
   color: rgba(255, 255, 255, 0.55) !important;
 }
+
+/* BIG WIN OVERLAY */
+
+.big-win-overlay {
+
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background:
+    rgba(0,0,0,0.45);
+
+  backdrop-filter: blur(6px);
+
+  z-index: 9999;
+
+  animation: bigWinFade 0.25s ease;
+}
+
+.big-win-content {
+
+  text-align: center;
+
+  animation:
+    bigWinPop 0.45s ease;
+
+  pointer-events: none;
+}
+
+.big-win-title {
+
+  font-size: 72px;
+  font-weight: bold;
+
+  color: #ffd700;
+
+  text-shadow:
+    0 0 12px #ff00ff,
+    0 0 32px #ffd700,
+    0 0 64px #ff00ff;
+
+  animation:
+    bigWinPulse 1s ease-in-out infinite;
+}
+
+.big-win-amount {
+
+  margin-top: 18px;
+
+  font-size: 54px;
+  font-weight: bold;
+
+  color: #00ffd5;
+
+  text-shadow:
+    0 0 14px #00ffd5,
+    0 0 32px #00ffd5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* COINS */
+
+#flyingCoins {
+
+  position: fixed;
+  inset: 0;
+
+  overflow: hidden;
+
+  pointer-events: none;
+
+  z-index: 9998;
+}
+
+.coin-particle {
+
+  position: absolute;
+
+  font-size: 28px;
+
+  animation:
+    flyCoin 1.6s linear forwards;
+}
+
+@keyframes flyCoin {
+
+  0% {
+
+    transform:
+      translateY(0)
+      rotate(0deg)
+      scale(0.7);
+
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+
+    transform:
+      translateY(100vh)
+      rotate(720deg)
+      scale(1.2);
+
+    opacity: 0;
+  }
+}
+
+/* ANIMATIONS */
+
+@keyframes bigWinFade {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bigWinPop {
+
+  0% {
+
+    transform:
+      scale(0.5);
+
+    opacity: 0;
+  }
+
+  100% {
+
+    transform:
+      scale(1);
+
+    opacity: 1;
+  }
+}
+
+@keyframes bigWinPulse {
+
+  0% {
+
+    transform: scale(1);
+
+    text-shadow:
+      0 0 12px #ff00ff,
+      0 0 32px #ffd700;
+  }
+
+  50% {
+
+    transform: scale(1.04);
+
+    text-shadow:
+      0 0 18px #ff00ff,
+      0 0 56px #ffd700;
+  }
+
+  100% {
+
+    transform: scale(1);
+
+    text-shadow:
+      0 0 12px #ff00ff,
+      0 0 32px #ffd700;
+  }
+}

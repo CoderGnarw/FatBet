@@ -229,15 +229,21 @@ async function spin() {
   }
 
   if (totalWin > 0) {
-    coins += totalWin;
-    highlightWinningLines(winData.winningLines);
 
-    if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
-      playSound(jackpotSound);
-    } else {
-      playSound(winSound);
-    }
+  if (totalWin >= currentBet * 25) {
+    showBigWin(totalWin);
   }
+
+  coins += totalWin;
+
+  highlightWinningLines(winData.winningLines);
+
+  if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
+    playSound(jackpotSound);
+  } else {
+    playSound(winSound);
+  }
+}
 
   if (totalWin >= bet * 25) {
     await addLiveFeedMessage(
@@ -1353,4 +1359,48 @@ function updateFeedTimes() {
 
     el.innerText = timeAgo(timestamp);
   });
+}
+
+function showBigWin(amount) {
+
+  const overlay = document.getElementById("bigWinOverlay");
+  const amountText = document.getElementById("bigWinAmount");
+
+  amountText.innerText = `+${formatNumber(amount)} Coins`;
+
+  overlay.classList.remove("hidden");
+
+  createFlyingCoins();
+
+  setTimeout(() => {
+    overlay.classList.add("hidden");
+  }, 2200);
+}
+
+function createFlyingCoins() {
+
+  const container = document.getElementById("flyingCoins");
+
+  for (let i = 0; i < 40; i++) {
+
+    const coin = document.createElement("div");
+
+    coin.classList.add("coin-particle");
+
+    coin.innerText = "🪙";
+
+    coin.style.left = `${Math.random() * 100}%`;
+
+    coin.style.animationDuration =
+      `${1.2 + Math.random() * 1.2}s`;
+
+    coin.style.fontSize =
+      `${22 + Math.random() * 18}px`;
+
+    container.appendChild(coin);
+
+    setTimeout(() => {
+      coin.remove();
+    }, 2500);
+  }
 }
