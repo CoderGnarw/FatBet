@@ -449,3 +449,26 @@ body::before {
       rgba(0, 0, 0, 0.65) 100%
     );
 }
+
+.profile-stats {
+  margin-top: 24px;
+  padding: 16px;
+
+  border: 2px solid #ffd700;
+  border-radius: 18px;
+
+  background: rgba(0, 0, 0, 0.35);
+
+  box-shadow:
+    0 0 12px #ff00ff;
+}
+
+.profile-stats h3 {
+  margin-top: 0;
+  color: #ffd700;
+}
+
+.profile-stats p {
+  margin: 8px 0;
+  color: #00ffd5;
+}

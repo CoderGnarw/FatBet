@@ -109,6 +109,7 @@ async function checkLogin() {
   updateProfileUI(user);
   updateUI();
   updateLeaderboard();
+  updateStatsUI(user);
 }
 
 function createSlotGrid() {
@@ -960,4 +961,22 @@ function openSettingsOverlay() {
 
 function closeSettingsOverlay() {
   document.getElementById("settingsOverlay").classList.add("hidden");
+}
+
+function updateStatsUI(user) {
+  setText("statsSpins", user.spins_total || 0);
+  setText("statsWins", user.wins_total || 0);
+  setText("statsCoinsWon", formatNumber(user.coins_won_total || 0));
+  setText("statsBiggestWin", formatNumber(user.biggest_win || 0));
+  setText("statsFreeSpins", user.free_spins_won || 0);
+  setText("statsJackpots", user.jackpots_won || 0);
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = value;
+}
+
+function formatNumber(number) {
+  return Number(number).toLocaleString("de-DE");
 }
