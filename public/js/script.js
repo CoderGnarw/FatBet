@@ -40,6 +40,8 @@ let autoSpinRunning = false;
 
 let turboSpin = false;
 
+let knownFeedIds = [];
+
 const paylines = [
   [0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1],
@@ -69,7 +71,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await checkLogin();
   await loadJackpot();
   await loadLiveFeed();
-  setInterval(loadLiveFeed, 10000);
+  setInterval(loadLiveFeed, 5000);
 });
 
 async function checkLogin() {
@@ -912,13 +914,22 @@ async function loadLiveFeed() {
   const box = document.getElementById("liveFeed");
   if (!box) return;
 
-  box.innerHTML = "";
+  const newestFirst = feed.slice(0, 8);
 
-  feed.forEach(item => {
+  newestFirst.reverse().forEach(item => {
+    if (knownFeedIds.includes(item.id)) return;
+
+    knownFeedIds.push(item.id);
+
     const div = document.createElement("div");
     div.classList.add("feed-item");
     div.innerText = item.message;
-    box.appendChild(div);
+
+    box.prepend(div);
+
+    while (box.children.length > 8) {
+      box.removeChild(box.lastElementChild);
+    }
   });
 }
 
