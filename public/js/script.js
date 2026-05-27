@@ -900,7 +900,7 @@ async function loadLiveFeed() {
   const box = document.getElementById("liveFeed");
   if (!box) return;
 
-  const newestFirst = feed.slice(0, 8);
+  const newestFirst = feed.slice(0, 6);
 
   newestFirst.reverse().forEach(item => {
     if (knownFeedIds.includes(item.id) && box.children.length > 0) return;
@@ -928,7 +928,7 @@ async function loadLiveFeed() {
 
     box.prepend(div);
 
-    while (box.children.length > 8) {
+    while (box.children.length > 6) {
       box.removeChild(box.lastElementChild);
     }
   });

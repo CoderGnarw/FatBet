@@ -1248,3 +1248,36 @@ button:hover::before {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.65) !important;
 }
+
+.feed-item {
+  min-height: 66px;
+  padding: 12px 14px !important;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.feed-tag {
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.feed-message {
+  margin-top: 5px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.feed-time {
+  margin-top: 5px;
+  font-size: 10px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
