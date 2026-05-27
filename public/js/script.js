@@ -1493,7 +1493,7 @@ function revealLootboxCard(event) {
     raritySound.volume = 0.6;
     setTimeout(() => {
       raritySound.play().catch(() => {});
-    }, 250);
+    }, 150);
   }
 
   if (pendingLootboxResult.rarity === "legendary") {
