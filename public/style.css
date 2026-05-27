@@ -244,25 +244,23 @@ button:hover {
 }
 
 .slot-grid {
-
   display: grid;
-
-  grid-template-columns: repeat(5, 1fr);
-
+  grid-template-columns: repeat(5, 120px);
+  grid-template-rows: repeat(3, 120px);
   gap: 14px;
 }
 
-.slot-cell {
-
-  aspect-ratio: 1 / 1;
+.slot {
+  width: 120px;
+  height: 120px;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  font-size: 72px;
+  font-size: 58px;
 
-  border-radius: 20px;
+  border-radius: 18px;
 
   background: #111;
 
@@ -270,12 +268,40 @@ button:hover {
 
   box-shadow:
     inset 0 0 12px rgba(255,255,255,0.08),
-    0 0 14px rgba(255,215,0,0.25);
+    0 0 14px rgba(255,215,0,0.35);
+
+  transition:
+    transform 0.15s,
+    box-shadow 0.2s;
 }
 
-.slot-cell.win {
-
+.slot.win {
   animation: winPulse 0.8s infinite alternate;
+}
+
+.slot.wild {
+  background:
+    radial-gradient(circle, #ffffff 0%, #cfcfcf 100%);
+
+  box-shadow:
+    0 0 18px #00ffd5,
+    0 0 45px #00ffd5;
+}
+
+.slot.scatter {
+  background:
+    linear-gradient(180deg, #00ffd5, #00443a);
+
+  color: #111;
+
+  box-shadow:
+    0 0 20px #00ffd5,
+    0 0 45px #00ffd5,
+    inset 0 0 15px #fff;
+}
+
+.slot.line-win {
+  outline: 4px solid #00ffd5;
 }
 
 @keyframes winPulse {
