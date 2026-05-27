@@ -1491,7 +1491,9 @@ function revealLootboxCard(event) {
   if (raritySound) {
     raritySound.currentTime = 0;
     raritySound.volume = 0.6;
-    raritySound.play().catch(() => {});
+    setTimeout(() => {
+      raritySound.play().catch(() => {});
+    }, 250);
   }
 
   if (pendingLootboxResult.rarity === "legendary") {
