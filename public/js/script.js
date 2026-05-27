@@ -917,6 +917,7 @@ async function loadLiveFeed() {
     else if (isBigWin) div.classList.add("feed-bigwin");
 
     const tag = isJackpot ? "💰 JACKPOT" : isBigWin ? "💎 BIG WIN" : "📢 WIN";
+    
     const time = item.created_at ? timeAgo(item.created_at) : "";
 
     div.innerHTML = `

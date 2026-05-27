@@ -506,7 +506,7 @@ app.post("/jackpot", async (req, res) => {
 app.get("/live-feed", async (req, res) => {
   const { data, error } = await supabase
     .from("live_feed")
-    .select("*")
+    .select("id, message, created_at")
     .order("created_at", { ascending: false })
     .limit(10);
 
