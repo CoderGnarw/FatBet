@@ -230,54 +230,136 @@
 
       <h2>⚙️ Einstellungen</h2>
 
-      <img
-        id="settingsAvatar"
-        class="settings-avatar"
-        src="https://cdn.discordapp.com/embed/avatars/0.png"
-        alt="Avatar"
-      >
+      <div class="settings-layout">
 
-      <p>
-        Discord Username:
-      </p>
+        <!-- LEFT: PROFILE -->
+        <div class="settings-left">
 
-      <input id="discordUsernameInput" type="text" disabled>
+          <img
+            id="settingsAvatar"
+            class="settings-avatar"
+            src="https://cdn.discordapp.com/embed/avatars/0.png"
+            alt="Avatar"
+          >
 
-      <p>
-        Displayname:
-      </p>
+          <p>
+            Discord Username:
+          </p>
 
-      <input id="displayNameInput" type="text" maxlength="20">
+          <input id="discordUsernameInput" type="text" disabled>
 
-      <button onclick="saveDisplayName()">
-        Speichern
-      </button>
+          <p>
+            Displayname:
+          </p>
 
-      <div class="title-select-box">
-        <h3>👑 Aktiver Titel</h3>
+          <div class="displayname-row">
 
-        <select id="titleSelect" onchange="saveSelectedTitle()">
-          <option value="">Kein Titel</option>
-        </select>
+            <input
+              id="displayNameInput"
+              type="text"
+              maxlength="20"
+            >
+
+            <button onclick="saveDisplayName()">
+              Speichern
+            </button>
+
+          </div>
+
+          <div class="title-select-box">
+
+            <h3>👑 Aktiver Titel</h3>
+
+            <select
+              id="titleSelect"
+              onchange="saveSelectedTitle()"
+            >
+              <option value="">
+                Kein Titel
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <!-- MIDDLE: ACHIEVEMENTS -->
+        <div class="settings-middle">
+
+          <h3 class="settings-section-title">
+            🏆 Achievements
+          </h3>
+
+          <div
+            id="achievementsList"
+            class="achievements-list"
+          ></div>
+
+        </div>
+
+        <!-- RIGHT: STATS -->
+        <div class="settings-right">
+
+          <div class="profile-stats">
+
+            <h3>📊 Deine Statistiken</h3>
+
+            <p>
+              🎰 Spins insgesamt:
+              <span id="statsSpins">0</span>
+            </p>
+
+            <p>
+              ✅ Gewinne insgesamt:
+              <span id="statsWins">0</span>
+            </p>
+
+            <p>
+              💰 Gewonnene Coins:
+              <span id="statsCoinsWon">0</span>
+            </p>
+
+            <p>
+              🏆 Größter Gewinn:
+              <span id="statsBiggestWin">0</span>
+            </p>
+
+            <p>
+              🎁 Freispiele gewonnen:
+              <span id="statsFreeSpins">0</span>
+            </p>
+
+            <p>
+              💎 Jackpots geknackt:
+              <span id="statsJackpots">0</span>
+            </p>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="profile-stats">
-        <h3>📊 Deine Statistiken</h3>
-
-        <p>🎰 Spins insgesamt: <span id="statsSpins">0</span></p>
-        <p>✅ Gewinne insgesamt: <span id="statsWins">0</span></p>
-        <p>💰 Gewonnene Coins: <span id="statsCoinsWon">0</span></p>
-        <p>🏆 Größter Gewinn: <span id="statsBiggestWin">0</span></p>
-        <p>🎁 Freispiele gewonnen: <span id="statsFreeSpins">0</span></p>
-        <p>💎 Jackpots geknackt: <span id="statsJackpots">0</span></p>
-  </div>
-      <div class="achievements-section">
-
-        <h3>🏆 Achievements</h3>
-
-        <div id="achievementsList" class="achievements-list"></div>
+    </div>
 
   </div>
+
+  <!-- ACHIEVEMENT POPUP -->
+  <div id="achievementPopup" class="achievement-popup hidden">
+
+    <div class="achievement-popup-content">
+
+      <div class="achievement-popup-title">
+        🏆 ACHIEVEMENT FREIGESCHALTET
+      </div>
+
+      <div id="achievementPopupName" class="achievement-popup-name">
+        Achievement
+      </div>
+
+      <div id="achievementPopupReward" class="achievement-popup-reward">
+        Belohnung
+      </div>
 
     </div>
 
@@ -287,26 +369,6 @@
   <script src="js/script.js"></script>
   <script src="js/bonus.js"></script>
   <script src="js/loot.js"></script>
-
-<div id="achievementPopup" class="achievement-popup hidden">
-
-  <div class="achievement-popup-content">
-
-    <div class="achievement-popup-title">
-      🏆 ACHIEVEMENT FREIGESCHALTET
-    </div>
-
-    <div id="achievementPopupName" class="achievement-popup-name">
-      Achievement
-    </div>
-
-    <div id="achievementPopupReward" class="achievement-popup-reward">
-      Belohnung
-    </div>
-
-  </div>
-
-</div>
 
 </body>
 
