@@ -623,3 +623,36 @@ body::before {
   }
 
 }
+
+.achievements-list {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.achievements-list::-webkit-scrollbar {
+  display: none;
+}
+
+.achievement-category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.achievement-section-title {
+
+  margin-top: 10px;
+  margin-bottom: 4px;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  color: #ffd700;
+
+  text-shadow:
+    0 0 10px #ff00ff;
+
+  text-align: left;
+
+  padding-left: 4px;
+}

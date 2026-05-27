@@ -1053,37 +1053,62 @@ function renderAchievements() {
 
   list.innerHTML = "";
 
-  achievementsCache.forEach(achievement => {
+  const categories = {
 
-    const card = document.createElement("div");
+    "Spins": "🎰 Spin Achievements",
+    "Coins": "💰 Win Achievements",
+    "Freispiele": "🎁 Freispiele Achievements",
+    "Jackpot": "💎 Jackpot Achievements"
 
-    card.classList.add("achievement-card");
+  };
 
-    if (achievement.unlocked) {
-      card.classList.add("unlocked");
-    } else {
-      card.classList.add("locked");
-    }
+  Object.entries(categories).forEach(([key, title]) => {
 
-    card.innerHTML = `
-      <div class="achievement-name">
-        ${achievement.name}
-      </div>
+    const section = document.createElement("div");
 
-      <div class="achievement-category">
-        ${achievement.category}
-      </div>
+    section.classList.add("achievement-category-section");
 
-      <div class="achievement-requirement">
-        🎯 ${achievement.requirement}
-      </div>
-
-      <div class="achievement-reward">
-        🎁 ${achievement.reward}
+    section.innerHTML = `
+      <div class="achievement-section-title">
+        ${title}
       </div>
     `;
 
-    list.appendChild(card);
+    const filtered = achievementsCache.filter(
+      achievement => achievement.category === key
+    );
+
+    filtered.forEach(achievement => {
+
+      const card = document.createElement("div");
+
+      card.classList.add("achievement-card");
+
+      if (achievement.unlocked) {
+        card.classList.add("unlocked");
+      } else {
+        card.classList.add("locked");
+      }
+
+      card.innerHTML = `
+        <div class="achievement-name">
+          ${achievement.name}
+        </div>
+
+        <div class="achievement-requirement">
+          🎯 ${achievement.requirement}
+        </div>
+
+        <div class="achievement-reward">
+          🎁 ${achievement.reward}
+        </div>
+      `;
+
+      section.appendChild(card);
+
+    });
+
+    list.appendChild(section);
 
   });
 
