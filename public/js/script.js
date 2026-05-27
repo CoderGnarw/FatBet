@@ -64,11 +64,11 @@ const winSound = new Audio("assets/sounds/win.mp3");
 const jackpotSound = new Audio("assets/sounds/jackpot.mp3");
 
 const lootboxSounds = {
-  common: new Audio("sounds/common.mp3"),
-  rare: new Audio("sounds/rare.mp3"),
-  epic: new Audio("sounds/epic.mp3"),
-  legendary: new Audio("sounds/legendary.mp3"),
-  mythic: new Audio("sounds/mythic.mp3")
+  common: new Audio("assets/sounds/common.mp3"),
+  rare: new Audio("assets/sounds/rare.mp3"),
+  epic: new Audio("assets/sounds/epic.mp3"),
+  legendary: new Audio("assets/sounds/legendary.mp3"),
+  mythic: new Audio("assets/sounds/mythic.mp3")
 };
 
 spinSound.volume = 0.15;
