@@ -39,7 +39,6 @@ let autoSpinInfinite = false;
 let autoSpinRunning = false;
 
 let turboSpin = false;
-
 let knownFeedIds = [];
 
 const paylines = [
@@ -68,9 +67,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   createSlotGrid();
   fillGridWithRandomSymbols();
   updateUI();
+
   await checkLogin();
   await loadJackpot();
   await loadLiveFeed();
+
   setInterval(loadLiveFeed, 5000);
 });
 
@@ -96,6 +97,7 @@ async function checkLogin() {
 
   currentUser = user.display_name || user.username;
   coins = user.coins;
+  displayedCoins = coins;
 
   document.getElementById("login").classList.add("hidden");
   document.getElementById("game").classList.remove("hidden");
@@ -174,14 +176,9 @@ async function spin() {
   }
 
   updateUI();
+
   spinSound.currentTime = 0;
-
-  if (turboSpin) {
-    spinSound.playbackRate = 1.8;
-  } else {
-    spinSound.playbackRate = 0.9;
-  }
-
+  spinSound.playbackRate = turboSpin ? 1.8 : 0.9;
   spinSound.play().catch(() => {});
 
   generateFinalGrid(isFreeSpin);
@@ -198,19 +195,11 @@ async function spin() {
   if (jackpotData.jackpotWon) {
     totalWin += jackpotData.jackpotWin;
     showJackpotOverlay(jackpotData.jackpotWin);
-  }
 
-  if (jackpotData.jackpotWon) {
     await addLiveFeedMessage(
       `${currentUser} hat den Jackpot mit ${jackpotData.jackpotWin} Coins geknackt 💰`
     );
   }
-
-  if (totalWin >= bet * 25) {
-    await addLiveFeedMessage(
-      `${currentUser} gewann ${totalWin} Coins 🎉`
-    );
-  } 
 
   if (isFreeSpin && totalWin > 0) {
     freeSpinTotalWin += totalWin;
@@ -226,12 +215,20 @@ async function spin() {
     coins += totalWin;
     highlightWinningLines(winData.winningLines);
 
-    if (winData.hasFiveOfAKind) {
+    if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
       playSound(jackpotSound);
     } else {
       playSound(winSound);
     }
   }
+
+  if (totalWin >= bet * 25) {
+    await addLiveFeedMessage(
+      `${currentUser} gewann ${totalWin} Coins 🎉`
+    );
+  }
+
+  await updateStats(totalWin, scatterData.freeSpinsWon, jackpotData.jackpotWon);
 
   highlightScatters();
   showWinDetails(winData.winningLines, scatterData);
@@ -257,7 +254,7 @@ async function spin() {
   }
 
   await showBigWin(totalWin);
-}   
+}
 
 function animateReelsSequentially() {
   return new Promise(resolve => {
@@ -282,9 +279,7 @@ function animateReelsSequentially() {
         if (reel === reels - 1) {
           setTimeout(resolve, 250);
         }
-      }, turboSpin
-          ? 450 + reel * 120
-          : 1250 + reel * 450);
+      }, turboSpin ? 450 + reel * 120 : 1250 + reel * 450);
     }
   });
 }
@@ -357,7 +352,11 @@ function calculateTotalWin() {
     }
   });
 
-  return { totalWin, winningLines, hasFiveOfAKind };
+  return {
+    totalWin,
+    winningLines,
+    hasFiveOfAKind
+  };
 }
 
 function calculateLineWin(line) {
@@ -466,7 +465,10 @@ function calculateScatterBonus(isFreeSpin) {
   if (scatterCount === 4) freeSpinsWon = 7;
   if (scatterCount >= 5) freeSpinsWon = 10;
 
-  return { scatterCount, freeSpinsWon };
+  return {
+    scatterCount,
+    freeSpinsWon
+  };
 }
 
 function highlightWinningLines(winningLines) {
@@ -592,6 +594,7 @@ async function updateLeaderboard() {
   board.forEach(user => {
     const li = document.createElement("li");
     const name = user.display_name || user.username;
+
     li.innerText = `${name}: ${user.coins} Coins`;
     list.appendChild(li);
   });
@@ -745,7 +748,6 @@ async function runAutoSpin() {
 }
 
 function toggleTurboSpin() {
-
   turboSpin = !turboSpin;
 
   const button = document.getElementById("turboButton");
@@ -753,15 +755,39 @@ function toggleTurboSpin() {
   if (!button) return;
 
   if (turboSpin) {
-
     button.innerText = "⚡ Turbo AN";
     button.classList.add("active");
-
   } else {
-
     button.innerText = "⚡ Turbo AUS";
     button.classList.remove("active");
   }
+}
+
+function animateCoins(from, to) {
+  const coinsElement = document.getElementById("coins");
+
+  if (!coinsElement) return;
+
+  const duration = 650;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const currentValue = Math.floor(from + (to - from) * progress);
+
+    coinsElement.innerText = currentValue;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      coinsElement.innerText = to;
+      displayedCoins = to;
+    }
+  }
+
+  requestAnimationFrame(update);
 }
 
 async function loadJackpot() {
@@ -820,31 +846,58 @@ function hideJackpotOverlay() {
   }
 }
 
-function animateCoins(from, to) {
-  const coinsElement = document.getElementById("coins");
+async function loadLiveFeed() {
+  const res = await fetch("/live-feed");
+  const feed = await res.json();
 
-  if (!coinsElement) return;
+  const box = document.getElementById("liveFeed");
+  if (!box) return;
 
-  const duration = 650;
-  const startTime = performance.now();
+  const newestFirst = feed.slice(0, 8);
 
-  function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
+  newestFirst.reverse().forEach(item => {
+    if (knownFeedIds.includes(item.id)) return;
 
-    const currentValue = Math.floor(from + (to - from) * progress);
+    knownFeedIds.push(item.id);
 
-    coinsElement.innerText = currentValue;
+    const div = document.createElement("div");
+    div.classList.add("feed-item");
+    div.innerText = item.message;
 
-    if (progress < 1) {
-      requestAnimationFrame(update);
-    } else {
-      coinsElement.innerText = to;
-      displayedCoins = to;
+    box.prepend(div);
+
+    while (box.children.length > 8) {
+      box.removeChild(box.lastElementChild);
     }
-  }
+  });
+}
 
-  requestAnimationFrame(update);
+async function addLiveFeedMessage(message) {
+  await fetch("/live-feed", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
+
+  loadLiveFeed();
+}
+
+async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
+  await fetch("/update-stats", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      totalWin,
+      freeSpinsWon,
+      jackpotWon
+    })
+  });
 }
 
 function updateProfileUI(user) {
@@ -888,8 +941,10 @@ async function saveDisplayName() {
 
   const data = await res.json();
 
-  const displayNameText = document.getElementById("displayNameText");
-  if (displayNameText) displayNameText.innerText = data.display_name;
+  currentUser = data.display_name;
+
+  const displayNameInput = document.getElementById("displayNameInput");
+  if (displayNameInput) displayNameInput.value = data.display_name;
 
   updateLeaderboard();
 }
@@ -905,43 +960,4 @@ function openSettingsOverlay() {
 
 function closeSettingsOverlay() {
   document.getElementById("settingsOverlay").classList.add("hidden");
-}
-
-async function loadLiveFeed() {
-  const res = await fetch("/live-feed");
-  const feed = await res.json();
-
-  const box = document.getElementById("liveFeed");
-  if (!box) return;
-
-  const newestFirst = feed.slice(0, 8);
-
-  newestFirst.reverse().forEach(item => {
-    if (knownFeedIds.includes(item.id)) return;
-
-    knownFeedIds.push(item.id);
-
-    const div = document.createElement("div");
-    div.classList.add("feed-item");
-    div.innerText = item.message;
-
-    box.prepend(div);
-
-    while (box.children.length > 8) {
-      box.removeChild(box.lastElementChild);
-    }
-  });
-}
-
-async function addLiveFeedMessage(message) {
-  await fetch("/live-feed", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
-  });
-
-  loadLiveFeed();
 }
