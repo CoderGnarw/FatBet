@@ -123,22 +123,18 @@ button:hover {
 }
 
 .main-game-layout {
-  display: flex;
-
+  display: grid;
+  grid-template-columns: 300px 780px 300px;
+  gap: 36px;
+  align-items: start;
   justify-content: center;
-  align-items: flex-start;
-
-  gap: 38px;
-
   width: 100%;
-
-  max-width: 1800px;
-
+  max-width: 1500px;
   margin: 30px auto;
 }
 
 .slot-center {
-  width: auto;
+  width: 780px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -281,8 +277,11 @@ button:hover {
 }
 
 .side-panel {
-  width: 280px;
-  min-height: 640px;
+  width: 300px;
+  min-height: 560px;
+  height: 560px;
+
+  box-sizing: border-box;
   padding: 26px;
   border-radius: 30px;
   background:
