@@ -1669,3 +1669,118 @@ button:hover::before {
     transform: scale(1) translateY(0);
   }
 }
+
+.lootbox-card {
+  position: absolute;
+  z-index: 4;
+  width: 340px;
+  height: 460px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+
+.lootbox-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.7s ease;
+}
+
+.lootbox-card.revealed .lootbox-card-inner {
+  transform: rotateY(180deg);
+}
+
+.lootbox-card-front,
+.lootbox-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  backface-visibility: hidden;
+  overflow: hidden;
+
+  border: 3px solid #ffd700;
+  background: linear-gradient(180deg, #260030, #050505);
+
+  box-shadow:
+    0 0 30px #ff00ff,
+    0 0 70px rgba(255,215,0,0.45);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lootbox-card-back {
+  transform: rotateY(180deg);
+}
+
+.lootbox-card-shimmer {
+  position: absolute;
+  inset: -40%;
+  opacity: 0.75;
+  animation: cardShimmer 1.6s linear infinite;
+}
+
+.lootbox-card-shimmer.common {
+  background: conic-gradient(transparent, #aaa, transparent);
+}
+
+.lootbox-card-shimmer.rare {
+  background: conic-gradient(transparent, #00aaff, transparent);
+}
+
+.lootbox-card-shimmer.epic {
+  background: conic-gradient(transparent, #b000ff, transparent);
+}
+
+.lootbox-card-shimmer.legendary {
+  background: conic-gradient(transparent, #ffd700, transparent);
+}
+
+.lootbox-card-shimmer.mythic {
+  background: conic-gradient(transparent, #ff004c, #ff00ff, #ffd700, transparent);
+}
+
+.lootbox-card-question {
+  position: relative;
+  z-index: 2;
+  font-size: 140px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow:
+    0 0 18px #ff00ff,
+    0 0 45px #ffd700;
+}
+
+.lootbox-card-hint,
+.lootbox-continue {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  color: #00ffd5;
+  text-shadow: 0 0 12px #00ffd5;
+}
+
+.lootbox-card-back .lootbox-rarity {
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.lootbox-card-back .lootbox-reward-text {
+  margin-top: 20px;
+  font-size: 30px;
+  color: #00ffd5;
+  text-shadow: 0 0 16px #00ffd5;
+}
+
+@keyframes cardShimmer {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

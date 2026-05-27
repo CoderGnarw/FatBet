@@ -1406,60 +1406,83 @@ async function saveSelectedTitle() {
   updateLeaderboard();
 }
 
+let pendingLootboxResult = null;
+let lootboxCanClose = false;
+
 async function openLootboxAnimated() {
   const overlay = document.getElementById("lootboxOverlay");
   const chest = document.getElementById("lootboxChest");
-  const rewardBox = document.getElementById("lootboxReward");
+  const card = document.getElementById("lootboxCard");
+  const shimmer = document.getElementById("lootboxCardShimmer");
 
-  if (!overlay || !chest || !rewardBox) {
+  if (!overlay || !chest || !card || !shimmer) {
     openLootbox();
     return;
   }
 
-  overlay.classList.remove("hidden");
+  pendingLootboxResult = null;
+  lootboxCanClose = false;
 
-  rewardBox.className = "lootbox-reward hidden";
+  overlay.classList.remove("hidden");
   chest.className = "lootbox-chest";
   chest.innerText = "🎁";
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  card.className = "lootbox-card hidden";
+  shimmer.className = "lootbox-card-shimmer common";
+
+  await new Promise(resolve => setTimeout(resolve, 450));
 
   chest.classList.add("opening");
 
   await new Promise(resolve => setTimeout(resolve, 700));
 
-  const result = openLootbox();
+  pendingLootboxResult = openLootbox();
 
-  chest.innerText = result.success ? "✨" : "❌";
+  chest.classList.add("hidden");
 
-  rewardBox.classList.remove("hidden");
+  shimmer.className =
+    `lootbox-card-shimmer ${pendingLootboxResult.rarity}`;
 
-  const rarity = rewardBox.querySelector(".lootbox-rarity");
-  const text = rewardBox.querySelector(".lootbox-reward-text");
+  card.classList.remove("hidden");
+}
 
-  rewardBox.classList.add(result.rarity);
+function revealLootboxCard(event) {
+  event.stopPropagation();
 
-  if (!result.success) {
-    rarity.innerText = "FEHLER";
-    text.innerText = result.text;
-  } else {
-    const labels = {
-      common: "🎁 COMMON",
-      rare: "💙 RARE",
-      epic: "💜 EPIC",
-      legendary: "🌟 LEGENDARY",
-      mythic: "💎 MYTHIC 💎"
-    };
+  const card = document.getElementById("lootboxCard");
+  const rarity = document.getElementById("lootboxRewardRarity");
+  const text = document.getElementById("lootboxRewardText");
 
-    rarity.innerText = labels[result.rarity];
-    text.innerText = result.text;
-  }
+  if (!card || !rarity || !text || !pendingLootboxResult) return;
 
-  if (result.success) {
+  if (card.classList.contains("revealed")) return;
+
+  const labels = {
+    common: "🎁 COMMON",
+    rare: "💙 RARE",
+    epic: "💜 EPIC",
+    legendary: "🌟 LEGENDARY",
+    mythic: "💎 MYTHIC 💎",
+    error: "FEHLER"
+  };
+
+  rarity.innerText = labels[pendingLootboxResult.rarity] || "REWARD";
+  text.innerText = pendingLootboxResult.text;
+
+  card.classList.add("revealed");
+
+  if (pendingLootboxResult.success) {
     createFlyingCoins();
   }
 
-  await new Promise(resolve => setTimeout(resolve, 2400));
+  lootboxCanClose = true;
+}
+
+document.addEventListener("click", event => {
+  const overlay = document.getElementById("lootboxOverlay");
+
+  if (!overlay || overlay.classList.contains("hidden")) return;
+  if (!lootboxCanClose) return;
 
   overlay.classList.add("hidden");
-}
+});

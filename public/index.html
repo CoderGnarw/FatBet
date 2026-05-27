@@ -221,9 +221,22 @@
     🎁
   </div>
 
-  <div id="lootboxReward" class="lootbox-reward hidden">
-    <div class="lootbox-rarity">REWARD</div>
-    <div class="lootbox-reward-text">Belohnung erhalten!</div>
+  <div id="lootboxCard" class="lootbox-card hidden" onclick="revealLootboxCard(event)">
+    <div class="lootbox-card-inner">
+
+      <div class="lootbox-card-front">
+        <div id="lootboxCardShimmer" class="lootbox-card-shimmer common"></div>
+        <div class="lootbox-card-question">?</div>
+        <div class="lootbox-card-hint">Klicke zum Aufdecken</div>
+      </div>
+
+      <div class="lootbox-card-back">
+        <div id="lootboxRewardRarity" class="lootbox-rarity">REWARD</div>
+        <div id="lootboxRewardText" class="lootbox-reward-text">Belohnung</div>
+        <div class="lootbox-continue">Klicke irgendwo, um fortzufahren</div>
+      </div>
+
+    </div>
   </div>
 </div>
 
