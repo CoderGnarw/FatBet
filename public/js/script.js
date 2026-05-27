@@ -42,6 +42,7 @@ let turboSpin = false;
 let knownFeedIds = [];
 
 let currentStats = null;
+let achievementsCache = [];
 
 const paylines = [
   [0, 0, 0, 0, 0],
@@ -73,6 +74,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await checkLogin();
   await loadJackpot();
   await loadLiveFeed();
+  await loadAchievements();
 
   setInterval(loadLiveFeed, 5000);
 });
@@ -924,11 +926,9 @@ async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
     currentStats.jackpots_won += 1;
   }
 
-  // SOFORT FRONTEND UPDATEN
   updateStatsUI(currentStats);
 
-  // DANN BACKEND SPEICHERN
-  await fetch("/update-stats", {
+  const res = await fetch("/update-stats", {
     method: "POST",
     credentials: "include",
     headers: {
@@ -940,6 +940,14 @@ async function updateStats(totalWin, freeSpinsWon, jackpotWon) {
       jackpotWon
     })
   });
+
+  const data = await res.json();
+
+  if (data.unlockedAchievements) {
+    await handleAchievementUnlocks(
+      data.unlockedAchievements
+    );
+  }
 
 }
 
@@ -1021,4 +1029,110 @@ function setText(id, value) {
 
 function formatNumber(number) {
   return Number(number).toLocaleString("de-DE");
+}
+
+async function loadAchievements() {
+
+  const res = await fetch("/achievements", {
+    credentials: "include"
+  });
+
+  const achievements = await res.json();
+
+  achievementsCache = achievements;
+
+  renderAchievements();
+
+}
+
+function renderAchievements() {
+
+  const list = document.getElementById("achievementsList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  achievementsCache.forEach(achievement => {
+
+    const card = document.createElement("div");
+
+    card.classList.add("achievement-card");
+
+    if (achievement.unlocked) {
+      card.classList.add("unlocked");
+    } else {
+      card.classList.add("locked");
+    }
+
+    card.innerHTML = `
+      <div class="achievement-name">
+        ${achievement.name}
+      </div>
+
+      <div class="achievement-category">
+        ${achievement.category}
+      </div>
+
+      <div class="achievement-requirement">
+        🎯 ${achievement.requirement}
+      </div>
+
+      <div class="achievement-reward">
+        🎁 ${achievement.reward}
+      </div>
+    `;
+
+    list.appendChild(card);
+
+  });
+
+}
+
+async function handleAchievementUnlocks(unlockedAchievements) {
+
+  if (!unlockedAchievements || unlockedAchievements.length === 0) {
+    return;
+  }
+
+  for (const achievement of unlockedAchievements) {
+
+    showAchievementPopup(achievement);
+
+    const cached = achievementsCache.find(
+      item => item.id === achievement.id
+    );
+
+    if (cached) {
+      cached.unlocked = true;
+    }
+
+    renderAchievements();
+
+    await new Promise(resolve =>
+      setTimeout(resolve, 2600)
+    );
+
+  }
+
+}
+
+function showAchievementPopup(achievement) {
+
+  const popup = document.getElementById("achievementPopup");
+
+  const name = document.getElementById("achievementPopupName");
+  const reward = document.getElementById("achievementPopupReward");
+
+  if (!popup || !name || !reward) return;
+
+  name.innerText = achievement.name;
+  reward.innerText = `🎁 ${achievement.reward}`;
+
+  popup.classList.remove("hidden");
+
+  setTimeout(() => {
+    popup.classList.add("hidden");
+  }, 2200);
+
 }
