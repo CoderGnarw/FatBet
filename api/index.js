@@ -32,226 +32,58 @@ app.use(cookieSession({
 }));
 
 const ACHIEVEMENTS = [
+  { id: "rookie_spinner", name: "Rookie Spinner", category: "Spins", requirement: "100 Spins", reward: "Bronze Badge", rarity: "common", title: null },
+  { id: "reel_addict", name: "Reel Addict", category: "Spins", requirement: "500 Spins", reward: "Silber Badge", rarity: "rare", title: null },
+  { id: "spin_machine", name: "Spin Machine", category: "Spins", requirement: "1.000 Spins", reward: "Titel", rarity: "epic", title: "Spin Machine" },
+  { id: "neon_gambler", name: "Neon Gambler", category: "Spins", requirement: "5.000 Spins", reward: "Profilrahmen", rarity: "legendary", title: "Neon Gambler" },
+  { id: "eternal_spinner", name: "Eternal Spinner", category: "Spins", requirement: "10.000 Spins", reward: "Animierter Rahmen", rarity: "mythic", title: "Eternal Spinner" },
 
-  // SPINS
+  { id: "high_roller", name: "High Roller", category: "Coins", requirement: "1 Mio. gewonnene Coins", reward: "Gold Titel", rarity: "rare", title: "High Roller" },
+  { id: "coin_tycoon", name: "Coin Tycoon", category: "Coins", requirement: "5 Mio. gewonnene Coins", reward: "Profilfarbe", rarity: "epic", title: "Coin Tycoon" },
+  { id: "fortune_hunter", name: "Fortune Hunter", category: "Coins", requirement: "10 Mio. gewonnene Coins", reward: "Neon Badge", rarity: "epic", title: "Fortune Hunter" },
+  { id: "king_of_luck", name: "King of Luck", category: "Coins", requirement: "25 Mio. gewonnene Coins", reward: "Rahmen", rarity: "legendary", title: "King of Luck" },
+  { id: "slot_emperor", name: "Slot Emperor", category: "Coins", requirement: "50 Mio. gewonnene Coins", reward: "Animierter Titel", rarity: "legendary", title: "Slot Emperor" },
+  { id: "house_edge", name: "The House Edge", category: "Coins", requirement: "75 Mio. gewonnene Coins", reward: "Spezialeffekt", rarity: "mythic", title: "The House Edge" },
+  { id: "casino_legend", name: "Casino Legend", category: "Coins", requirement: "100 Mio. gewonnene Coins", reward: "Legendary Aura", rarity: "mythic", title: "Casino Legend" },
 
-  {
-    id: "rookie_spinner",
-    name: "Rookie Spinner",
-    category: "Spins",
-    requirement: "100 Spins",
-    reward: "Bronze Badge",
-    rarity: "common",
-    title: null
-  },
+  { id: "lucky_scatter", name: "Lucky Scatter", category: "Freispiele", requirement: "100 Freispiele", reward: "Badge", rarity: "common", title: null },
+  { id: "free_spin_fanatic", name: "Free Spin Fanatic", category: "Freispiele", requirement: "250 Freispiele", reward: "Titel", rarity: "rare", title: "Free Spin Fanatic" },
+  { id: "scatter_collector", name: "Scatter Collector", category: "Freispiele", requirement: "500 Freispiele", reward: "Rahmen", rarity: "epic", title: "Scatter Collector" },
+  { id: "wild_fortune", name: "Wild Fortune", category: "Freispiele", requirement: "750 Freispiele", reward: "Spezialfarbe", rarity: "legendary", title: "Wild Fortune" },
+  { id: "scatter_god", name: "Scatter God", category: "Freispiele", requirement: "1.000 Freispiele", reward: "Legendary Titel", rarity: "mythic", title: "Scatter God" },
 
-  {
-    id: "reel_addict",
-    name: "Reel Addict",
-    category: "Spins",
-    requirement: "500 Spins",
-    reward: "Silber Badge",
-    rarity: "rare",
-    title: null
-  },
+  { id: "jackpot_hunter", name: "Jackpot Hunter", category: "Jackpot", requirement: "1 Jackpot", reward: "Badge", rarity: "rare", title: "Jackpot Hunter" },
+  { id: "jackpot_addict", name: "Jackpot Addict", category: "Jackpot", requirement: "5 Jackpots", reward: "Titel", rarity: "epic", title: "Jackpot Addict" },
+  { id: "mega_winner", name: "Mega Winner", category: "Jackpot", requirement: "10 Jackpots", reward: "Animierter Rahmen", rarity: "legendary", title: "Mega Winner" },
+  { id: "god_of_fortune", name: "God of Fortune", category: "Jackpot", requirement: "25 Jackpots", reward: "Mythic Titel", rarity: "mythic", title: "God of Fortune" }
+];
 
-  {
-    id: "spin_machine",
-    name: "Spin Machine",
-    category: "Spins",
-    requirement: "1.000 Spins",
-    reward: "Titel",
-    rarity: "epic",
-    title: "Spin Machine"
-  },
-
-  {
-    id: "neon_gambler",
-    name: "Neon Gambler",
-    category: "Spins",
-    requirement: "5.000 Spins",
-    reward: "Profilrahmen",
-    rarity: "legendary",
-    title: "Neon Gambler"
-  },
-
-  {
-    id: "eternal_spinner",
-    name: "Eternal Spinner",
-    category: "Spins",
-    requirement: "10.000 Spins",
-    reward: "Animierter Rahmen",
-    rarity: "mythic",
-    title: "Eternal Spinner"
-  },
-
-  // COINS
-
-  {
-    id: "high_roller",
-    name: "High Roller",
-    category: "Coins",
-    requirement: "1 Mio. gewonnene Coins",
-    reward: "Gold Titel",
-    rarity: "rare",
-    title: "High Roller"
-  },
-
-  {
-    id: "coin_tycoon",
-    name: "Coin Tycoon",
-    category: "Coins",
-    requirement: "5 Mio. gewonnene Coins",
-    reward: "Profilfarbe",
-    rarity: "epic",
-    title: "Coin Tycoon"
-  },
-
-  {
-    id: "fortune_hunter",
-    name: "Fortune Hunter",
-    category: "Coins",
-    requirement: "10 Mio. gewonnene Coins",
-    reward: "Neon Badge",
-    rarity: "epic",
-    title: "Fortune Hunter"
-  },
-
-  {
-    id: "king_of_luck",
-    name: "King of Luck",
-    category: "Coins",
-    requirement: "25 Mio. gewonnene Coins",
-    reward: "Rahmen",
-    rarity: "legendary",
-    title: "King of Luck"
-  },
-
-  {
-    id: "slot_emperor",
-    name: "Slot Emperor",
-    category: "Coins",
-    requirement: "50 Mio. gewonnene Coins",
-    reward: "Animierter Titel",
-    rarity: "legendary",
-    title: "Slot Emperor"
-  },
-
-  {
-    id: "house_edge",
-    name: "The House Edge",
-    category: "Coins",
-    requirement: "75 Mio. gewonnene Coins",
-    reward: "Spezialeffekt",
-    rarity: "mythic",
-    title: "The House Edge"
-  },
-
-  {
-    id: "casino_legend",
-    name: "Casino Legend",
-    category: "Coins",
-    requirement: "100 Mio. gewonnene Coins",
-    reward: "Legendary Aura",
-    rarity: "mythic",
-    title: "Casino Legend"
-  },
-
-  // FREISPIELE
-
-  {
-    id: "lucky_scatter",
-    name: "Lucky Scatter",
-    category: "Freispiele",
-    requirement: "100 Freispiele",
-    reward: "Badge",
-    rarity: "common",
-    title: null
-  },
-
-  {
-    id: "free_spin_fanatic",
-    name: "Free Spin Fanatic",
-    category: "Freispiele",
-    requirement: "250 Freispiele",
-    reward: "Titel",
-    rarity: "rare",
-    title: "Free Spin Fanatic"
-  },
-
-  {
-    id: "scatter_collector",
-    name: "Scatter Collector",
-    category: "Freispiele",
-    requirement: "500 Freispiele",
-    reward: "Rahmen",
-    rarity: "epic",
-    title: "Scatter Collector"
-  },
-
-  {
-    id: "wild_fortune",
-    name: "Wild Fortune",
-    category: "Freispiele",
-    requirement: "750 Freispiele",
-    reward: "Spezialfarbe",
-    rarity: "legendary",
-    title: "Wild Fortune"
-  },
-
-  {
-    id: "scatter_god",
-    name: "Scatter God",
-    category: "Freispiele",
-    requirement: "1.000 Freispiele",
-    reward: "Legendary Titel",
-    rarity: "mythic",
-    title: "Scatter God"
-  },
-
-  // JACKPOT
-
-  {
-    id: "jackpot_hunter",
-    name: "Jackpot Hunter",
-    category: "Jackpot",
-    requirement: "1 Jackpot",
-    reward: "Badge",
-    rarity: "rare",
-    title: "Jackpot Hunter"
-  },
-
-  {
-    id: "jackpot_addict",
-    name: "Jackpot Addict",
-    category: "Jackpot",
-    requirement: "5 Jackpots",
-    reward: "Titel",
-    rarity: "epic",
-    title: "Jackpot Addict"
-  },
-
-  {
-    id: "mega_winner",
-    name: "Mega Winner",
-    category: "Jackpot",
-    requirement: "10 Jackpots",
-    reward: "Animierter Rahmen",
-    rarity: "legendary",
-    title: "Mega Winner"
-  },
-
-  {
-    id: "god_of_fortune",
-    name: "God of Fortune",
-    category: "Jackpot",
-    requirement: "25 Jackpots",
-    reward: "Mythic Titel",
-    rarity: "mythic",
-    title: "God of Fortune"
+function getDiscordAvatarUrl(discordUser) {
+  if (!discordUser.avatar) {
+    const defaultAvatar = Number(discordUser.discriminator || 0) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${defaultAvatar}.png`;
   }
 
-];
+  const extension = discordUser.avatar.startsWith("a_") ? "gif" : "png";
+  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
+}
+
+function isAdmin(req) {
+  const adminIds = (process.env.ADMIN_DISCORD_IDS || "")
+    .split(",")
+    .map(id => id.trim());
+
+  return req.session?.user?.discord_id &&
+    adminIds.includes(req.session.user.discord_id);
+}
+
+function requireAdmin(req, res, next) {
+  if (!isAdmin(req)) {
+    return res.status(403).json({ error: "Keine Adminrechte." });
+  }
+
+  next();
+}
 
 app.get("/auth/discord", (req, res) => {
   const redirect =
@@ -279,23 +111,14 @@ app.get("/auth/discord/callback", async (req, res) => {
         code,
         redirect_uri: process.env.DISCORD_REDIRECT_URI
       }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
 
     const accessToken = tokenResponse.data.access_token;
 
-    const userResponse = await axios.get(
-      "https://discord.com/api/users/@me",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
-    );
+    const userResponse = await axios.get("https://discord.com/api/users/@me", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
 
     const discordUser = userResponse.data;
 
@@ -308,21 +131,20 @@ app.get("/auth/discord/callback", async (req, res) => {
     const avatarUrl = getDiscordAvatarUrl(discordUser);
 
     if (!existingUser) {
-      await supabase
-        .from("users")
-        .insert({
-          discord_id: discordUser.id,
-          username: discordUser.username,
-          display_name: discordUser.username,
-          avatar_url: avatarUrl,
-          coins: 1000,
-          spins_total: 0,
-          wins_total: 0,
-          coins_won_total: 0,
-          biggest_win: 0,
-          jackpots_won: 0,
-          free_spins_won: 0
-        });
+      await supabase.from("users").insert({
+        discord_id: discordUser.id,
+        username: discordUser.username,
+        display_name: discordUser.username,
+        avatar_url: avatarUrl,
+        coins: 1000,
+        spins_total: 0,
+        wins_total: 0,
+        coins_won_total: 0,
+        biggest_win: 0,
+        jackpots_won: 0,
+        free_spins_won: 0,
+        selected_title: null
+      });
     } else {
       await supabase
         .from("users")
@@ -343,6 +165,11 @@ app.get("/auth/discord/callback", async (req, res) => {
     console.error(err.response?.data || err.message);
     res.status(500).send("Discord Login Fehler.");
   }
+});
+
+app.get("/logout", (req, res) => {
+  req.session = null;
+  res.redirect(process.env.FRONTEND_URL);
 });
 
 app.get("/me", async (req, res) => {
@@ -429,6 +256,48 @@ app.post("/profile/display-name", async (req, res) => {
   res.json({ display_name: cleanName });
 });
 
+app.post("/profile/title", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  const { title } = req.body;
+  const discordId = req.session.user.discord_id;
+
+  if (!title) {
+    await supabase
+      .from("users")
+      .update({ selected_title: null })
+      .eq("discord_id", discordId);
+
+    return res.json({ selected_title: null });
+  }
+
+  const achievement = ACHIEVEMENTS.find(item => item.title === title);
+
+  if (!achievement) {
+    return res.status(400).json({ error: "Ungültiger Titel." });
+  }
+
+  const { data: unlocked } = await supabase
+    .from("user_achievements")
+    .select("*")
+    .eq("discord_id", discordId)
+    .eq("achievement_id", achievement.id)
+    .single();
+
+  if (!unlocked) {
+    return res.status(403).json({ error: "Titel nicht freigeschaltet." });
+  }
+
+  await supabase
+    .from("users")
+    .update({ selected_title: title })
+    .eq("discord_id", discordId);
+
+  res.json({ selected_title: title });
+});
+
 app.get("/jackpot", async (req, res) => {
   const { data, error } = await supabase
     .from("jackpot")
@@ -459,7 +328,7 @@ app.post("/jackpot", async (req, res) => {
     });
   }
 
-  const contribution = Math.max(1, Math.floor(bet * 0.02));
+  const contribution = Math.max(1, Math.floor(Number(bet) * 0.02));
 
   const { data, error } = await supabase
     .from("jackpot")
@@ -472,7 +341,7 @@ app.post("/jackpot", async (req, res) => {
     return res.sendStatus(500);
   }
 
-  const newAmount = data.amount + contribution;
+  const newAmount = Number(data.amount) + contribution;
   const jackpotChance = 0.002;
   const jackpotWon = Math.random() < jackpotChance;
 
@@ -559,17 +428,17 @@ app.post("/update-stats", async (req, res) => {
     spins_total: (user.spins_total || 0) + 1
   };
 
-  if (totalWin > 0) {
+  if (Number(totalWin) > 0) {
     updates.wins_total = (user.wins_total || 0) + 1;
-    updates.coins_won_total = (user.coins_won_total || 0) + totalWin;
+    updates.coins_won_total = (user.coins_won_total || 0) + Number(totalWin);
 
-    if (totalWin > (user.biggest_win || 0)) {
-      updates.biggest_win = totalWin;
+    if (Number(totalWin) > (user.biggest_win || 0)) {
+      updates.biggest_win = Number(totalWin);
     }
   }
 
-  if (freeSpinsWon > 0) {
-    updates.free_spins_won = (user.free_spins_won || 0) + freeSpinsWon;
+  if (Number(freeSpinsWon) > 0) {
+    updates.free_spins_won = (user.free_spins_won || 0) + Number(freeSpinsWon);
   }
 
   if (jackpotWon) {
@@ -626,9 +495,127 @@ app.get("/achievements", async (req, res) => {
   res.json(achievements);
 });
 
-app.get("/logout", (req, res) => {
-  req.session = null;
-  res.redirect(process.env.FRONTEND_URL);
+/* ADMIN ROUTES */
+
+app.get("/admin/me", requireAdmin, async (req, res) => {
+  res.json({ isAdmin: true });
+});
+
+app.post("/admin/add-coins", requireAdmin, async (req, res) => {
+  const { username, amount } = req.body;
+
+  const cleanedAmount = String(amount)
+    .replace(/\./g, "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "");
+
+  const addAmount = Number(cleanedAmount);
+
+  if (!username || !Number.isSafeInteger(addAmount)) {
+    return res.status(400).json({ error: "Ungültige Eingabe." });
+  }
+
+  const searchName = String(username).trim();
+
+  const { data: users, error } = await supabase
+    .from("users")
+    .select("discord_id, username, display_name, coins")
+    .or(`username.ilike.${searchName},display_name.ilike.${searchName}`);
+
+  if (error || !users || users.length === 0) {
+    return res.status(404).json({ error: "Spieler nicht gefunden." });
+  }
+
+  const user = users[0];
+  const newCoins = Number(user.coins || 0) + addAmount;
+
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ coins: newCoins })
+    .eq("discord_id", user.discord_id);
+
+  if (updateError) {
+    return res.status(500).json({ error: "Coins konnten nicht geändert werden." });
+  }
+
+  res.json({
+    success: true,
+    username: user.display_name || user.username,
+    coins: newCoins
+  });
+});
+
+app.post("/admin/give-all-coins", requireAdmin, async (req, res) => {
+  const cleanedAmount = String(req.body.amount)
+    .replace(/\./g, "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "");
+
+  const addAmount = Number(cleanedAmount);
+
+  if (!Number.isSafeInteger(addAmount)) {
+    return res.status(400).json({ error: "Ungültiger Betrag." });
+  }
+
+  const { data: users, error } = await supabase
+    .from("users")
+    .select("discord_id, coins");
+
+  if (error || !users) {
+    return res.status(500).json({ error: "Spieler konnten nicht geladen werden." });
+  }
+
+  for (const user of users) {
+    await supabase
+      .from("users")
+      .update({ coins: Number(user.coins || 0) + addAmount })
+      .eq("discord_id", user.discord_id);
+  }
+
+  res.json({
+    success: true,
+    added: addAmount,
+    affected: users.length
+  });
+});
+
+app.post("/admin/set-jackpot", requireAdmin, async (req, res) => {
+  const rawAmount = req.body.amount;
+
+  const cleanedAmount = String(rawAmount)
+    .replace(/\./g, "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "");
+
+  const jackpotAmount = Number(cleanedAmount);
+
+  if (!Number.isSafeInteger(jackpotAmount) || jackpotAmount < 0) {
+    return res.status(400).json({
+      error: "Ungültiger Jackpot.",
+      received: rawAmount,
+      cleaned: cleanedAmount
+    });
+  }
+
+  const { data, error } = await supabase
+    .from("jackpot")
+    .update({ amount: jackpotAmount })
+    .eq("id", 1)
+    .select("amount")
+    .single();
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: "Jackpot konnte nicht gesetzt werden.",
+      details: error.message
+    });
+  }
+
+  res.json({
+    success: true,
+    amount: data.amount
+  });
 });
 
 async function unlockAchievements(discordId, user) {
@@ -673,165 +660,11 @@ async function unlockAchievements(discordId, user) {
 
     if (!error) {
       const achievement = ACHIEVEMENTS.find(item => item.id === achievementId);
-      if (achievement) {
-        unlockedNow.push(achievement);
-      }
+      if (achievement) unlockedNow.push(achievement);
     }
   }
 
   return unlockedNow;
 }
-
-function getDiscordAvatarUrl(discordUser) {
-  if (!discordUser.avatar) {
-    const defaultAvatar = Number(discordUser.discriminator || 0) % 5;
-    return `https://cdn.discordapp.com/embed/avatars/${defaultAvatar}.png`;
-  }
-
-  const extension = discordUser.avatar.startsWith("a_") ? "gif" : "png";
-
-  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
-}
-
-function isAdmin(req) {
-  const adminIds = (process.env.ADMIN_DISCORD_IDS || "")
-    .split(",")
-    .map(id => id.trim());
-
-  return req.session?.user?.discord_id &&
-    adminIds.includes(req.session.user.discord_id);
-}
-
-function requireAdmin(req, res, next) {
-  if (!isAdmin(req)) {
-    return res.status(403).json({
-      error: "Keine Adminrechte."
-    });
-  }
-
-  next();
-}
-
-app.get("/admin/me", requireAdmin, async (req, res) => {
-  res.json({ isAdmin: true });
-});
-
-app.post("/admin/add-coins", requireAdmin, async (req, res) => {
-  const { username, amount } = req.body;
-  const addAmount = parseInt(amount, 10);
-
-  if (!username || !Number.isFinite(addAmount)) {
-    return res.status(400).json({ error: "Ungültige Eingabe." });
-  }
-
-  const { data: users, error } = await supabase
-    .from("users")
-    .select("discord_id, username, display_name, coins")
-    .or(`username.ilike.${username},display_name.ilike.${username}`);
-
-  if (error || !users || users.length === 0) {
-    return res.status(404).json({ error: "Spieler nicht gefunden." });
-  }
-
-  const user = users[0];
-  const newCoins = Number(user.coins) + addAmount;
-
-  const { error: updateError } = await supabase
-    .from("users")
-    .update({ coins: newCoins })
-    .eq("discord_id", user.discord_id);
-
-  if (updateError) {
-    return res.status(500).json({ error: "Coins konnten nicht geändert werden." });
-  }
-
-  res.json({ success: true, username: user.display_name || user.username, coins: newCoins });
-});
-
-app.post("/admin/give-all-coins", requireAdmin, async (req, res) => {
-  const addAmount = parseInt(req.body.amount, 10);
-
-  if (!Number.isFinite(addAmount)) {
-    return res.status(400).json({ error: "Ungültiger Betrag." });
-  }
-
-  const { data: users, error } = await supabase
-    .from("users")
-    .select("discord_id, coins");
-
-  if (error || !users) {
-    return res.status(500).json({ error: "Spieler konnten nicht geladen werden." });
-  }
-
-  for (const user of users) {
-    await supabase
-      .from("users")
-      .update({ coins: Number(user.coins) + addAmount })
-      .eq("discord_id", user.discord_id);
-  }
-
-  res.json({ success: true, added: addAmount, affected: users.length });
-});
-
-app.post("/admin/set-jackpot", requireAdmin, async (req, res) => {
-  const jackpotAmount = parseInt(req.body.amount, 10);
-
-  if (!Number.isFinite(jackpotAmount) || jackpotAmount < 0) {
-    return res.status(400).json({ error: "Ungültiger Jackpot." });
-  }
-
-  const { error } = await supabase
-    .from("jackpot")
-    .update({ amount: jackpotAmount })
-    .eq("id", 1);
-
-  if (error) {
-    return res.status(500).json({ error: "Jackpot konnte nicht gesetzt werden." });
-  }
-
-  res.json({ success: true, amount: jackpotAmount });
-});
-
-app.post("/profile/title", async (req, res) => {
-  if (!req.session || !req.session.user) {
-    return res.sendStatus(401);
-  }
-
-  const { title } = req.body;
-  const discordId = req.session.user.discord_id;
-
-  if (!title) {
-    await supabase
-      .from("users")
-      .update({ selected_title: null })
-      .eq("discord_id", discordId);
-
-    return res.json({ selected_title: null });
-  }
-
-  const achievement = ACHIEVEMENTS.find(item => item.title === title);
-
-  if (!achievement) {
-    return res.status(400).json({ error: "Ungültiger Titel." });
-  }
-
-  const { data: unlocked } = await supabase
-    .from("user_achievements")
-    .select("*")
-    .eq("discord_id", discordId)
-    .eq("achievement_id", achievement.id)
-    .single();
-
-  if (!unlocked) {
-    return res.status(403).json({ error: "Titel nicht freigeschaltet." });
-  }
-
-  await supabase
-    .from("users")
-    .update({ selected_title: title })
-    .eq("discord_id", discordId);
-
-  res.json({ selected_title: title });
-});
 
 module.exports = app;
