@@ -12,6 +12,17 @@
 
 <body>
 
+  <div class="profile-menu-wrapper">
+  <button class="profile-avatar-button" onclick="toggleProfileMenu()">
+    <img id="topProfileAvatar" src="" alt="Avatar">
+  </button>
+
+  <div id="profileMenu" class="profile-menu hidden">
+    <button onclick="openSettingsOverlay()">⚙️ Einstellungen</button>
+    <a href="/logout">🚪 Abmelden</a>
+  </div>
+</div>
+
   <h1>🎰 FatBet</h1>
 
   <!-- LOGIN -->
@@ -25,29 +36,7 @@
 
   <!-- GAME -->
   <div id="game" class="hidden">
-
-    <p>
-      Spieler:
-      <span id="player"></span>
-    </p>
-
-    <div class="profile-card">
-      <img id="profileAvatar" class="profile-avatar" src="" alt="Avatar">
-
-      <div>
-        <p class="profile-name">
-          Anzeigename:
-          <span id="displayNameText"></span>
-        </p>
-
-        <input id="displayNameInput" type="text" maxlength="20" placeholder="Neuer Anzeigename">
-
-        <button onclick="saveDisplayName()">
-            Speichern
-        </button>
-      </div>
-    </div>
-
+    
     <p>
       Coins:
       <span id="coins">1000</span>
@@ -168,6 +157,24 @@
     <h2>💰 JACKPOT 💰</h2>
     <p id="jackpotWinText"></p>
     <small>Klicke irgendwo, um weiterzuspielen</small>
+  </div>
+</div>
+
+<div id="settingsOverlay" class="settings-overlay hidden">
+  <div class="settings-box">
+    <button class="settings-close" onclick="closeSettingsOverlay()">✕</button>
+
+    <h2>⚙️ Einstellungen</h2>
+
+    <img id="settingsAvatar" class="settings-avatar" src="" alt="Avatar">
+
+    <p>Discord Username:</p>
+    <input id="discordUsernameInput" type="text" disabled>
+
+    <p>Displayname:</p>
+    <input id="displayNameInput" type="text" maxlength="20">
+
+    <button onclick="saveDisplayName()">Speichern</button>
   </div>
 </div>
 

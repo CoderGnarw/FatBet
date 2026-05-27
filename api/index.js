@@ -323,10 +323,13 @@ app.post("/profile/display-name", async (req, res) => {
 
 function getDiscordAvatarUrl(discordUser) {
   if (!discordUser.avatar) {
-    return "https://cdn.discordapp.com/embed/avatars/0.png";
+    const defaultAvatar = Number(discordUser.discriminator || 0) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${defaultAvatar}.png`;
   }
 
-  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`;
+  const extension = discordUser.avatar.startsWith("a_") ? "gif" : "png";
+
+  return `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.${extension}?size=128`;
 }
 
 module.exports = app;

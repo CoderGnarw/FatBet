@@ -819,15 +819,18 @@ function animateCoins(from, to) {
 }
 
 function updateProfileUI(user) {
-  const displayNameText = document.getElementById("displayNameText");
-  const displayNameInput = document.getElementById("displayNameInput");
-  const profileAvatar = document.getElementById("profileAvatar");
-
+  const avatarUrl = user.avatar_url || "https://cdn.discordapp.com/embed/avatars/0.png";
   const displayName = user.display_name || user.username;
 
-  if (displayNameText) displayNameText.innerText = displayName;
+  const topAvatar = document.getElementById("topProfileAvatar");
+  const settingsAvatar = document.getElementById("settingsAvatar");
+  const discordUsernameInput = document.getElementById("discordUsernameInput");
+  const displayNameInput = document.getElementById("displayNameInput");
+
+  if (topAvatar) topAvatar.src = avatarUrl;
+  if (settingsAvatar) settingsAvatar.src = avatarUrl;
+  if (discordUsernameInput) discordUsernameInput.value = user.username;
   if (displayNameInput) displayNameInput.value = displayName;
-  if (profileAvatar) profileAvatar.src = user.avatar_url || "";
 }
 
 async function saveDisplayName() {
@@ -857,4 +860,17 @@ async function saveDisplayName() {
   if (displayNameText) displayNameText.innerText = data.display_name;
 
   updateLeaderboard();
+}
+
+function toggleProfileMenu() {
+  document.getElementById("profileMenu").classList.toggle("hidden");
+}
+
+function openSettingsOverlay() {
+  document.getElementById("settingsOverlay").classList.remove("hidden");
+  document.getElementById("profileMenu").classList.add("hidden");
+}
+
+function closeSettingsOverlay() {
+  document.getElementById("settingsOverlay").classList.add("hidden");
 }
