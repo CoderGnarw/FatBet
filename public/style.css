@@ -2248,3 +2248,25 @@ h1,
   right: 18px !important;
   z-index: 10000 !important;
 }
+
+.feed-big {
+  border-color: #00ffd5;
+  box-shadow:
+    0 0 12px rgba(0, 255, 213, 0.45),
+    inset 0 0 14px rgba(0, 255, 213, 0.12);
+}
+
+.feed-mega {
+  border-color: #ff7a00;
+  box-shadow:
+    0 0 14px rgba(255, 122, 0, 0.65),
+    inset 0 0 18px rgba(255, 122, 0, 0.18);
+}
+
+.feed-fat {
+  border-color: #ff00ff;
+  box-shadow:
+    0 0 18px rgba(255, 0, 255, 0.75),
+    0 0 32px rgba(255, 215, 0, 0.35),
+    inset 0 0 22px rgba(255, 0, 255, 0.22);
+}

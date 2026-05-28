@@ -263,10 +263,21 @@ async function spin() {
   }
 
   if (totalWin >= bet * 25) {
-    await addLiveFeedMessage(
-      `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`
-    );
+  const multiplier = totalWin / bet;
+
+  let winTier = "big";
+
+  if (multiplier >= 100) {
+    winTier = "fat";
+  } else if (multiplier >= 50) {
+    winTier = "mega";
   }
+
+  await addLiveFeedMessage({
+    message: `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`,
+    tier: winTier
+  });
+}
 
   await updateStats(totalWin, scatterData.freeSpinsWon, jackpotData.jackpotWon);
 
@@ -1061,12 +1072,24 @@ async function loadLiveFeed() {
     div.classList.add("feed-item");
 
     const isJackpot = item.message.toLowerCase().includes("jackpot");
-    const isBigWin = item.message.toLowerCase().includes("gewann");
+const isWin = item.message.toLowerCase().includes("gewann");
 
-    if (isJackpot) div.classList.add("feed-jackpot");
-    else if (isBigWin) div.classList.add("feed-bigwin");
+const tier = item.tier || "big";
 
-    const tag = isJackpot ? "💰 JACKPOT" : isBigWin ? "💎 BIG WIN" : "📢 WIN";
+if (isJackpot) {
+  div.classList.add("feed-jackpot");
+} else if (isWin) {
+  div.classList.add(`feed-${tier}`);
+}
+
+const tag =
+  isJackpot
+    ? "💰 JACKPOT"
+    : tier === "fat"
+      ? "💎 FAT WIN"
+      : tier === "mega"
+        ? "🔥 MEGA WIN"
+        : "💎 BIG WIN";
     const time = item.created_at ? timeAgo(item.created_at) : "";
 
     div.innerHTML = `
@@ -1085,14 +1108,19 @@ async function loadLiveFeed() {
   });
 }
 
-async function addLiveFeedMessage(message) {
+async function addLiveFeedMessage(payload) {
+  const body =
+    typeof payload === "string"
+      ? { message: payload, tier: "big" }
+      : payload;
+
   await fetch("/live-feed", {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ message })
+    body: JSON.stringify(body)
   });
 
   loadLiveFeed();

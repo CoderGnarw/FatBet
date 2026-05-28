@@ -375,7 +375,7 @@ app.post("/jackpot", async (req, res) => {
 app.get("/live-feed", async (req, res) => {
   const { data, error } = await supabase
     .from("live_feed")
-    .select("id, message, created_at")
+    .select("id, message, tier, created_at")
     .order("created_at", { ascending: false })
     .limit(10);
 
@@ -392,7 +392,7 @@ app.post("/live-feed", async (req, res) => {
     return res.sendStatus(401);
   }
 
-  const { message } = req.body;
+  const { message, tier } = req.body;
 
   if (!message) {
     return res.sendStatus(400);
@@ -400,7 +400,10 @@ app.post("/live-feed", async (req, res) => {
 
   await supabase
     .from("live_feed")
-    .insert({ message });
+    .insert({
+      message,
+      tier: tier || "big"
+    });
 
   res.sendStatus(200);
 });
