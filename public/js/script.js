@@ -53,6 +53,10 @@ let pendingLootboxResult = null;
 let lootboxCanClose = false;
 
 let sevenTvEmotes = {};
+const manualEmotes = {
+  KEKW: "https://cdn.7tv.app/emote/60ae7316f7c927fad14e6ca2/2x.webp",
+  OMEGALUL: "https://cdn.7tv.app/emote/60ae958e229664e8664adbc8/2x.webp"
+};
 
 const paylines = [
   [0, 0, 0, 0, 0],
@@ -2108,11 +2112,38 @@ function parse7TVEmotes(text) {
   return text
     .split(" ")
     .map(word => {
-      const emoteUrl = sevenTvEmotes[word];
+      const cleanWord = word.replace(/[.,!?;:]/g, "");
+      const punctuation = word.slice(cleanWord.length);
+
+      const emoteUrl =
+        sevenTvEmotes[cleanWord] ||
+        manualEmotes[cleanWord];
 
       if (!emoteUrl) return word;
 
-      return `<img class="chat-emote" src="${emoteUrl}" alt="${word}" title="${word}">`;
+      return `<img class="chat-emote" src="${emoteUrl}" alt="${cleanWord}" title="${cleanWord}">${punctuation}`;
     })
     .join(" ");
+}
+
+async function resolveUnknown7TVEmotes(message) {
+  const words = message.split(/\s+/);
+
+  for (const rawWord of words) {
+    const cleanWord = rawWord.replace(/[.,!?;:()[\]{}"'`]/g, "");
+
+    if (!cleanWord || cleanWord.length < 2) continue;
+    if (sevenTvEmotes[cleanWord] || manualEmotes[cleanWord]) continue;
+    if (!/^[a-zA-Z0-9_]{2,40}$/.test(cleanWord)) continue;
+
+    try {
+      const res = await fetch(`/emotes/7tv/search/${encodeURIComponent(cleanWord)}`);
+      const data = await res.json();
+
+      if (data.found && data.url) {
+        sevenTvEmotes[data.name] = data.url;
+        sevenTvEmotes[cleanWord] = data.url;
+      }
+    } catch {}
+  }
 }

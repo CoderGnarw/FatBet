@@ -852,4 +852,68 @@ app.post("/admin/set-chat-role", requireAdmin, async (req, res) => {
   });
 });
 
+const sevenTvSearchCache = new Map();
+
+app.get("/emotes/7tv/search/:name", async (req, res) => {
+  const name = String(req.params.name || "").trim();
+
+  if (!/^[a-zA-Z0-9_]{2,40}$/.test(name)) {
+    return res.status(400).json({ found: false });
+  }
+
+  const cacheKey = name.toLowerCase();
+
+  if (sevenTvSearchCache.has(cacheKey)) {
+    return res.json(sevenTvSearchCache.get(cacheKey));
+  }
+
+  try {
+    const gqlRes = await fetch("https://7tv.io/v3/gql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query: `
+          query SearchEmotes($query: String!) {
+            emotes(query: $query, limit: 1) {
+              items {
+                id
+                name
+                host {
+                  url
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          query: name
+        }
+      })
+    });
+
+    const json = await gqlRes.json();
+    const emote = json?.data?.emotes?.items?.[0];
+
+    if (!emote?.name || !emote?.host?.url) {
+      const result = { found: false };
+      sevenTvSearchCache.set(cacheKey, result);
+      return res.json(result);
+    }
+
+    const result = {
+      found: true,
+      name: emote.name,
+      url: `https:${emote.host.url}/2x.webp`
+    };
+
+    sevenTvSearchCache.set(cacheKey, result);
+    res.json(result);
+  } catch (error) {
+    console.error("7TV search error:", error);
+    res.json({ found: false });
+  }
+});
+
 module.exports = app;
