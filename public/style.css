@@ -2518,8 +2518,11 @@ h1,
 
 .bonus-card {
   width: 170px !important;
-  min-height: 86px;
-  padding: 12px 14px !important;
+
+  min-height: unset !important;
+  height: auto !important;
+
+  padding: 14px 16px !important;
 }
 
 .bonus-icon {
