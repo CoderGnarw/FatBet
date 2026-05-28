@@ -3166,3 +3166,46 @@ h1,
 .chat-input-row button {
   padding: 10px 12px;
 }
+
+.chat-big {
+  border-left: 3px solid #00ffd5;
+  padding-left: 8px;
+  text-shadow: 0 0 8px rgba(0,255,213,0.65);
+}
+
+.chat-mega {
+  border-left: 3px solid #ff7a00;
+  padding-left: 8px;
+  text-shadow: 0 0 8px rgba(255,122,0,0.75);
+}
+
+.chat-fat {
+  border-left: 3px solid #ff00ff;
+  padding-left: 8px;
+  text-shadow:
+    0 0 8px rgba(255,0,255,0.8),
+    0 0 14px rgba(255,215,0,0.45);
+}
+
+.chat-jackpot {
+  border-left: 3px solid #ffd700;
+  padding-left: 8px;
+  background: rgba(255,215,0,0.08);
+  box-shadow: inset 0 0 12px rgba(255,215,0,0.18);
+}
+
+.chat-mythic {
+  border-left: 3px solid #ff00ff;
+  padding-left: 8px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,0,255,0.12),
+      rgba(0,255,255,0.08)
+    );
+}
+
+.chat-legendary {
+  border-left: 3px solid #ffd700;
+  padding-left: 8px;
+}

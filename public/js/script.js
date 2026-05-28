@@ -1960,6 +1960,9 @@ async function loadChatMessages() {
   const box = document.getElementById("chatMessages");
   if (!box) return;
 
+  const shouldAutoScroll =
+    box.scrollTop + box.clientHeight >= box.scrollHeight - 20;
+
   const res = await fetch("/chat/messages", {
     credentials: "include"
   });
@@ -1972,15 +1975,48 @@ async function loadChatMessages() {
     const div = document.createElement("div");
     div.className = "chat-message";
 
+    const tier = detectChatTier(item.message);
+
+    if (tier) {
+      div.classList.add(`chat-${tier}`);
+    }
+
     div.innerHTML = `
-      <span class="chat-user">${item.username}:</span>
-      <span class="chat-text">${escapeHtml(item.message)}</span>
+      <span class="chat-user">${escapeHtml(item.username)}:</span>
+      <span class="chat-text">${parseChatEmotes(escapeHtml(item.message))}</span>
     `;
 
     box.appendChild(div);
   });
 
-  box.scrollTop = box.scrollHeight;
+  if (shouldAutoScroll) {
+    box.scrollTop = box.scrollHeight;
+  }
+}
+
+function detectChatTier(message) {
+  const text = message.toLowerCase();
+
+  if (text.includes("jackpot")) return "jackpot";
+  if (text.includes("fat win")) return "fat";
+  if (text.includes("mega win")) return "mega";
+  if (text.includes("big win")) return "big";
+  if (text.includes("mythic")) return "mythic";
+  if (text.includes("legendary")) return "legendary";
+
+  return null;
+}
+
+function parseChatEmotes(text) {
+  return text
+    .replaceAll(":pog:", "🔥")
+    .replaceAll(":rip:", "💀")
+    .replaceAll(":jackpot:", "💰")
+    .replaceAll(":slot:", "🎰")
+    .replaceAll(":loot:", "🎁")
+    .replaceAll(":coin:", "🪙")
+    .replaceAll(":mythic:", "💎")
+    .replaceAll(":gg:", "✨");
 }
 
 async function sendChatMessage() {
