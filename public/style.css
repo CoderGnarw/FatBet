@@ -2534,3 +2534,31 @@ h1,
 .bonus-subtitle {
   font-size: 13px;
 }
+
+#turboButton {
+  transition:
+    all 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+#turboButton.active {
+  color: #fff5b8;
+
+  border-color: #ffcc00;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,180,0,0.18),
+      rgba(255,120,0,0.12)
+    );
+
+  box-shadow:
+    0 0 14px rgba(255,200,0,0.55),
+    0 0 28px rgba(255,140,0,0.35),
+    inset 0 0 10px rgba(255,220,120,0.22);
+
+  text-shadow:
+    0 0 10px #ffcc00,
+    0 0 18px #ff9900;
+}

@@ -926,13 +926,7 @@ function toggleTurboSpin() {
   const button = document.getElementById("turboButton");
   if (!button) return;
 
-  if (turboSpin) {
-    button.innerText = "⚡ Turbo AN";
-    button.classList.add("active");
-  } else {
-    button.innerText = "⚡ Turbo AUS";
-    button.classList.remove("active");
-  }
+  button.classList.toggle("active", turboSpin);
 }
 
 function animateCoins(from, to) {
