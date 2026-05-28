@@ -307,8 +307,13 @@ function animateReelsSequentially() {
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
 
-          cell.innerText = currentGrid[row][reel];
+          const finalSymbol = currentGrid[row][reel];
+
+          cell.innerText = finalSymbol;
           cell.classList.remove("spinning");
+
+          highlightSpecialSymbolCell(cell, finalSymbol);
+
           cell.classList.add("reel-stop");
 
           setTimeout(() => {
@@ -357,10 +362,9 @@ function renderGrid() {
 
       cell.innerText = currentGrid[row][reel];
       cell.classList.remove("wild");
+      cell.classList.remove("scatter");
 
-      if (currentGrid[row][reel] === wildSymbol) {
-        cell.classList.add("wild");
-      }
+      highlightSpecialSymbolCell(cell, currentGrid[row][reel]);
     }
   }
 }
@@ -530,6 +534,18 @@ function highlightScatters() {
         cell.classList.add("scatter");
       }
     }
+  }
+}
+
+function highlightSpecialSymbolCell(cell, symbol) {
+  if (!cell) return;
+
+  if (symbol === scatterSymbol) {
+    cell.classList.add("scatter");
+  }
+
+  if (symbol === wildSymbol) {
+    cell.classList.add("wild");
   }
 }
 
