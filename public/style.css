@@ -3256,3 +3256,11 @@ h1,
     0 0 16px #00ffd5,
     0 0 26px rgba(255, 0, 255, 0.8);
 }
+
+.chat-emote {
+  height: 28px;
+  max-width: 90px;
+  vertical-align: middle;
+  object-fit: contain;
+  margin: 0 2px;
+}
