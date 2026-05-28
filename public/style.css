@@ -2670,23 +2670,36 @@ h1,
 }
 
 .online-players {
-  margin: -6px auto 14px;
-  padding: 8px 14px;
-  width: fit-content;
+  margin-top: 14px;
+
+  padding: 10px 18px;
 
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.45);
+
+  background: rgba(0, 0, 0, 0.42);
+
   border: 2px solid rgba(0,255,120,0.55);
 
+  box-shadow:
+    0 0 14px rgba(0,255,120,0.28);
+
   color: #8dffb2;
-  font-size: 14px;
+
+  font-size: 15px;
   font-weight: 800;
 
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: 6px;
 
-  text-shadow: 0 0 10px rgba(0,255,120,0.7);
+  text-shadow:
+    0 0 10px rgba(0,255,120,0.7);
+}
+
+.feed-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
