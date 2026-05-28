@@ -355,7 +355,7 @@ app.post("/jackpot", async (req, res) => {
       contribution,
       jackpotWon: true,
       jackpotWin: newAmount,
-      newJackpotAmount: 10000
+      newJackpotAmount: 777777
     });
   }
 
