@@ -328,7 +328,7 @@ app.post("/jackpot", async (req, res) => {
     });
   }
 
-  const contribution = Math.max(1, Math.floor(Number(bet) * 0.02));
+  const contribution = Math.max(1, Math.floor(Number(bet) * 0.15));
 
   const { data, error } = await supabase
     .from("jackpot")
@@ -348,7 +348,7 @@ app.post("/jackpot", async (req, res) => {
   if (jackpotWon) {
     await supabase
       .from("jackpot")
-      .update({ amount: 10000 })
+      .update({ amount: 777777 })
       .eq("id", 1);
 
     return res.json({
