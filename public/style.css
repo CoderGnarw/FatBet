@@ -2241,3 +2241,10 @@ h1,
   60% { transform: translate(7px, 5px); }
   100% { transform: translate(0, 0); }
 }
+
+.profile-menu-wrapper {
+  position: fixed !important;
+  top: 18px !important;
+  right: 18px !important;
+  z-index: 10000 !important;
+}
