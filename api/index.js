@@ -894,7 +894,11 @@ app.get("/emotes/7tv/search/:name", async (req, res) => {
     });
 
     const json = await gqlRes.json();
-    const emote = json?.data?.emotes?.items?.[0];
+    const items = json?.data?.emotes?.items || [];
+
+    const emote = items.find(item =>
+      item?.name?.toLowerCase() === name.toLowerCase()
+    );
 
     if (!emote?.name || !emote?.host?.url) {
       const result = { found: false };
@@ -905,7 +909,7 @@ app.get("/emotes/7tv/search/:name", async (req, res) => {
     const result = {
       found: true,
       name: emote.name,
-      url: `https:${emote.host.url}/2x.webp`
+      url: `https:${emote.host.url}/2x`
     };
 
     sevenTvSearchCache.set(cacheKey, result);
