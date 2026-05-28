@@ -863,10 +863,6 @@ app.get("/emotes/7tv/search/:name", async (req, res) => {
 
   const cacheKey = name.toLowerCase();
 
-  if (sevenTvSearchCache.has(cacheKey)) {
-    return res.json(sevenTvSearchCache.get(cacheKey));
-  }
-
   try {
     const gqlRes = await fetch("https://7tv.io/v3/gql", {
       method: "POST",
@@ -902,7 +898,6 @@ app.get("/emotes/7tv/search/:name", async (req, res) => {
 
     if (!emote?.name || !emote?.host?.url) {
       const result = { found: false };
-      sevenTvSearchCache.set(cacheKey, result);
       return res.json(result);
     }
 
@@ -912,7 +907,6 @@ app.get("/emotes/7tv/search/:name", async (req, res) => {
       url: `https:${emote.host.url}/2x`
     };
 
-    sevenTvSearchCache.set(cacheKey, result);
     res.json(result);
   } catch (error) {
     console.error("7TV search error:", error);
