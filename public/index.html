@@ -64,30 +64,40 @@
           <div id="slotGrid" class="slot-grid"></div>
         </div>
 
-        <div class="bet-controls">
-          <label for="betSelect">Einsatz:</label>
+        <div class="main-controls">
 
-          <select id="betSelect" onchange="changeBet()">
-            <option value="10">10 Coins</option>
-            <option value="25">25 Coins</option>
-            <option value="50" selected>50 Coins</option>
-            <option value="100">100 Coins</option>
-            <option value="250">250 Coins</option>
-            <option value="500">500 Coins</option>
-          </select>
+  <div class="spin-controls">
+    <label for="bet">Einsatz:</label>
 
-          <button onclick="spin()">
-            Spin (<span id="betText">50</span>)
-          </button>
-        </div>
+    <select id="bet">
+      <option value="100">100</option>
+      <option value="250">250</option>
+      <option value="500" selected>500</option>
+      <option value="1000">1.000</option>
+      <option value="2500">2.500</option>
+      <option value="5000">5.000</option>
+    </select>
 
-        <div class="auto-spin-controls">
-          <button onclick="startAutoSpin(10)">Auto x10</button>
-          <button onclick="startAutoSpin(25)">Auto x25</button>
-          <button onclick="startInfiniteAutoSpin()">Auto ∞</button>
-          <button onclick="stopAutoSpin()">Stop</button>
-          <button onclick="toggleTurboSpin()" id="turboButton">⚡ Turbo AUS</button>
-        </div>
+    <button id="spinButton" class="spin-button">
+      🎰 SPIN
+    </button>
+  </div>
+
+  <div class="auto-controls-bar">
+    <button onclick="startAutoSpin(10)">x10</button>
+    <button onclick="startAutoSpin(25)">x25</button>
+    <button onclick="startInfiniteAuto()">∞</button>
+
+    <div class="auto-divider"></div>
+
+    <button onclick="stopAutoSpin()">STOP</button>
+
+    <button id="turboButton" onclick="toggleTurboMode()">
+      ⚡ TURBO
+    </button>
+  </div>
+
+</div>
 
         <p id="autoSpinStatus" class="auto-spin-status hidden">
           Auto Spins übrig:
@@ -95,9 +105,36 @@
         </p>
 
         <div class="bonus-controls">
-          <button onclick="openLootboxAnimated()">🎁 Lootbox öffnen (25.000)</button>
-          <button onclick="dailyReward()">🎉 Daily Reward</button>
-        </div>
+
+  <div class="bonus-card lootbox-card"
+       onclick="openLootboxAnimated()">
+
+    <div class="bonus-icon">🎁</div>
+
+    <div class="bonus-title">
+      LOOTBOX
+    </div>
+
+    <div class="bonus-subtitle">
+      25.000 Coins
+    </div>
+  </div>
+
+  <div class="bonus-card daily-card"
+       onclick="dailyReward()">
+
+    <div class="bonus-icon">🎉</div>
+
+    <div class="bonus-title">
+      DAILY REWARD
+    </div>
+
+    <div class="bonus-subtitle">
+      Kostenlos
+    </div>
+  </div>
+
+</div>
 
         <p id="result"></p>
 
