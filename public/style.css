@@ -2270,3 +2270,41 @@ h1,
     0 0 32px rgba(255, 215, 0, 0.35),
     inset 0 0 22px rgba(255, 0, 255, 0.22);
 }
+
+.win-details {
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.win-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.win-details-toggle {
+  font-size: 13px;
+  color: #00ffd5;
+  text-shadow: 0 0 10px #00ffd5;
+}
+
+.win-details-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    margin-top 0.25s ease;
+}
+
+.win-details.expanded .win-details-content {
+  max-height: 300px;
+  opacity: 1;
+  margin-top: 12px;
+}

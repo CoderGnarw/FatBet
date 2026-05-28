@@ -786,11 +786,28 @@ function showWinDetails(winningLines, scatterData) {
   if (!box) return;
 
   box.innerHTML = "";
+  box.classList.remove("expanded");
 
   if (winningLines.length === 0 && scatterData.freeSpinsWon === 0) {
     box.classList.add("hidden");
     return;
   }
+
+  const header = document.createElement("div");
+  header.classList.add("win-details-header");
+
+  const totalLines = winningLines.length;
+  const hasScatter = scatterData.freeSpinsWon > 0;
+
+  header.innerHTML = `
+    <span>📜 ${totalLines} Gewinnlinie${totalLines === 1 ? "" : "n"}${hasScatter ? " + Scatter" : ""}</span>
+    <span class="win-details-toggle">Klicken zum Anzeigen</span>
+  `;
+
+  box.appendChild(header);
+
+  const content = document.createElement("div");
+  content.classList.add("win-details-content");
 
   winningLines.forEach(winLine => {
     const div = document.createElement("div");
@@ -800,7 +817,7 @@ function showWinDetails(winningLines, scatterData) {
       `Linie ${winLine.index + 1}: ${winLine.symbol} x${winLine.matches} ` +
       `→ ${formatNumber(winLine.win)} Coins`;
 
-    box.appendChild(div);
+    content.appendChild(div);
   });
 
   if (scatterData.freeSpinsWon > 0) {
@@ -810,8 +827,22 @@ function showWinDetails(winningLines, scatterData) {
     div.innerText =
       `Scatter: ${scatterData.scatterCount} 🎁 → ${scatterData.freeSpinsWon} Freispiele`;
 
-    box.appendChild(div);
+    content.appendChild(div);
   }
+
+  box.appendChild(content);
+
+  box.onclick = () => {
+    box.classList.toggle("expanded");
+
+    const toggle = box.querySelector(".win-details-toggle");
+
+    if (toggle) {
+      toggle.innerText = box.classList.contains("expanded")
+        ? "Klicken zum Einklappen"
+        : "Klicken zum Anzeigen";
+    }
+  };
 
   box.classList.remove("hidden");
 }
