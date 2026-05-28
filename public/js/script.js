@@ -315,23 +315,30 @@ async function spin() {
 
 function animateReelsSequentially() {
   return new Promise(resolve => {
+    let stoppedReels = 0;
+
     for (let reel = 0; reel < reels; reel++) {
+      const reelSpinSpeed = turboSpin ? 34 : 72;
+      const baseStopTime = turboSpin ? 520 : 950;
+      const reelDelay = turboSpin ? 120 : 260;
+
       const interval = setInterval(() => {
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
 
           cell.classList.add("spinning");
           cell.classList.remove("reel-stop");
+          cell.classList.remove("reel-snap");
+
           cell.innerText = rand();
         }
-      }, turboSpin ? 35 : 95);
+      }, reelSpinSpeed);
 
       setTimeout(() => {
         clearInterval(interval);
 
         for (let row = 0; row < rows; row++) {
           const cell = document.getElementById(`slot-${row}-${reel}`);
-
           const finalSymbol = currentGrid[row][reel];
 
           cell.innerText = finalSymbol;
@@ -340,16 +347,20 @@ function animateReelsSequentially() {
           highlightSpecialSymbolCell(cell, finalSymbol);
 
           cell.classList.add("reel-stop");
+          cell.classList.add("reel-snap");
 
           setTimeout(() => {
             cell.classList.remove("reel-stop");
-          }, 320);
+            cell.classList.remove("reel-snap");
+          }, 420);
         }
 
-        if (reel === reels - 1) {
-          setTimeout(resolve, turboSpin ? 180 : 350);
+        stoppedReels++;
+
+        if (stoppedReels === reels) {
+          setTimeout(resolve, turboSpin ? 140 : 260);
         }
-      }, turboSpin ? 380 + reel * 90 : 1150 + reel * 420);
+      }, baseStopTime + reel * reelDelay);
     }
   });
 }
