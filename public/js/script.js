@@ -101,6 +101,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadJackpot();
   startJackpotPolling();
 
+  await loadChatMessages();
+  setInterval(loadChatMessages, 3000);
+
   await loadLiveFeed();
   await loadAchievements();
 
@@ -1951,4 +1954,61 @@ function animateNumberText(element, from, to, duration = 1600, prefix = "", suff
   }
 
   requestAnimationFrame(update);
+}
+
+async function loadChatMessages() {
+  const box = document.getElementById("chatMessages");
+  if (!box) return;
+
+  const res = await fetch("/chat/messages", {
+    credentials: "include"
+  });
+
+  const messages = await res.json();
+
+  box.innerHTML = "";
+
+  messages.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "chat-message";
+
+    div.innerHTML = `
+      <span class="chat-user">${item.username}:</span>
+      <span class="chat-text">${escapeHtml(item.message)}</span>
+    `;
+
+    box.appendChild(div);
+  });
+
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  if (!input) return;
+
+  const message = input.value.trim();
+  if (!message) return;
+
+  input.value = "";
+
+  await fetch("/chat/messages", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message })
+  });
+
+  loadChatMessages();
+}
+
+function escapeHtml(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

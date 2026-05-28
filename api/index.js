@@ -728,4 +728,57 @@ function createLootParticles(color = "#ff00ff") {
   }
 }
 
+app.get("/chat/messages", async (req, res) => {
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .select("id, username, message, created_at")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    console.error(error);
+    return res.json([]);
+  }
+
+  res.json(data.reverse());
+});
+
+app.post("/chat/messages", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  let { message } = req.body;
+
+  if (!message || typeof message !== "string") {
+    return res.status(400).json({ error: "Nachricht fehlt." });
+  }
+
+  message = message.trim().slice(0, 180);
+
+  if (!message) {
+    return res.status(400).json({ error: "Nachricht leer." });
+  }
+
+  const username =
+    req.session.user.display_name ||
+    req.session.user.username ||
+    "Spieler";
+
+  const { error } = await supabase
+    .from("chat_messages")
+    .insert({
+      discord_id: req.session.user.discord_id,
+      username,
+      message
+    });
+
+  if (error) {
+    console.error(error);
+    return res.sendStatus(500);
+  }
+
+  res.json({ success: true });
+});
+
 module.exports = app;
