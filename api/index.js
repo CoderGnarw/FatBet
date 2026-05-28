@@ -731,7 +731,7 @@ function createLootParticles(color = "#ff00ff") {
 app.get("/chat/messages", async (req, res) => {
   const { data, error } = await supabase
     .from("chat_messages")
-    .select("id, username, message, created_at")
+    .select("id, username, message, created_at, discord_id")
     .order("created_at", { ascending: false })
     .limit(30);
 
@@ -740,7 +740,26 @@ app.get("/chat/messages", async (req, res) => {
     return res.json([]);
   }
 
-  res.json(data.reverse());
+  const discordIds = [...new Set(data.map(msg => msg.discord_id))];
+
+  const { data: users } = await supabase
+    .from("users")
+    .select("discord_id, chat_role")
+    .in("discord_id", discordIds);
+
+  const roleMap = new Map(
+    users.map(user => [
+      user.discord_id,
+      user.chat_role || "player"
+    ])
+  );
+
+  const messages = data.reverse().map(msg => ({
+    ...msg,
+    chat_role: roleMap.get(msg.discord_id) || "player"
+  }));
+
+  res.json(messages);
 });
 
 app.post("/chat/messages", async (req, res) => {
@@ -779,6 +798,58 @@ app.post("/chat/messages", async (req, res) => {
   }
 
   res.json({ success: true });
+});
+
+app.post("/admin/set-chat-role", requireAdmin, async (req, res) => {
+  const { username, role } = req.body;
+
+  const allowedRoles = [
+    "player",
+    "vip",
+    "mod",
+    "admin",
+    "whale",
+    "lucky",
+    "mythic"
+  ];
+
+  if (!username || !allowedRoles.includes(role)) {
+    return res.status(400).json({
+      error: "Ungültige Rolle."
+    });
+  }
+
+  const searchName = String(username).trim();
+
+  const { data: users, error: findError } = await supabase
+    .from("users")
+    .select("discord_id, username, display_name")
+    .or(`username.ilike.${searchName},display_name.ilike.${searchName}`);
+
+  if (findError || !users || users.length === 0) {
+    return res.status(404).json({
+      error: "Spieler nicht gefunden."
+    });
+  }
+
+  const user = users[0];
+
+  const { error: updateError } = await supabase
+    .from("users")
+    .update({ chat_role: role })
+    .eq("discord_id", user.discord_id);
+
+  if (updateError) {
+    return res.status(500).json({
+      error: "Rolle konnte nicht gesetzt werden."
+    });
+  }
+
+  res.json({
+    success: true,
+    username: user.display_name || user.username,
+    role
+  });
 });
 
 module.exports = app;

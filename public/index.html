@@ -260,6 +260,30 @@
 
         <p id="adminStatus"></p>
 
+        <hr>
+
+        <h3>💬 Chat Rolle setzen</h3>
+
+        <input
+          id="adminRoleUsername"
+          type="text"
+          placeholder="Username / Displayname"
+        >
+
+        <select id="adminChatRole">
+          <option value="player">Player</option>
+          <option value="vip">VIP</option>
+          <option value="mod">Moderator</option>
+          <option value="admin">Admin</option>
+          <option value="whale">Whale</option>
+          <option value="lucky">Lucky</option>
+          <option value="mythic">Mythic</option>
+        </select>
+
+        <button onclick="adminSetChatRole()">
+          Chat Rolle setzen
+        </button>
+      
       </div>
 
     </div>

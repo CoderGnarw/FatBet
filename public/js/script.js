@@ -1982,7 +1982,9 @@ async function loadChatMessages() {
     }
 
     div.innerHTML = `
-      <span class="chat-user">${escapeHtml(item.username)}:</span>
+      <span class="chat-user chat-role-${item.chat_role || "player"}">
+        ${escapeHtml(item.username)}:
+      </span>
       <span class="chat-text">${parseChatEmotes(escapeHtml(item.message))}</span>
     `;
 
@@ -2047,4 +2049,28 @@ function escapeHtml(text) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+async function adminSetChatRole() {
+  const username = document.getElementById("adminRoleUsername").value.trim();
+  const role = document.getElementById("adminChatRole").value;
+
+  const res = await fetch("/admin/set-chat-role", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, role })
+  });
+
+  const data = await res.json();
+
+  adminStatus(
+    res.ok
+      ? `${data.username} hat jetzt die Rolle ${data.role}.`
+      : data.error
+  );
+
+  loadChatMessages();
 }
