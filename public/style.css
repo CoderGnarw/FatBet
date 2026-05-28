@@ -2118,3 +2118,126 @@ h1,
   position: relative;
   z-index: 5;
 }
+
+.big-win {
+  background:
+    radial-gradient(circle at center, rgba(255, 0, 255, 0.18), rgba(0, 0, 0, 0.58));
+  backdrop-filter: blur(3px);
+}
+
+.big-win-text {
+  animation: winTitleSlam 0.55s ease, winTitlePulse 0.9s ease-in-out infinite;
+}
+
+.big-win-amount {
+  animation: winAmountRise 0.65s ease;
+}
+
+.big-win.big-tier {
+  --win-main: #ffd700;
+  --win-second: #00ffd5;
+}
+
+.big-win.mega-tier {
+  --win-main: #ff4d00;
+  --win-second: #ffd700;
+  animation: megaFlash 0.35s ease;
+}
+
+.big-win.fat-tier {
+  --win-main: #ff00ff;
+  --win-second: #00ffd5;
+  animation: fatFlash 0.5s ease, fatShake 0.75s ease;
+}
+
+.big-win.big-tier .big-win-text,
+.big-win.mega-tier .big-win-text,
+.big-win.fat-tier .big-win-text {
+  color: var(--win-main);
+  text-shadow:
+    0 0 18px var(--win-main),
+    0 0 44px var(--win-second),
+    0 0 86px #ff00ff;
+}
+
+.big-win.big-tier .big-win-amount,
+.big-win.mega-tier .big-win-amount,
+.big-win.fat-tier .big-win-amount {
+  color: var(--win-second);
+  text-shadow:
+    0 0 18px var(--win-second),
+    0 0 46px var(--win-main);
+}
+
+@keyframes winTitleSlam {
+  0% {
+    transform: translateY(-120px) scale(0.4) rotate(-8deg);
+    opacity: 0;
+  }
+
+  65% {
+    transform: translateY(8px) scale(1.18) rotate(2deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-20px) scale(1) rotate(0);
+  }
+}
+
+@keyframes winTitlePulse {
+  0%, 100% {
+    transform: translateY(-20px) scale(1);
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.06);
+  }
+}
+
+@keyframes winAmountRise {
+  from {
+    transform: translateY(70px) scale(0.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(-20px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes megaFlash {
+  0% {
+    background: rgba(255, 215, 0, 0.45);
+  }
+
+  100% {
+    background:
+      radial-gradient(circle at center, rgba(255, 0, 255, 0.18), rgba(0, 0, 0, 0.58));
+  }
+}
+
+@keyframes fatFlash {
+  0% {
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  40% {
+    background: rgba(255, 0, 255, 0.55);
+  }
+
+  100% {
+    background:
+      radial-gradient(circle at center, rgba(255, 0, 255, 0.18), rgba(0, 0, 0, 0.58));
+  }
+}
+
+@keyframes fatShake {
+  0% { transform: translate(0, 0); }
+  15% { transform: translate(-10px, 6px); }
+  30% { transform: translate(8px, -6px); }
+  45% { transform: translate(-7px, -5px); }
+  60% { transform: translate(7px, 5px); }
+  100% { transform: translate(0, 0); }
+}

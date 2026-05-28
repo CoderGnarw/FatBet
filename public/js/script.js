@@ -694,26 +694,38 @@ async function showBigWin(amount) {
   const amountText = document.getElementById("bigWinAmount");
   const titleText = document.getElementById("bigWinText");
 
-  if (!overlay || !amountText) return;
+  if (!overlay || !amountText || !titleText) return;
 
-  if (titleText) {
-    if (multiplier >= 100) {
-      titleText.innerText = "💎 FAT WIN 💎";
-    } else if (multiplier >= 50) {
-      titleText.innerText = "🔥 MEGA WIN 🔥";
-    } else {
-      titleText.innerText = "💎 BIG WIN 💎";
-    }
+  overlay.classList.remove("big-tier", "mega-tier", "fat-tier");
+
+  let title = "💎 BIG WIN 💎";
+  let tier = "big-tier";
+  let coinBursts = 1;
+
+  if (multiplier >= 100) {
+    title = "💎 FAT WIN 💎";
+    tier = "fat-tier";
+    coinBursts = 4;
+  } else if (multiplier >= 50) {
+    title = "🔥 MEGA WIN 🔥";
+    tier = "mega-tier";
+    coinBursts = 2;
   }
 
+  titleText.innerText = title;
   amountText.innerText = `+${formatNumber(amount)} Coins`;
 
+  overlay.classList.add(tier);
   overlay.classList.remove("hidden");
-  createFlyingCoins();
 
-  await new Promise(resolve => setTimeout(resolve, 2200));
+  for (let i = 0; i < coinBursts; i++) {
+    createFlyingCoins();
+  }
+
+  await new Promise(resolve => setTimeout(resolve, multiplier >= 100 ? 3000 : 2300));
 
   overlay.classList.add("hidden");
+  overlay.classList.remove("big-tier", "mega-tier", "fat-tier");
 }
 
 function createFlyingCoins() {
