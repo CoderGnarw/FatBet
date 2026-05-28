@@ -1781,3 +1781,29 @@ function updateOnlinePlayers() {
 
   playerCount.innerText = onlinePlayers;
 }
+
+async function sendPresenceHeartbeat() {
+  await fetch("/presence/heartbeat", {
+    method: "POST",
+    credentials: "include"
+  }).catch(() => {});
+}
+
+async function loadOnlinePlayerCount() {
+  const res = await fetch("/presence/count", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+
+  onlinePlayers = data.count || 0;
+  updateOnlinePlayers();
+}
+
+function startPresenceSystem() {
+  sendPresenceHeartbeat();
+  loadOnlinePlayerCount();
+
+  setInterval(sendPresenceHeartbeat, 20000);
+  setInterval(loadOnlinePlayerCount, 10000);
+}
