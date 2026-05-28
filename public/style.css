@@ -344,7 +344,7 @@ button:hover {
 }
 
 .win-details {
-  margin-top: 12px;
+  margin-top: -8px;
   padding: 14px 18px;
   width: 100%;
   max-width: 560px;
