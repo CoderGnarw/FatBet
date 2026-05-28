@@ -623,13 +623,10 @@ function updateUI() {
   const autoSpinCount = document.getElementById("autoSpinCount");
 
   if (autoSpinStatus && autoSpinCount) {
-    if (autoSpinRunning) {
-      autoSpinStatus.classList.remove("hidden");
-      autoSpinCount.innerText = autoSpinInfinite ? "∞" : autoSpinsRemaining;
-    } else {
-      autoSpinStatus.classList.add("hidden");
-      autoSpinCount.innerText = "0";
-    }
+  autoSpinStatus.classList.remove("hidden");
+  autoSpinCount.innerText = autoSpinRunning
+    ? (autoSpinInfinite ? "∞" : autoSpinsRemaining)
+    : "";
   }
 }
 
