@@ -103,9 +103,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadJackpot();
   startJackpotPolling();
 
+  await load7TVEmotes();
   await loadChatMessages();
   setInterval(loadChatMessages, 3000);
-  await load7TVEmotes();
 
   await loadLiveFeed();
   await loadAchievements();
@@ -2079,21 +2079,29 @@ async function adminSetChatRole() {
 }
 
 async function load7TVEmotes() {
-  try {
-    const res = await fetch("https://7tv.io/v3/emote-sets/global");
-    const data = await res.json();
+  sevenTvEmotes = {};
 
-    sevenTvEmotes = {};
+  const setIds = ["global", "6353512c802a0e34bac96dd2"];
 
-    data.emotes.forEach(item => {
-      if (!item.name || !item.data?.host?.url) return;
+  for (const setId of setIds) {
+    try {
+      const res = await fetch(`https://7tv.io/v3/emote-sets/${setId}`);
+      const data = await res.json();
 
-      sevenTvEmotes[item.name] =
-        `https:${item.data.host.url}/2x.webp`;
-    });
-  } catch (error) {
-    console.warn("7TV Emotes konnten nicht geladen werden:", error);
+      if (!data.emotes) continue;
+
+      data.emotes.forEach(item => {
+        if (!item.name || !item.data?.host?.url) return;
+
+        sevenTvEmotes[item.name] =
+          `https:${item.data.host.url}/2x.webp`;
+      });
+    } catch (error) {
+      console.warn("7TV Set konnte nicht geladen werden:", setId, error);
+    }
   }
+
+  console.log("7TV Emotes geladen:", Object.keys(sevenTvEmotes).length);
 }
 
 function parse7TVEmotes(text) {
