@@ -84,25 +84,24 @@
   </div>
 
   <div class="auto-controls-bar">
-    <button onclick="startAutoSpin(10)">x10</button>
-    <button onclick="startAutoSpin(25)">x25</button>
-    <button onclick="startInfiniteAuto()">∞</button>
+  <button onclick="startAutoSpin(10)">x10</button>
+  <button onclick="startAutoSpin(25)">x25</button>
+  <button onclick="startInfiniteAutoSpin()">∞</button>
 
-    <div class="auto-divider"></div>
+  <div class="auto-divider"></div>
 
-    <button onclick="stopAutoSpin()">STOP</button>
+  <button onclick="stopAutoSpin()">STOP</button>
+  <button id="turboButton" onclick="toggleTurboSpin()">⚡ TURBO</button>
 
-    <button id="turboButton" onclick="toggleTurboMode()">
-      ⚡ TURBO
-    </button>
+  <div class="auto-divider"></div>
+
+  <div id="autoSpinStatus" class="auto-spin-pill hidden">
+    Rest:
+    <span id="autoSpinCount">0</span>
   </div>
-
 </div>
 
-        <p id="autoSpinStatus" class="auto-spin-status hidden">
-          Auto Spins übrig:
-          <span id="autoSpinCount">0</span>
-        </p>
+</div>
 
         <div class="bonus-controls">
 

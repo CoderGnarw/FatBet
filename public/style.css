@@ -2486,3 +2486,51 @@ h1,
   text-shadow:
     0 0 12px #00ffd5;
 }
+
+.auto-spin-pill {
+  min-width: 92px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 0 12px;
+
+  border-radius: 14px;
+
+  color: #00ffd5;
+  font-weight: 800;
+
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(0, 255, 213, 0.75);
+
+  box-shadow:
+    0 0 14px rgba(0, 255, 213, 0.45),
+    inset 0 0 12px rgba(0, 255, 213, 0.12);
+}
+
+.bonus-controls {
+  margin-top: 18px;
+  gap: 14px;
+}
+
+.bonus-card {
+  width: 170px !important;
+  min-height: 86px;
+  padding: 12px 14px !important;
+}
+
+.bonus-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.bonus-title {
+  font-size: 17px;
+}
+
+.bonus-subtitle {
+  font-size: 13px;
+}
