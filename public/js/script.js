@@ -26,6 +26,7 @@ const reels = 5;
 let coins = 1000;
 let displayedCoins = 1000;
 let currentUser = "";
+let onlinePlayers = 1;
 let bet = 50;
 let freeSpins = 0;
 let currentGrid = [];
@@ -93,6 +94,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   createSlotGrid();
   fillGridWithRandomSymbols();
   updateUI();
+  updateOnlinePlayers();
 
   await checkLogin();
   await loadJackpot();
@@ -1770,3 +1772,11 @@ document.addEventListener("click", () => {
 
   overlay.classList.add("hidden");
 });
+
+function updateOnlinePlayers() {
+  const playerCount = document.getElementById("onlinePlayerCount");
+
+  if (!playerCount) return;
+
+  playerCount.innerText = onlinePlayers;
+}
