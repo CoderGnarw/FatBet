@@ -602,17 +602,10 @@ function updateUI() {
   const betText = document.getElementById("betText");
   if (betText) betText.innerText = bet;
 
-  const freeSpinsText = document.getElementById("freeSpins");
   const freeSpinsWrapper = document.getElementById("freeSpinsWrapper");
 
-  if (freeSpinsText) freeSpinsText.innerText = freeSpins;
-
   if (freeSpinsWrapper) {
-    if (freeSpins > 0) {
-      freeSpinsWrapper.classList.remove("hidden");
-    } else {
-      freeSpinsWrapper.classList.add("hidden");
-    }
+    freeSpinsWrapper.style.display = "none";
   }
 
   const betSelect = document.getElementById("betSelect");
