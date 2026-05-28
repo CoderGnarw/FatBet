@@ -97,6 +97,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   updateOnlinePlayers();
 
   await checkLogin();
+  startPresenceSystem();
   await loadJackpot();
   startJackpotPolling();
 

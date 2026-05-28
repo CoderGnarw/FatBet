@@ -670,4 +670,34 @@ async function unlockAchievements(discordId, user) {
   return unlockedNow;
 }
 
+app.post("/presence/heartbeat", async (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.sendStatus(401);
+  }
+
+  await supabase
+    .from("online_players")
+    .upsert({
+      discord_id: req.session.user.discord_id,
+      last_seen: new Date().toISOString()
+    });
+
+  res.json({ success: true });
+});
+
+app.get("/presence/count", async (req, res) => {
+  const cutoff = new Date(Date.now() - 60 * 1000).toISOString();
+
+  const { count, error } = await supabase
+    .from("online_players")
+    .select("*", { count: "exact", head: true })
+    .gte("last_seen", cutoff);
+
+  if (error) {
+    return res.json({ count: 1 });
+  }
+
+  res.json({ count: count || 0 });
+});
+
 module.exports = app;
