@@ -68,6 +68,10 @@ const paylines = [
 const spinSound = new Audio("assets/sounds/spin.mp3");
 const winSound = new Audio("assets/sounds/win.mp3");
 const jackpotSound = new Audio("assets/sounds/jackpot.mp3");
+const bigWinSound = new Audio("assets/sounds/bigwin.mp3");
+const megaWinSound = new Audio("assets/sounds/megawin.mp3");
+const fatWinSound = new Audio("assets/sounds/fatwin.mp3");
+const jackpotWinSound = new Audio("assets/sounds/jackpotwin.mp3");
 
 const lootboxSounds = {
   common: new Audio("assets/sounds/common.mp3"),
@@ -77,9 +81,13 @@ const lootboxSounds = {
   mythic: new Audio("assets/sounds/mythic.mp3")
 };
 
-spinSound.volume = 0.15;
-winSound.volume = 0.08;
+spinSound.volume = 0.25;
+winSound.volume = 0.2;
 jackpotSound.volume = 0.25;
+bigWinSound.volume = 0.4;
+megaWinSound.volume = 0.45;
+fatWinSound.volume = 0.55;
+jackpotWinSound.volume = 0.7;
 
 window.addEventListener("DOMContentLoaded", async () => {
   createSlotGrid();
@@ -703,14 +711,25 @@ async function showBigWin(amount) {
   let coinBursts = 1;
 
   if (multiplier >= 100) {
-    title = "💎 FAT WIN 💎";
-    tier = "fat-tier";
-    coinBursts = 4;
-  } else if (multiplier >= 50) {
-    title = "🔥 MEGA WIN 🔥";
-    tier = "mega-tier";
-    coinBursts = 2;
-  }
+  title = "💎 FAT WIN 💎";
+  tier = "fat-tier";
+  coinBursts = 4;
+
+  fatWinSound.currentTime = 0;
+  fatWinSound.play().catch(() => {});
+
+} else if (multiplier >= 50) {
+  title = "🔥 MEGA WIN 🔥";
+  tier = "mega-tier";
+  coinBursts = 2;
+
+  megaWinSound.currentTime = 0;
+  megaWinSound.play().catch(() => {});
+
+} else {
+  bigWinSound.currentTime = 0;
+  bigWinSound.play().catch(() => {});
+}
 
   titleText.innerText = title;
   amountText.innerText = `+${formatNumber(amount)} Coins`;
@@ -987,6 +1006,8 @@ function showJackpotOverlay(amount) {
   document.body.classList.add("jackpot-shake");
 
   createJackpotCoins();
+  jackpotWinSound.currentTime = 0;
+  jackpotWinSound.play().catch(() => {});
 
   setTimeout(() => {
     document.body.classList.remove("jackpot-shake");
