@@ -2912,3 +2912,103 @@ h1,
     opacity: 1;
   }
 }
+
+.common-bg {
+  background:
+    radial-gradient(circle at center,
+      rgba(255,255,255,0.08),
+      rgba(0,0,0,0.82));
+}
+
+.rare-bg {
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,255,0.18),
+      rgba(0,0,0,0.84));
+}
+
+.epic-bg {
+  background:
+    radial-gradient(circle at center,
+      rgba(180,0,255,0.22),
+      rgba(0,0,0,0.86));
+}
+
+.legendary-bg {
+  background:
+    radial-gradient(circle at center,
+      rgba(255,180,0,0.28),
+      rgba(0,0,0,0.88));
+}
+
+.mythic-bg {
+  background:
+    radial-gradient(circle at center,
+      rgba(255,0,255,0.32),
+      rgba(0,0,0,0.92));
+}
+
+.mythic-flash::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+
+  background:
+    radial-gradient(circle,
+      rgba(255,0,255,0.45),
+      transparent 70%);
+
+  pointer-events: none;
+  z-index: 99999;
+
+  animation: mythicFlash 0.85s ease-out;
+}
+
+@keyframes mythicFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+.loot-particle {
+  position: fixed;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 50%;
+  pointer-events: none;
+
+  z-index: 99999;
+
+  box-shadow:
+    0 0 12px currentColor,
+    0 0 24px currentColor;
+
+  animation: lootParticleFly 1.4s ease-out forwards;
+}
+
+@keyframes lootParticleFly {
+  0% {
+    transform: translate(0,0) scale(0.4);
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(var(--x), var(--y))
+      scale(1.4);
+
+    opacity: 0;
+  }
+}

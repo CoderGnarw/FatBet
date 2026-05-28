@@ -700,4 +700,32 @@ app.get("/presence/count", async (req, res) => {
   res.json({ count: count || 0 });
 });
 
+function createLootParticles(color = "#ff00ff") {
+  for (let i = 0; i < 18; i++) {
+    const particle = document.createElement("div");
+
+    particle.className = "loot-particle";
+    particle.style.background = color;
+
+    particle.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+    particle.style.top = `${50 + (Math.random() * 10 - 5)}%`;
+
+    particle.style.setProperty(
+      "--x",
+      `${Math.random() * 400 - 200}px`
+    );
+
+    particle.style.setProperty(
+      "--y",
+      `${Math.random() * -350}px`
+    );
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.remove();
+    }, 1400);
+  }
+}
+
 module.exports = app;

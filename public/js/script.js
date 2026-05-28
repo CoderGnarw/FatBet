@@ -1712,8 +1712,9 @@ function revealLootboxCard(event) {
   const card = document.getElementById("lootboxCard");
   const rarity = document.getElementById("lootboxRewardRarity");
   const text = document.getElementById("lootboxRewardText");
+  const overlay = document.getElementById("lootboxOverlay");
 
-  if (!card || !rarity || !text || !pendingLootboxResult) return;
+  if (!card || !rarity || !text || !overlay || !pendingLootboxResult) return;
   if (card.classList.contains("revealed")) return;
 
   const labels = {
@@ -1731,6 +1732,16 @@ function revealLootboxCard(event) {
   card.classList.add("revealed");
   card.classList.add(pendingLootboxResult.rarity);
 
+  overlay.classList.remove(
+    "common-bg",
+    "rare-bg",
+    "epic-bg",
+    "legendary-bg",
+    "mythic-bg"
+  );
+
+  overlay.classList.add(`${pendingLootboxResult.rarity}-bg`);
+
   const raritySound = lootboxSounds[pendingLootboxResult.rarity];
 
   if (raritySound) {
@@ -1742,7 +1753,21 @@ function revealLootboxCard(event) {
     }, 150);
   }
 
+  if (pendingLootboxResult.rarity === "common") {
+    createLootParticles("#bdbdbd", 12);
+  }
+
+  if (pendingLootboxResult.rarity === "rare") {
+    createLootParticles("#00aaff", 18);
+  }
+
+  if (pendingLootboxResult.rarity === "epic") {
+    createLootParticles("#b000ff", 24);
+  }
+
   if (pendingLootboxResult.rarity === "legendary") {
+    createLootParticles("#ffd700", 34);
+
     document.body.classList.add("screen-shake");
 
     setTimeout(() => {
@@ -1751,13 +1776,22 @@ function revealLootboxCard(event) {
   }
 
   if (pendingLootboxResult.rarity === "mythic") {
+    document.body.classList.add("mythic-flash");
     document.body.classList.add("screen-shake-mythic");
+
+    createLootParticles("#ff00ff", 42);
+    createLootParticles("#00ffff", 42);
+    createLootParticles("#ffd700", 28);
 
     createFlyingCoins();
     createFlyingCoins();
     createFlyingCoins();
     createFlyingCoins();
     createFlyingCoins();
+
+    setTimeout(() => {
+      document.body.classList.remove("mythic-flash");
+    }, 850);
 
     setTimeout(() => {
       document.body.classList.remove("screen-shake-mythic");
@@ -1772,6 +1806,35 @@ function revealLootboxCard(event) {
 
   const continueText = document.getElementById("lootboxContinue");
   if (continueText) continueText.classList.remove("hidden");
+}
+
+function createLootParticles(color = "#ff00ff", amount = 18) {
+  for (let i = 0; i < amount; i++) {
+    const particle = document.createElement("div");
+
+    particle.className = "loot-particle";
+    particle.style.background = color;
+    particle.style.color = color;
+
+    particle.style.left = `${50 + (Math.random() * 22 - 11)}%`;
+    particle.style.top = `${50 + (Math.random() * 14 - 7)}%`;
+
+    particle.style.setProperty(
+      "--x",
+      `${Math.random() * 460 - 230}px`
+    );
+
+    particle.style.setProperty(
+      "--y",
+      `${Math.random() * -380}px`
+    );
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      particle.remove();
+    }, 1400);
+  }
 }
 
 document.addEventListener("click", () => {
