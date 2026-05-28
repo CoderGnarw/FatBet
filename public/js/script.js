@@ -54,8 +54,8 @@ let lootboxCanClose = false;
 
 let sevenTvEmotes = {};
 const manualEmotes = {
-  KEKW: "https://cdn.7tv.app/emote/60ae7316f7c927fad14e6ca2/2x.webp",
-  OMEGALUL: "https://cdn.7tv.app/emote/60ae958e229664e8664adbc8/2x.webp"
+  KEKW: "https://cdn.7tv.app/emote/01F61B1440000991F7SWQNMVX7/4x.avif",
+  OMEGALUL: "https://cdn.7tv.app/emote/01F00Z3A9G0007E4VV006YKSK9/4x.avif"
 };
 
 const paylines = [
@@ -2141,7 +2141,7 @@ async function resolveUnknown7TVEmotes(message) {
 
     try {
       const res = await fetch(`/emotes/7tv/search/${encodeURIComponent(cleanWord)}`);
-      
+
       if (manualEmotes[cleanWord]) continue;
 
       const data = await res.json();
