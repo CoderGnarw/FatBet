@@ -556,8 +556,12 @@ function highlightWinningLines(winningLines) {
       const row = winLine.line[reel];
       const cell = document.getElementById(`slot-${row}-${reel}`);
 
+      if (!cell) continue;
+
       cell.classList.add("win");
       cell.classList.add("line-win");
+      cell.classList.add("winning");
+      cell.classList.add("winning-pop");
     }
   });
 }
@@ -591,6 +595,9 @@ function clearWinningCells() {
     slot.classList.remove("line-win");
     slot.classList.remove("scatter");
     slot.classList.remove("wild");
+
+    slot.classList.remove("winning");
+    slot.classList.remove("winning-pop");
   });
 
   const winDetails = document.getElementById("winDetails");
