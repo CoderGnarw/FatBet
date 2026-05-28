@@ -716,39 +716,47 @@ async function showBigWin(amount) {
   let title = "💎 BIG WIN 💎";
   let tier = "big-tier";
   let coinBursts = 1;
+  let duration = 2300;
+  let countDuration = 1250;
 
   if (multiplier >= 100) {
-  title = "💎 FAT WIN 💎";
-  tier = "fat-tier";
-  coinBursts = 4;
+    title = "💎 FAT WIN 💎";
+    tier = "fat-tier";
+    coinBursts = 4;
+    duration = 3200;
+    countDuration = 2100;
 
-  fatWinSound.currentTime = 0;
-  fatWinSound.play().catch(() => {});
+    fatWinSound.currentTime = 0;
+    fatWinSound.play().catch(() => {});
+  } else if (multiplier >= 50) {
+    title = "🔥 MEGA WIN 🔥";
+    tier = "mega-tier";
+    coinBursts = 2;
+    duration = 2700;
+    countDuration = 1650;
 
-} else if (multiplier >= 50) {
-  title = "🔥 MEGA WIN 🔥";
-  tier = "mega-tier";
-  coinBursts = 2;
-
-  megaWinSound.currentTime = 0;
-  megaWinSound.play().catch(() => {});
-
-} else {
-  bigWinSound.currentTime = 0;
-  bigWinSound.play().catch(() => {});
-}
+    megaWinSound.currentTime = 0;
+    megaWinSound.play().catch(() => {});
+  } else {
+    bigWinSound.currentTime = 0;
+    bigWinSound.play().catch(() => {});
+  }
 
   titleText.innerText = title;
-  amountText.innerText = `+${formatNumber(amount)} Coins`;
+  amountText.innerText = "+0 Coins";
 
   overlay.classList.add(tier);
   overlay.classList.remove("hidden");
 
+  animateNumberText(amountText, 0, amount, countDuration, "+", " Coins");
+
   for (let i = 0; i < coinBursts; i++) {
-    createFlyingCoins();
+    setTimeout(() => {
+      createFlyingCoins();
+    }, i * 350);
   }
 
-  await new Promise(resolve => setTimeout(resolve, multiplier >= 100 ? 3000 : 2300));
+  await new Promise(resolve => setTimeout(resolve, duration));
 
   overlay.classList.add("hidden");
   overlay.classList.remove("big-tier", "mega-tier", "fat-tier");
@@ -1050,19 +1058,42 @@ function showJackpotOverlay(amount) {
 
   if (!overlay || !text) return;
 
-  text.innerText = `Du hast ${formatNumber(amount)} Coins gewonnen!`;
+  text.innerText = "Du hast 0 Coins gewonnen!";
 
   overlay.classList.remove("hidden");
 
   document.body.classList.add("jackpot-shake");
+  document.body.classList.add("jackpot-screen-flash");
 
-  createJackpotCoins();
+  animateNumberText(
+    text,
+    0,
+    amount,
+    2400,
+    "Du hast ",
+    " Coins gewonnen!"
+  );
+
   jackpotWinSound.currentTime = 0;
   jackpotWinSound.play().catch(() => {});
 
+  createJackpotCoins();
+
+  setTimeout(() => {
+    createJackpotCoins();
+  }, 600);
+
+  setTimeout(() => {
+    createJackpotCoins();
+  }, 1200);
+
   setTimeout(() => {
     document.body.classList.remove("jackpot-shake");
-  }, 650);
+  }, 900);
+
+  setTimeout(() => {
+    document.body.classList.remove("jackpot-screen-flash");
+  }, 1200);
 }
 
 function hideJackpotOverlay() {
@@ -1878,4 +1909,28 @@ function startPresenceSystem() {
 
   setInterval(sendPresenceHeartbeat, 20000);
   setInterval(loadOnlinePlayerCount, 10000);
+}
+
+function animateNumberText(element, from, to, duration = 1600, prefix = "", suffix = "") {
+  if (!element) return;
+
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const currentValue = Math.floor(from + (to - from) * eased);
+
+    element.innerText = `${prefix}${formatNumber(currentValue)}${suffix}`;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      element.innerText = `${prefix}${formatNumber(to)}${suffix}`;
+    }
+  }
+
+  requestAnimationFrame(update);
 }

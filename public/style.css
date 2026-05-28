@@ -3012,3 +3012,52 @@ h1,
     opacity: 0;
   }
 }
+
+.jackpot-screen-flash::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999999;
+
+  background:
+    radial-gradient(circle,
+      rgba(255, 215, 0, 0.55),
+      rgba(255, 0, 255, 0.28),
+      transparent 72%);
+
+  animation: jackpotScreenFlash 1.2s ease-out forwards;
+}
+
+@keyframes jackpotScreenFlash {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+.jackpot-box {
+  animation:
+    jackpotPop 0.5s ease,
+    jackpotGlow 0.9s ease-in-out infinite,
+    jackpotBoxPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes jackpotBoxPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.045);
+  }
+}
