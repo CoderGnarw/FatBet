@@ -2074,3 +2074,47 @@ button:hover::before {
   max-width: 520px;
   margin: 30px auto 0;
 }
+
+.big-win-overlay,
+.big-win {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+.big-win-content,
+.big-win-text,
+.big-win-amount {
+  transform: translateY(-20px);
+}
+
+#flyingCoins {
+  z-index: 1 !important;
+}
+
+.coin-particle {
+  z-index: 1 !important;
+  opacity: 0.45;
+}
+
+h1,
+.profile-menu-wrapper,
+.main-game-layout,
+.slot-center,
+.side-panel,
+.slot-machine,
+.jackpot-display,
+.bet-controls,
+.auto-spin-controls,
+.bonus-controls,
+#result,
+.win-details {
+  position: relative;
+  z-index: 5;
+}
