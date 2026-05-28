@@ -246,9 +246,11 @@ async function spin() {
   }
 
   if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
-    freeSpins += scatterData.freeSpinsWon;
-    freeSpinStartCount = scatterData.freeSpinsWon;
-    freeSpinTotalWin = 0;
+  freeSpins += scatterData.freeSpinsWon;
+  freeSpinStartCount = scatterData.freeSpinsWon;
+  freeSpinTotalWin = 0;
+
+  await showFreeSpinsWonAnimation(scatterData.freeSpinsWon);
   }
 
   if (totalWin > 0) {
@@ -290,8 +292,9 @@ async function spin() {
     const totalMultiplier = totalWin / bet;
     result(`Gewonnen: ${formatNumber(totalWin)} Coins 🎉 | Gesamt x${totalMultiplier}`);
   } else if (scatterData.freeSpinsWon > 0) {
-    result(`${scatterData.freeSpinsWon} Freispiele gewonnen 🎁`);
-  } else {
+  result("");
+  }
+    else {
     result("Leider verloren 😢");
   }
 
@@ -753,6 +756,25 @@ async function showBigWin(amount) {
 
   overlay.classList.add("hidden");
   overlay.classList.remove("big-tier", "mega-tier", "fat-tier");
+}
+
+async function showFreeSpinsWonAnimation(amount) {
+  if (!amount || amount <= 0) return;
+
+  const overlay = document.getElementById("freeSpinsWonOverlay");
+  const amountBox = document.getElementById("freeSpinsWonAmount");
+
+  if (!overlay || !amountBox) return;
+
+  amountBox.innerText = `+${amount}`;
+
+  overlay.classList.remove("hidden");
+
+  createFlyingCoins();
+
+  await new Promise(resolve => setTimeout(resolve, 1900));
+
+  overlay.classList.add("hidden");
 }
 
 function createFlyingCoins() {

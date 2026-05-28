@@ -2565,3 +2565,106 @@ h1,
     0 0 10px #ffcc00,
     0 0 18px #ff9900;
 }
+
+.free-spins-won-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0, 255, 213, 0.16),
+      rgba(0, 0, 0, 0.45));
+}
+
+.free-spins-won-box {
+  padding: 44px 70px;
+
+  border-radius: 34px;
+
+  text-align: center;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(60, 0, 90, 0.95),
+      rgba(0, 0, 0, 0.92)
+    );
+
+  border: 3px solid #00ffd5;
+
+  box-shadow:
+    0 0 22px #00ffd5,
+    0 0 58px rgba(255, 0, 255, 0.65),
+    inset 0 0 28px rgba(0, 255, 213, 0.16);
+
+  animation: freeSpinPop 0.55s ease, freeSpinPulse 0.9s ease-in-out infinite;
+}
+
+.free-spins-won-title {
+  font-size: 58px;
+  font-weight: 900;
+
+  color: #ffd700;
+
+  text-shadow:
+    0 0 18px #ffd700,
+    0 0 44px #ff00ff;
+}
+
+.free-spins-won-amount {
+  margin-top: 10px;
+
+  font-size: 72px;
+  font-weight: 900;
+
+  color: #00ffd5;
+
+  text-shadow:
+    0 0 20px #00ffd5,
+    0 0 52px #00ffd5;
+}
+
+.free-spins-won-subtitle {
+  margin-top: 8px;
+
+  font-size: 24px;
+  font-weight: 800;
+
+  color: white;
+
+  text-shadow:
+    0 0 14px #ff00ff;
+}
+
+@keyframes freeSpinPop {
+  0% {
+    transform: scale(0.45) rotate(-6deg);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.12) rotate(2deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes freeSpinPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+}
