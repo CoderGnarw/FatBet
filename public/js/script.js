@@ -1671,7 +1671,8 @@ async function openLootboxAnimated() {
   lootboxCanClose = false;
 
   overlay.classList.remove("hidden");
-  chest.className = "lootbox-chest";
+
+  chest.className = "lootbox-chest lootbox-drop-in";
   chest.innerText = "🎁";
 
   card.className = "lootbox-card hidden";
@@ -1679,22 +1680,29 @@ async function openLootboxAnimated() {
 
   if (continueText) continueText.classList.add("hidden");
 
-  await new Promise(resolve => setTimeout(resolve, 450));
+  await new Promise(resolve => setTimeout(resolve, 550));
 
-  chest.classList.add("opening");
+  chest.classList.add("lootbox-shake");
 
-  await new Promise(resolve => setTimeout(resolve, 700));
+  await new Promise(resolve => setTimeout(resolve, 850));
 
   pendingLootboxResult = openLootbox();
 
-  chest.classList.add("hidden");
+  chest.classList.remove("lootbox-shake");
+  chest.classList.add("opening");
+
+  await new Promise(resolve => setTimeout(resolve, 450));
 
   shimmer.className =
     `lootbox-card-shimmer ${pendingLootboxResult.rarity}`;
 
-  await new Promise(resolve => setTimeout(resolve, 350));
-
   card.classList.remove("hidden");
+  card.classList.add("lootbox-rise");
+
+  await new Promise(resolve => setTimeout(resolve, 650));
+
+  chest.classList.add("hidden");
+  card.classList.remove("lootbox-rise");
 }
 
 function revealLootboxCard(event) {

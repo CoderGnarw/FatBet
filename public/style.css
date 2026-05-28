@@ -2732,3 +2732,159 @@ h1,
   align-items: center;
 }
 
+.lootbox-overlay {
+  background:
+    radial-gradient(circle at center,
+      rgba(255, 0, 255, 0.22),
+      rgba(0, 0, 0, 0.78));
+  backdrop-filter: blur(5px);
+}
+
+.lootbox-light {
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(circle,
+      rgba(255, 215, 0, 0.28),
+      rgba(255, 0, 255, 0.18),
+      transparent 68%);
+
+  animation: lootboxLightPulse 1.6s ease-in-out infinite;
+}
+
+.lootbox-chest {
+  position: relative;
+  z-index: 2;
+
+  font-size: 118px;
+
+  filter:
+    drop-shadow(0 0 18px #ffd700)
+    drop-shadow(0 0 42px #ff00ff);
+}
+
+.lootbox-drop-in {
+  animation: lootboxDropIn 0.55s cubic-bezier(.18,.89,.32,1.28);
+}
+
+.lootbox-shake {
+  animation: lootboxShake 0.18s ease-in-out infinite;
+}
+
+.lootbox-chest.opening {
+  animation: lootboxOpenPop 0.45s ease forwards;
+}
+
+.lootbox-card {
+  z-index: 4;
+}
+
+.lootbox-rise {
+  animation: lootboxCardRise 0.75s cubic-bezier(.2,.9,.25,1.25);
+}
+
+.lootbox-card-front,
+.lootbox-card-back {
+  box-shadow:
+    0 0 24px rgba(255, 0, 255, 0.75),
+    0 0 58px rgba(255, 215, 0, 0.32),
+    inset 0 0 22px rgba(255, 255, 255, 0.06);
+}
+
+.lootbox-card-shimmer {
+  animation:
+    lootboxShimmerSweep 1.15s linear infinite,
+    lootboxRarityPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes lootboxDropIn {
+  0% {
+    transform: translateY(-220px) scale(0.4) rotate(-14deg);
+    opacity: 0;
+  }
+
+  70% {
+    transform: translateY(14px) scale(1.14) rotate(4deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
+@keyframes lootboxShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-6px, 2px) rotate(-5deg); }
+  50% { transform: translate(5px, -2px) rotate(4deg); }
+  75% { transform: translate(-3px, -1px) rotate(-3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes lootboxOpenPop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  60% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.75);
+    opacity: 0;
+  }
+}
+
+@keyframes lootboxCardRise {
+  0% {
+    transform: translateY(160px) scale(0.55) rotate(-8deg);
+    opacity: 0;
+  }
+
+  70% {
+    transform: translateY(-18px) scale(1.08) rotate(2deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
+@keyframes lootboxLightPulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.65;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes lootboxShimmerSweep {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+
+  100% {
+    transform: translateX(140%) skewX(-18deg);
+  }
+}
+
+@keyframes lootboxRarityPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
