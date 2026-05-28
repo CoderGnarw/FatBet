@@ -69,10 +69,13 @@
   <div class="spin-controls">
     <label for="bet">Einsatz:</label>
 
-    <select id="bet">
+    <select id="betSelect" onchange="changeBet()">
+      <option value="50">50</option>
       <option value="100">100</option>
       <option value="250">250</option>
       <option value="500" selected>500</option>
+      <option value="750">750</option>
+      <option value="1000">1000</option>
     </select>
 
     <button id="spinButton" class="spin-button" onclick="spin()">
