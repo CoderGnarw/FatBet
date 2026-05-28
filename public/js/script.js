@@ -1702,7 +1702,7 @@ async function openLootboxAnimated() {
   await new Promise(resolve => setTimeout(resolve, 650));
 
   chest.classList.add("hidden");
-  card.classList.remove("lootbox-rise");
+  /* card.classList.remove("lootbox-rise"); */
 }
 
 function revealLootboxCard(event) {
