@@ -2832,12 +2832,14 @@ h1,
   }
 
   100% {
-  transform: translateY(0) scale(1) rotate(0);
+    transform: translateY(0) scale(1) rotate(0);
+    opacity: 1;
   }
 }
 
-.lootbox-card.lootbox-rise {
-  transform: translateY(0);
+  .lootbox-card.lootbox-rise,
+  .lootbox-card.lootbox-card-ready {
+    transform: translateY(0) scale(1) rotate(0);
 }
 
 @keyframes lootboxLightPulse {
