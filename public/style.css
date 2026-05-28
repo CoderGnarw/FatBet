@@ -2882,42 +2882,19 @@ h1,
   animation: lootboxCardRise 0.75s cubic-bezier(.2,.9,.25,1.25);
 }
 
-.lootbox-card {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
-
-  width: 360px !important;
-  height: 500px !important;
-
-  transform: translate(-50%, -50%) scale(1) rotate(0deg) !important;
-
-  animation: none !important;
+#lootboxOverlay .lootbox-card {
+  position: relative !important;
+  width: 360px;
+  height: 500px;
   z-index: 4;
   perspective: 1000px;
+  cursor: pointer;
 }
 
-.lootbox-card.lootbox-rise {
-  animation: lootboxCardRiseFixed 0.75s cubic-bezier(.2,.9,.25,1.25) !important;
+#lootboxOverlay .lootbox-card.lootbox-rise {
+  animation: lootboxCardRise 0.75s cubic-bezier(.2,.9,.25,1.25);
 }
 
-.lootbox-card.lootbox-card-ready {
-  transform: translate(-50%, -50%) scale(1) rotate(0deg) !important;
-}
-
-@keyframes lootboxCardRiseFixed {
-  0% {
-    transform: translate(-50%, calc(-50% + 160px)) scale(0.55) rotate(-8deg);
-    opacity: 0;
-  }
-
-  70% {
-    transform: translate(-50%, calc(-50% - 18px)) scale(1.08) rotate(2deg);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
-    opacity: 1;
-  }
+#lootboxOverlay .lootbox-card.lootbox-card-ready {
+  transform: none;
 }
