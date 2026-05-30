@@ -3455,14 +3455,15 @@ h1,
 .top-casino-bar {
   position: relative;
 
-  height: 120px;
+  height: 72px;
   width: 100%;
+  max-width: 58%;
 
   display: flex;
   justify-content: center;
   align-items: flex-end;
 
-  margin-bottom: 8px;
+  margin: 0 auto 8px;
 
   background:
     linear-gradient(
@@ -3473,6 +3474,9 @@ h1,
     );
 
   border-bottom: 2px solid rgba(255, 0, 255, 0.35);
+
+  border-bottom-left-radius: 26px;
+  border-bottom-right-radius: 26px;
 
   box-shadow:
     0 0 28px rgba(255, 0, 255, 0.25),
@@ -3497,12 +3501,13 @@ h1,
   position: relative;
   z-index: 2;
 
-  width: min(330px, 64vw);
+  width: min(250px, 46vw);
   height: auto;
 
-  transform: translateY(28px);
+  transform: translateY(46px);
 
   filter:
     drop-shadow(0 0 12px #ff00ff)
     drop-shadow(0 0 24px rgba(255, 215, 0, 0.48));
 }
+
