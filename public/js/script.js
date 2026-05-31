@@ -200,6 +200,11 @@ async function spin() {
 
   const isFreeSpin = freeSpins > 0;
   const freeSpinsBeforeSpin = freeSpins;
+  const betSelect = document.getElementById("betSelect");
+
+  if (betSelect && !isFreeSpin) {
+    bet = Number(betSelect.value);
+  }
 
   if (!isFreeSpin && coins < bet) {
     result("Nicht genug Coins!");
@@ -672,6 +677,23 @@ function updateUI() {
     ? (autoSpinInfinite ? "∞" : autoSpinsRemaining)
     : "";
   }
+}
+
+function changeBet() {
+  const betSelect = document.getElementById("betSelect");
+
+  if (!betSelect) return;
+
+  if (freeSpins > 0 || isSpinning) {
+    betSelect.value = String(bet);
+    return;
+  }
+
+  bet = Number(betSelect.value);
+
+  console.log("BET CHANGED:", bet);
+
+  updateUI();
 }
 
 function result(text) {
