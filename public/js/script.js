@@ -221,106 +221,122 @@ async function spin() {
   isSpinning = true;
   updateUI();
 
-  if (isFreeSpin) {
-    freeSpins--;
-    result(`Freispiel läuft 🎁 Noch ${freeSpins} übrig`);
-  } else {
-    coins -= bet;
-  }
+  try {
+    if (isFreeSpin) {
+      freeSpins--;
+      result(`Freispiel läuft 🎁 Noch ${freeSpins} übrig`);
 
-  updateUI();
-
-  spinSound.currentTime = 0;
-  spinSound.playbackRate = turboSpin ? 1.8 : 0.9;
-  spinSound.play().catch(() => {});
-
-  generateFinalGrid(isFreeSpin);
-  await animateReelsSequentially();
-  renderGrid();
-
-  const winData = calculateTotalWin();
-  const scatterData = calculateScatterBonus(isFreeSpin);
-
-  let totalWin = winData.totalWin;
-
-  const jackpotData = await rollJackpot(isFreeSpin);
-
-  if (jackpotData.jackpotWon) {
-    totalWin += jackpotData.jackpotWin;
-    showJackpotOverlay(jackpotData.jackpotWin);
-
-    await addLiveFeedMessage(
-      `${currentUser} hat den Jackpot mit ${formatNumber(jackpotData.jackpotWin)} Coins geknackt 💰`
-    );
-  }
-
-  if (isFreeSpin && totalWin > 0) {
-    freeSpinTotalWin += totalWin;
-  }
-
-  if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
-  freeSpins += scatterData.freeSpinsWon;
-  freeSpinStartCount = scatterData.freeSpinsWon;
-  freeSpinTotalWin = 0;
-
-  await showFreeSpinsWonAnimation(scatterData.freeSpinsWon);
-  }
-
-  if (totalWin > 0) {
-    coins += totalWin;
-    highlightWinningLines(winData.winningLines);
-
-    if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
-      playSound(jackpotSound);
+      await save();
     } else {
-      playSound(winSound);
+      coins -= bet;
     }
+
+    updateUI();
+
+    spinSound.currentTime = 0;
+    spinSound.playbackRate = turboSpin ? 1.8 : 0.9;
+    spinSound.play().catch(() => {});
+
+    generateFinalGrid(isFreeSpin);
+
+    await animateReelsSequentially();
+    renderGrid();
+
+    const winData = calculateTotalWin();
+    const scatterData = calculateScatterBonus(isFreeSpin);
+
+    let totalWin = winData.totalWin;
+
+    const jackpotData = await rollJackpot(isFreeSpin);
+
+    if (jackpotData.jackpotWon) {
+      totalWin += jackpotData.jackpotWin;
+      showJackpotOverlay(jackpotData.jackpotWin);
+
+      await addLiveFeedMessage(
+        `${currentUser} hat den Jackpot mit ${formatNumber(jackpotData.jackpotWin)} Coins geknackt 💰`
+      );
+    }
+
+    if (isFreeSpin && totalWin > 0) {
+      freeSpinTotalWin += totalWin;
+    }
+
+    if (!isFreeSpin && scatterData.freeSpinsWon > 0) {
+      freeSpins += scatterData.freeSpinsWon;
+      freeSpinStartCount = scatterData.freeSpinsWon;
+      freeSpinTotalWin = 0;
+
+      await showFreeSpinsWonAnimation(scatterData.freeSpinsWon);
+    }
+
+    if (totalWin > 0) {
+      coins += totalWin;
+      highlightWinningLines(winData.winningLines);
+
+      if (winData.hasFiveOfAKind || jackpotData.jackpotWon) {
+        playSound(jackpotSound);
+      } else {
+        playSound(winSound);
+      }
+    }
+
+    if (totalWin >= bet * 25) {
+      const multiplier = totalWin / bet;
+
+      let winTier = "big";
+
+      if (multiplier >= 100) {
+        winTier = "fat";
+      } else if (multiplier >= 50) {
+        winTier = "mega";
+      }
+
+      await addLiveFeedMessage({
+        message: `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`,
+        tier: winTier
+      });
+    }
+
+    await updateStats(
+      totalWin,
+      scatterData.freeSpinsWon,
+      jackpotData.jackpotWon
+    );
+
+    highlightScatters();
+    showWinDetails(winData.winningLines, scatterData);
+
+    if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
+      result(
+        `Gewonnen: ${formatNumber(totalWin)} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`
+      );
+    } else if (totalWin > 0) {
+      const totalMultiplier = totalWin / bet;
+      result(
+        `Gewonnen: ${formatNumber(totalWin)} Coins 🎉 | Gesamt x${totalMultiplier}`
+      );
+    } else if (scatterData.freeSpinsWon > 0) {
+      result("");
+    } else {
+      result("Leider verloren 😢");
+    }
+
+    await save();
+
+    if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
+      showFreeSpinSummary();
+    }
+
+    await showBigWin(totalWin);
+  } catch (error) {
+    console.error("SPIN ERROR:", error);
+
+    result("⚠️ Beim Spin ist ein Fehler aufgetreten.");
+  } finally {
+    isSpinning = false;
+    updateUI();
   }
-
-  if (totalWin >= bet * 25) {
-  const multiplier = totalWin / bet;
-
-  let winTier = "big";
-
-  if (multiplier >= 100) {
-    winTier = "fat";
-  } else if (multiplier >= 50) {
-    winTier = "mega";
-  }
-
-  await addLiveFeedMessage({
-    message: `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`,
-    tier: winTier
-  });
-}
-
-  await updateStats(totalWin, scatterData.freeSpinsWon, jackpotData.jackpotWon);
-
-  highlightScatters();
-  showWinDetails(winData.winningLines, scatterData);
-
-  if (totalWin > 0 && scatterData.freeSpinsWon > 0) {
-    result(`Gewonnen: ${formatNumber(totalWin)} Coins 🎉 + ${scatterData.freeSpinsWon} Freispiele 🎁`);
-  } else if (totalWin > 0) {
-    const totalMultiplier = totalWin / bet;
-    result(`Gewonnen: ${formatNumber(totalWin)} Coins 🎉 | Gesamt x${totalMultiplier}`);
-  } else if (scatterData.freeSpinsWon > 0) {
-  result("");
-  }
-    else {
-    result("Leider verloren 😢");
-  }
-
-  await save();
-
-  isSpinning = false;
-  updateUI();
-
-  if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
-    showFreeSpinSummary();
-  }
-
-  await showBigWin(totalWin);
 }
 
 function animateReelsSequentially() {
