@@ -328,7 +328,9 @@ async function spin() {
       showFreeSpinSummary();
     }
 
-    await showBigWin(totalWin);
+    showBigWin(totalWin).catch(error => {
+      console.error("BIG WIN ERROR:", error);
+    });
   } catch (error) {
     console.error("SPIN ERROR:", error);
 
@@ -753,6 +755,15 @@ async function showBigWin(amount) {
   const amountText = document.getElementById("bigWinAmount");
   const titleText = document.getElementById("bigWinText");
 
+  console.log("SHOW BIG WIN", {
+    amount,
+    bet,
+    multiplier,
+    overlay,
+    amountText,
+    titleText
+  });
+
   if (!overlay || !amountText || !titleText) return;
 
   overlay.classList.remove("big-tier", "mega-tier", "fat-tier");
@@ -770,8 +781,7 @@ async function showBigWin(amount) {
     duration = 3200;
     countDuration = 2100;
 
-    fatWinSound.currentTime = 0;
-    fatWinSound.play().catch(() => {});
+    playSound(fatWinSound);
   } else if (multiplier >= 50) {
     title = "🔥 MEGA WIN 🔥";
     tier = "mega-tier";
@@ -779,18 +789,22 @@ async function showBigWin(amount) {
     duration = 2700;
     countDuration = 1650;
 
-    megaWinSound.currentTime = 0;
-    megaWinSound.play().catch(() => {});
+    playSound(megaWinSound);
   } else {
-    bigWinSound.currentTime = 0;
-    bigWinSound.play().catch(() => {});
+    playSound(bigWinSound);
   }
 
   titleText.innerText = title;
   amountText.innerText = "+0 Coins";
 
   overlay.classList.add(tier);
+  overlay.style.display = "";
+  overlay.style.opacity = "";
+  overlay.style.visibility = "";
   overlay.classList.remove("hidden");
+  overlay.style.display = "flex";
+  overlay.style.opacity = "1";
+  overlay.style.visibility = "visible";
 
   animateNumberText(amountText, 0, amount, countDuration, "+", " Coins");
 
