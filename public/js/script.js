@@ -193,17 +193,6 @@ function fillGridWithRandomSymbols() {
   }
 }
 
-function changeBet() {
-  if (freeSpins > 0 || isSpinning) {
-    const betSelect = document.getElementById("betSelect");
-    if (betSelect) betSelect.value = bet;
-    return;
-  }
-
-  bet = Number(document.getElementById("betSelect").value);
-  updateUI();
-}
-
 async function spin() {
   if (isSpinning) return;
 
