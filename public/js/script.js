@@ -253,9 +253,11 @@ async function spin() {
       totalWin += jackpotData.jackpotWin;
       showJackpotOverlay(jackpotData.jackpotWin);
 
-      await addLiveFeedMessage(
+      addLiveFeedMessage(
         `${currentUser} hat den Jackpot mit ${formatNumber(jackpotData.jackpotWin)} Coins geknackt 💰`
-      );
+      ).catch(error => {
+        console.error("JACKPOT LIVE FEED ERROR:", error);
+      });
     }
 
     if (isFreeSpin && totalWin > 0) {
@@ -267,7 +269,9 @@ async function spin() {
       freeSpinStartCount = scatterData.freeSpinsWon;
       freeSpinTotalWin = 0;
 
-      await showFreeSpinsWonAnimation(scatterData.freeSpinsWon);
+      showFreeSpinsWonAnimation(scatterData.freeSpinsWon).catch(error => {
+        console.error("FREE SPINS ANIMATION ERROR:", error);
+      });
     }
 
     if (totalWin > 0) {
@@ -278,6 +282,12 @@ async function spin() {
         playSound(jackpotSound);
       } else {
         playSound(winSound);
+      }
+
+      if (totalWin >= bet * 25) {
+        showBigWin(totalWin).catch(error => {
+          console.error("BIG WIN ERROR:", error);
+        });
       }
     }
 
@@ -292,17 +302,21 @@ async function spin() {
         winTier = "mega";
       }
 
-      await addLiveFeedMessage({
+      addLiveFeedMessage({
         message: `${currentUser} gewann ${formatNumber(totalWin)} Coins 🎉`,
         tier: winTier
+      }).catch(error => {
+        console.error("BIG WIN LIVE FEED ERROR:", error);
       });
     }
 
-    await updateStats(
+    updateStats(
       totalWin,
       scatterData.freeSpinsWon,
       jackpotData.jackpotWon
-    );
+    ).catch(error => {
+      console.error("UPDATE STATS ERROR:", error);
+    });
 
     highlightScatters();
     showWinDetails(winData.winningLines, scatterData);
@@ -327,10 +341,6 @@ async function spin() {
     if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
       showFreeSpinSummary();
     }
-
-    showBigWin(totalWin).catch(error => {
-      console.error("BIG WIN ERROR:", error);
-    });
   } catch (error) {
     console.error("SPIN ERROR:", error);
 
