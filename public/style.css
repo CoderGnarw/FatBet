@@ -3574,3 +3574,37 @@ h1,
   color: #00ffd5;
   white-space: nowrap;
 }
+
+.leaderboard-left {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.leaderboard-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.leaderboard-name {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard-coins {
+  font-size: 13px;
+  font-weight: 900;
+  color: #00ffd5;
+  white-space: nowrap;
+}
+
+.leaderboard-title {
+  font-size: 11px;
+  line-height: 1.05;
+}

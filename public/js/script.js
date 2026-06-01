@@ -750,22 +750,17 @@ async function updateLeaderboard() {
       `#${index + 1}`;
 
     const name = user.display_name || user.username;
-    const title = user.selected_title ? `👑 ${user.selected_title}` : "";
+    const title = user.selected_title || "";
 
     li.innerHTML = `
       <div class="leaderboard-left">
-    <span class="leaderboard-rank">${medal}</span>
+        <span class="leaderboard-rank">${medal}</span>
 
-    <div class="leaderboard-info">
-      <div class="leaderboard-name">${name}</div>
-      <div class="leaderboard-coins">${formatNumber(user.coins)} Coins</div>
-      <div class="leaderboard-title">👑 ${title}</div>
-    </div>
-  </div>
-  
-
-      <div class="leaderboard-coins">
-        ${formatNumber(user.coins)} Coins
+        <div class="leaderboard-info">
+          <div class="leaderboard-name">${name}</div>
+          <div class="leaderboard-coins">${formatNumber(user.coins)} Coins</div>
+          <div class="leaderboard-title">${title ? `👑 ${title}` : ""}</div>
+        </div>
       </div>
     `;
 
