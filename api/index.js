@@ -197,10 +197,35 @@ app.post("/save", async (req, res) => {
   }
 
   const { coins } = req.body;
+  const newCoins = Number(coins);
+
+  if (!Number.isFinite(newCoins) || newCoins < 0) {
+    return res.status(400).json({ error: "Ungültiger Coins-Wert." });
+  }
+
+  const { data: user, error: loadError } = await supabase
+    .from("users")
+    .select("coins")
+    .eq("discord_id", req.session.user.discord_id)
+    .single();
+
+  if (loadError || !user) {
+    console.error(loadError);
+    return res.sendStatus(500);
+  }
+
+  const currentCoins = Number(user.coins || 0);
+
+  if (newCoins < currentCoins) {
+    return res.status(200).json({
+      skipped: true,
+      coins: currentCoins
+    });
+  }
 
   const { error } = await supabase
     .from("users")
-    .update({ coins })
+    .update({ coins: newCoins })
     .eq("discord_id", req.session.user.discord_id);
 
   if (error) {
@@ -208,7 +233,7 @@ app.post("/save", async (req, res) => {
     return res.sendStatus(500);
   }
 
-  res.sendStatus(200);
+  res.status(200).json({ success: true, coins: newCoins });
 });
 
 app.get("/leaderboard", async (req, res) => {
