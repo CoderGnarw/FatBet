@@ -331,6 +331,7 @@ async function spin() {
     }
 
     await save();
+    await updateLeaderboard();
 
     if (isFreeSpin && freeSpinsBeforeSpin === 1 && freeSpins === 0) {
       showFreeSpinSummary();
@@ -702,18 +703,27 @@ function result(text) {
 }
 
 async function save() {
-  await fetch("/save", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      coins
-    })
-  });
+  try {
+    const res = await fetch("/save", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        coins
+      })
+    });
 
-  updateLeaderboard();
+    if (!res.ok) {
+      console.error("SAVE ERROR:", await res.text());
+      return;
+    }
+
+    await updateLeaderboard();
+  } catch (error) {
+    console.error("SAVE FETCH ERROR:", error);
+  }
 }
 
 async function updateLeaderboard() {
