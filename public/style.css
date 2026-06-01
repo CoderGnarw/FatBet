@@ -3555,3 +3555,22 @@ h1,
 
   z-index: 2;
 }
+
+.leaderboard-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.leaderboard-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.leaderboard-coins {
+  font-size: 13px;
+  font-weight: 900;
+  color: #00ffd5;
+  white-space: nowrap;
+}
