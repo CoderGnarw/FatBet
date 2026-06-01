@@ -754,13 +754,15 @@ async function updateLeaderboard() {
 
     li.innerHTML = `
       <div class="leaderboard-left">
-        <span class="leaderboard-rank">${medal}</span>
+    <span class="leaderboard-rank">${medal}</span>
 
-        <div>
-          <div class="leaderboard-name">${name}</div>
-          <div class="leaderboard-title">${title}</div>
-        </div>
-      </div>
+    <div class="leaderboard-info">
+      <div class="leaderboard-name">${name}</div>
+      <div class="leaderboard-coins">${formatNumber(user.coins)} Coins</div>
+      <div class="leaderboard-title">👑 ${title}</div>
+    </div>
+  </div>
+  
 
       <div class="leaderboard-coins">
         ${formatNumber(user.coins)} Coins
