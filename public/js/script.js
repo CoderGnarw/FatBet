@@ -762,12 +762,12 @@ async function updateLeaderboard() {
       <div class="leaderboard-title">👑 ${title}</div>
     </div>
   </div>
+    `;
   
 
       <div class="leaderboard-coins">
         ${formatNumber(user.coins)} Coins
       </div>
-    `;
 
     list.appendChild(li);
   });
