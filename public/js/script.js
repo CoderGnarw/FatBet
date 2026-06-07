@@ -109,13 +109,13 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await load7TVEmotes();
   await loadChatMessages();
-  setInterval(loadChatMessages, 3000);
+  setInterval(loadChatMessages, 7500);
 
   await loadLiveFeed();
   await loadAchievements();
 
-  setInterval(loadLiveFeed, 5000);
-  setInterval(updateFeedTimes, 1000);
+  setInterval(loadLiveFeed, 7500);
+  setInterval(updateFeedTimes, 5000);
 });
 
 async function checkLogin() {
